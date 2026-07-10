@@ -44,15 +44,17 @@ Without `--ft_noise_dir`, the framework generates noise from a temperature model
 
 ### Measured FT noise (`--ft_noise_dir`)
 
-FT waveforms are recorded through the readout signal chain (RADIANT, 3.2 GHz). The trigger path uses a different signal chain after the 3 dB splitter (arXiv:2411.12922, Sec. 3.2). So FT noise must be injected differently for each path:
+FT waveforms are recorded through the readout signal chain (RADIANT, 3.2 GHz). The trigger path uses a different signal chain after the 3 dB splitter (arXiv:2411.12922, Sec. 3.2). So FT noise must be injected differently for each path. This is the v9 production method (matching `08_RNO_G_trigger_simulation_testing/rollover_demonstration/trace_length_study/simulate_fixed_response_v9.py`), implemented in-script:
 
-1. **Trigger path** (at 5 GHz internal sim rate): FT noise is upsampled from 3.2 to 5 GHz (to match the internal sim rate), then multiplied by a transfer function (`trigger_response / readout_response`, from the detector description) to convert from readout domain to trigger domain. This stage only touches trigger channel copies.
+1. **Trigger path** (at 5 GHz internal sim rate): the internal trigger trace is much longer than one FT event (padded to ~2 us for linear convolution), so several FT events are each upsampled from 3.2 to 5 GHz and stitched into one continuous noise trace with a Hann overlap-add crossfade (`tile_noise_overlap_add`, `TILE_OVERLAP` samples of overlap). The stitched noise is multiplied by a transfer function (`trigger_response / readout_response`, from the detector description) to convert from readout to trigger domain, then added to the trigger channel copies (ch 0-3). This is the v9 headline fix: earlier versions evaluated the trigger on a signal-only copy.
 
-2. **Readout path** (at 3.2 GHz): the same FT event is added directly to readout channels at native rate. No transform needed since the noise was already recorded through the readout chain.
+2. **Readout path** (at 3.2 GHz): a separate FT event is added directly to the readout channels at native rate, after the readout-window cut and resample. No transform is needed since the noise was recorded through the readout chain.
 
-Both stages use the same noise realization. The config must set `noise: False` to prevent the framework from also adding thermal noise on top of the injected FT noise.
+The two paths draw independent FT realizations from the same streaming pool (the trigger tiles and the readout event are different draws). The config must set `noise: False` to prevent the framework from also adding thermal noise on top of the injected FT noise.
 
-Point `--ft_noise_dir` at a directory of ROOT files (`station{id}_run*.root` or `run*/waveforms.root`). To exclude non-thermal FT events, pass `--ft_clean_mask` with an NPZ mask file from [`noise_analysis/ft_cleaning/`](noise_analysis/ft_cleaning/).
+The readout window is cut with a zero-padded cutter (`zero_padded_readout_window_cutter`) that replaces the framework's cyclic roll: when the readout window extends past the internal trace edge, the overflow is filled with zeros rather than wrapped. In FT mode the zeros are then covered by the readout FT injection, which spans the full 2048-sample readout trace.
+
+Point `--ft_noise_dir` at a directory of `station{id}_run*.root` ROOT files. To exclude non-thermal FT events, pass `--ft_clean_mask` with an NPZ mask file (`runNum`/`eventNum`/`is_clean`) from [`noise_analysis/ft_cleaning/`](noise_analysis/ft_cleaning/). A pool smaller than `--n_events` simply reuses realizations (the file list is cycled and reshuffled).
 
 ## FLOWER trigger model
 
@@ -152,13 +154,23 @@ python simulate.py --station_id 23 --energy 1e18 --n_events 100 \
 
 - **No pedestal in the detector database.** The RNO-G MongoDB doesn't store pedestal voltages yet, so they must be passed via `--pedestal_voltage`.
 
+## FT noise injection lives in the script
+
+The measured-FT-noise machinery is implemented in `simulate.py` itself (the v9 method), not in a framework module:
+
+- `FTNoisePool`: streaming reader/cycler over `station{id}_run*.root` FORCE events, with clean-mask and corrupt-file handling.
+- `upsample_trace` + `tile_noise_overlap_add`: build the trigger-copy noise (Hann overlap-add of upsampled FT tiles) spanning the full internal trace.
+- `_get_readout_to_trigger_transfer`: readout->trigger domain conversion for the trigger copies.
+- `zero_padded_readout_window_cutter`: monkey-patched over the framework cutter (FT mode only).
+- `resampler_with_noise_and_clip`: monkey-patched over `channelResampler` to add the readout FT realization and apply the ADC clip.
+
 ## Framework changes on this branch
 
-This branch (`ft_noise_trigger_sim`) adds to NuRadioMC:
+This branch (`ft_noise_trigger_sim`) also carries these NuRadioMC modifications:
 
-1. **`noiseImporter`**: trigger copy injection, two-stage mode, explicit file list parameter
-2. **`analogToDigitalConverter`**: pedestal voltage support (`set_pedestal_voltage()`)
-3. **`readRNOGDataMattak`**: `ValueError` catch for corrupt ROOT files
-4. **`efieldToVoltageConverterPerEfield`**: pre/post pulse zero-padding for linear convolution
-5. **`rnog_detector`**: response_chain dict-to-list format conversion for exported detector files
-6. **`highLowThreshold`**: channel ID included in trace_start_time warning
+1. **`analogToDigitalConverter`**: pedestal voltage support (`set_pedestal_voltage()`)
+2. **`readRNOGDataMattak`**: `ValueError` catch for corrupt ROOT files
+3. **`efieldToVoltageConverterPerEfield`**: pre/post pulse zero-padding for linear convolution
+4. **`rnog_detector`**: response_chain dict-to-list format conversion for exported detector files
+5. **`highLowThreshold`**: channel ID included in trace_start_time warning
+6. **`noiseImporter`**: trigger copy injection and two-stage mode. Retained on the branch but no longer used by this example, which injects FT noise in-script (see above).
