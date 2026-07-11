@@ -214,10 +214,13 @@ def upsample_trace(trace, target_n_samples):
 
 
 def tile_noise_overlap_add(tiles, target_length, overlap=TILE_OVERLAP):
-    """Stitch upsampled FT noise tiles into one trace with a Hann crossfade.
+    """Stitch upsampled FT noise tiles into one trace with an equal-power crossfade.
 
-    Adjacent tiles are cross-faded over ``overlap`` samples so the joined
-    noise has no discontinuity at the tile boundaries.
+    Interior seams use head weight sqrt(ramp) and tail weight sqrt(1 - ramp) so that
+    head^2 + tail^2 = 1 at every overlap sample. For independent tiles the summed
+    variance is then constant through the seam, unlike the linear Hann crossfade,
+    which attenuates it. The first tile's leading edge and the last tile's trailing
+    edge are left at full amplitude (no neighbor to fill them).
 
     Args:
         tiles: List of equal-length 1D arrays (upsampled FT traces at 5 GHz).
@@ -232,15 +235,20 @@ def tile_noise_overlap_add(tiles, target_length, overlap=TILE_OVERLAP):
 
     n_tile = len(tiles[0])
     ramp = 0.5 * (1 - np.cos(np.pi * np.arange(overlap) / overlap))
+    head = np.sqrt(ramp)
+    tail = np.sqrt(1.0 - ramp)
 
     total_len = n_tile + (len(tiles) - 1) * (n_tile - overlap)
     result = np.zeros(max(total_len, target_length + overlap))
 
+    last = len(tiles) - 1
     pos = 0
-    for tile in tiles:
+    for k, tile in enumerate(tiles):
         windowed = tile.copy()
-        windowed[:overlap] *= ramp
-        windowed[-overlap:] *= ramp[::-1]
+        if k > 0:
+            windowed[:overlap] *= head
+        if k < last:
+            windowed[-overlap:] *= tail
         result[pos:pos + n_tile] += windowed
         pos += n_tile - overlap
 
