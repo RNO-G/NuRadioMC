@@ -1,0 +1,10 @@
+trigger_vrms_V:
+  0: 3.1202e-3
+  1: 6.4028e-3
+  2: 3.9018e-3
+  3: 3.7915e-3
+metadata:
+  station_id: 22
+  event_time: '2022-10-01'
+  provenance: v9 production TRIGGER_VRMS_FT from simulate_fixed_response_v9_st22.py; the values the v9 production datasets were generated with
+  measurement: full-pool campaign (measure_trigger_vrms_full.py + submit_measure_vrms.sh), SLURM jobs 53105697-53155558

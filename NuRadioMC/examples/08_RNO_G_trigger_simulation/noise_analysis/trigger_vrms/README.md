@@ -4,11 +4,61 @@ FT noise is recorded through the readout signal chain (RADIANT). The trigger pat
 
 `extract_trigger_vrms.py` measures the trigger-path Vrms by drawing FT events, applying the readout-to-trigger transfer function (from the detector description), and computing the per-channel RMS. The output YAML is passed to `simulate.py` via `--trigger_vrms`. Then, `triggerBoardResponse` uses the Vrms to select the VGA gain stage and digitize to 8-bit counts, and `highLowThreshold` converts the target trigger rate (1 Hz, ~3.76x the Vrms via `RNO_G_HighLow_Thresh`) into an ADC-count threshold.
 
+## Shipped production values
+
+The number is the per-channel standard deviation of clean-masked real forced-trigger noise,
+upsampled and tiled to the production trigger-copy geometry with the readout-to-trigger
+transfer applied: the noise level the FLOWER trigger sees. The shipped
+`trigger_vrms_station{11,12,13,21,22,23,24}.yaml` files carry the per-station v9 production
+`TRIGGER_VRMS_FT` values (from the `simulate_fixed_response_v9_st{NN}.py` production script
+copies; base = station 23), so branch defaults reproduce production. Two measurement
+generations exist: station 23's adopted values are a 200-realization measurement
+(`measure_trigger_vrms.py`); stations 11-24 are the full-pool campaign
+(`measure_trigger_vrms_full.py` + `submit_measure_vrms.sh`, SLURM jobs 53105697-53155558).
+Station 11 is identical to station 13 (a production-script clone that never received its own
+extraction; station 11 was excluded from the analysis).
+
+`measure_trigger_vrms.py` and `measure_trigger_vrms_full.py` supersede `extract_trigger_vrms.py`
+(kept below, marked superseded): the old extraction is a transfer-function estimate that reads
+~5-14% high (the retired station-23 file held ~4.32 / 5.10 / 4.21 / 3.01 mV, matching the
+convergence table below and no production dataset).
+
+**Open question (documented, not resolved here):** the full-pool campaign also re-measured
+station 23 at 4.298 / 5.069 / 4.162 / 2.980 mV, 5-13% above the adopted production values, and
+production never switched to it. The 2026-07-10 sigma-accounting study sided with the adopted
+production values (the digitized trigger-trace std tracked the production vrms within a couple
+percent). Which generation is truer is epoch-dependent (FT pool, clean mask, detector-response
+vintage) and unresolved. Re-measurement with the tools below therefore will NOT reproduce the
+historical dicts to the digit; the shipped YAMLs pin what production actually used.
+
+## Measuring trigger Vrms (production method)
+
+Run per station and epoch when you need a fresh measurement (a new station, a new detector
+response vintage, or a different FT pool). Full pool (recommended):
+
+```bash
+sbatch --export=ALL,STATION=23,MODE=ft,\
+FT_NOISE_DIR=/path/to/forced_triggers/station23,\
+CLEAN_MASK=/path/to/clean_mask_station23.npz,\
+ENV_SETUP="source <conda.sh> && conda activate <env>",\
+PYTHONPATH_ADD=/path/to/NuRadioMC_checkout_root submit_measure_vrms.sh
+```
+
+writes `trigger_vrms_station23_ft.npz` (per-event and per-run Vrms). The 200-realization
+sampler is `measure_trigger_vrms.py --station 23 --ft_noise_dir <dir> --clean_mask <npz>`. Both
+omit `--detector_file` to query MongoDB at `--event_time` (default 2022-10-01). Caveat: the
+measurement depends on the FT pool, the clean mask, and the detector-response vintage, so it is
+epoch-specific and will not reproduce the shipped production dicts exactly.
+
 ## Files
 
 | File | Description |
 |------|-------------|
-| `extract_trigger_vrms.py` | Extracts per-channel trigger Vrms and saves as YAML |
+| `trigger_vrms_station{NN}.yaml` | Shipped per-station v9 production trigger Vrms (used by `simulate.py --trigger_vrms`) |
+| `measure_trigger_vrms_full.py` | Full-pool trigger-Vrms measurement (production method); writes a per-station npz |
+| `measure_trigger_vrms.py` | Sampled (200-realization) trigger-Vrms measurement |
+| `submit_measure_vrms.sh` | SLURM wrapper for the full-pool measurement |
+| `extract_trigger_vrms.py` | Superseded transfer-function estimate; reads ~5-14% high, kept for reference |
 | `vrms_convergence_study.py` | Sweeps N to determine how many FT events are needed for stable Vrms |
 
 ## Usage
