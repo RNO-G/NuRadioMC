@@ -1,0 +1,154 @@
+clip_thresholds_mV:
+  0:
+  - -1428
+  - 1072
+  1:
+  - -1476
+  - 1024
+  2:
+  - -1541
+  - 959
+  3:
+  - -1536
+  - 964
+  4:
+  - -1311
+  - 1189
+  5:
+  - -1476
+  - 1024
+  6:
+  - -1489
+  - 1011
+  7:
+  - -1480
+  - 1020
+  8:
+  - -1508
+  - 992
+  9:
+  - -1517
+  - 983
+  10:
+  - -1486
+  - 1014
+  11:
+  - -1426
+  - 1074
+  12:
+  - -1470
+  - 1030
+  13:
+  - -1401
+  - 1099
+  14:
+  - -1492
+  - 1008
+  15:
+  - -1481
+  - 1019
+  16:
+  - -1510
+  - 990
+  17:
+  - -1544
+  - 956
+  18:
+  - -1539
+  - 961
+  19:
+  - -1520
+  - 980
+  20:
+  - -1459
+  - 1041
+  21:
+  - -1528
+  - 972
+  22:
+  - -1477
+  - 1023
+  23:
+  - -1526
+  - 974
+metadata:
+  station_id: 23
+  source_script: simulate_fixed_response_v9.py
+  pedestal_source: median over 6849 satellite pedestal runs from 2022 (pedestal_analysis.py)
+  provenance: v9 production CLIP_THRESHOLDS_MV; the per-channel ADC clip bounds the
+    production datasets used
+  later_measurement_never_adopted:
+    0:
+    - -1416
+    - 1084
+    1:
+    - -1467
+    - 1033
+    2:
+    - -1575
+    - 925
+    3:
+    - -1593
+    - 907
+    4:
+    - -1258
+    - 1242
+    5:
+    - -1467
+    - 1033
+    6:
+    - -1494
+    - 1006
+    7:
+    - -1469
+    - 1031
+    8:
+    - -1538
+    - 962
+    9:
+    - -1560
+    - 940
+    10:
+    - -1483
+    - 1017
+    11:
+    - -1318
+    - 1182
+    12:
+    - -1454
+    - 1046
+    13:
+    - -1358
+    - 1142
+    14:
+    - -1483
+    - 1017
+    15:
+    - -1463
+    - 1037
+    16:
+    - -1513
+    - 987
+    17:
+    - -1616
+    - 884
+    18:
+    - -1625
+    - 875
+    19:
+    - -1412
+    - 1088
+    20:
+    - -1446
+    - 1054
+    21:
+    - -1586
+    - 914
+    22:
+    - -1469
+    - 1031
+    23:
+    - -1487
+    - 1013
+  later_measurement_note: extracted clip_thresholds_station23_2022.yaml (pedestal_analysis.py
+    rerun); differs from the adopted production values, never used in production

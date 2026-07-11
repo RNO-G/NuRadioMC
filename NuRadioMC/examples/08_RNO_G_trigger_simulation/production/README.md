@@ -50,7 +50,8 @@ Output goes to `data_dir` (set in config):
 | `ft_noise_dir` | forced-trigger noise directory the sim draws injected noise from |
 | `ft_clean_mask` | clean-mask npz excluding contaminated FT events |
 | `trigger_vrms` | YAML of trigger-path Vrms per channel; use the `trigger_vrms_station{station_id}.yaml` matching `station_id` (empty lets the sim default). The shipped per-station YAMLs carry the v9 production values |
-| `pedestal_voltage` | ADC pedestal voltage in volts |
+| `clip_thresholds` | YAML of per-channel ADC clip bounds; use the `pedestal_extraction/clip_thresholds_station{station_id}.yaml` matching `station_id` (empty falls back to the uniform `pedestal_voltage` clip). The shipped per-station YAMLs carry the v9 production values |
+| `pedestal_voltage` | ADC pedestal voltage in volts; the uniform-clip fallback when `clip_thresholds` is empty |
 | `fiducial_rmax` | optional override of the config fiducial-volume max radius in m (restricts the throw volume to raise the trigger fraction); empty uses the `sim_config` volume, which is the v9 production setting |
 | `flavor` | neutrino flavor (`e`, `mu`, `tau`, `all`) |
 | `interaction_type` | `cc`, `nc`, or `ccnc` |

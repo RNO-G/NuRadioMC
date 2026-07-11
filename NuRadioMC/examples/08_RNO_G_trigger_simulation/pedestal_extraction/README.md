@@ -2,14 +2,31 @@
 
 The RADIANT 12-bit ADC digitizes over a 0-2.5 V range (4096 counts). The pedestal (DC baseline) sits at approximately 1.5 V, not the 1.25 V midpoint. This makes the effective dynamic range asymmetric: signals can swing further negative (~1.5 V headroom) than positive (~1.0 V headroom) before clipping.
 
-`simulate.py` applies asymmetric clipping via `--pedestal_voltage`.
+`simulate.py` applies this clip in the readout resampler. Per-channel bounds come from
+`--clip_thresholds <yaml>` (`{ch: [lo_mV, hi_mV]}`); with no file it falls back to a single
+uniform range built from the scalar `--pedestal_voltage`, an approximation.
+
+## Shipped production values
+
+The number is the per-channel pedestal position in the 0-2500 mV RADIANT range, turned into
+asymmetric saturation bounds (`clip- = -pedestal`, `clip+ = 2500 - pedestal`). The shipped
+`clip_thresholds_station{11,12,13,21,22,23,24}.yaml` carry the per-station v9 production
+`CLIP_THRESHOLDS_MV` (from the `simulate_fixed_response_v9_st{NN}.py` production script copies;
+base = station 23), so `--clip_thresholds` reproduces production. Pedestal source per station is
+recorded in each file's metadata (station 23 = 6849 satellite runs; 21/22 = handcarry;
+11/12/13/24 = satellite). Station 23 also records the never-adopted extracted values
+(`clip_thresholds_station23_2022.yaml`, `pedestal_analysis.py` rerun) as `later_measurement`.
+Re-derive for a new station or epoch with `pedestal_analysis.py`; it will not reproduce the
+shipped production dicts to the digit (pedestals drift), so the shipped YAMLs pin what production
+used.
 
 ## Files
 
 | File | Description |
 |------|-------------|
-| `pedestal_analysis.py` | Extracts per-channel pedestal voltages from pedestal.root files |
-| `clip_thresholds_station23_2022.yaml` | Output: per-channel clip thresholds from 1,124 runs (2022 only) |
+| `clip_thresholds_station{NN}.yaml` | Shipped per-station v9 production clip thresholds (used by `simulate.py --clip_thresholds`) |
+| `pedestal_analysis.py` | Re-derives per-channel pedestal voltages / clip thresholds from pedestal.root files |
+| `clip_thresholds_station23_2022.yaml` | Extracted station-23 clip thresholds (superseded generation; embedded as `later_measurement` in `clip_thresholds_station23.yaml`) |
 | `pedestal_analysis_results.npz` | Raw per-run, per-channel pedestal voltages for further analysis |
 
 ## Method

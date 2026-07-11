@@ -65,6 +65,7 @@ TILE_OVERLAP = 200  # samples of Hann crossfade between FT tiles at 5 GHz
 # Module-level state for the monkey-patched resampler/cutter
 _ft_noise_pool = None
 _adc_clip_range = None
+_adc_clip_per_channel = None
 
 
 class FTNoisePool:
@@ -387,13 +388,16 @@ if __name__ == "__main__":
                         channel.get_sampling_rate())
             logger.debug("Stage 2: readout FT noise injected")
 
-        # ADC saturation clipping
-        if _adc_clip_range is not None:
-            lo, hi = _adc_clip_range
+        # ADC saturation clipping. Per-channel asymmetric bounds from measured
+        # pedestals when a clip_thresholds file is loaded; otherwise the uniform
+        # range from the scalar pedestal_voltage.
+        if _adc_clip_per_channel is not None or _adc_clip_range is not None:
             for channel in station.iter_channels():
-                trace = channel.get_trace()
+                lo, hi = _adc_clip_range
+                if _adc_clip_per_channel is not None:
+                    lo, hi = _adc_clip_per_channel.get(channel.get_id(), (lo, hi))
                 channel.set_trace(
-                    np.clip(trace, lo, hi),
+                    np.clip(channel.get_trace(), lo, hi),
                     channel.get_sampling_rate())
 
     simulation.channelResampler.run = resampler_with_noise_and_clip
@@ -441,7 +445,12 @@ if __name__ == "__main__":
 
     # ADC pedestal
     parser.add_argument("--pedestal_voltage", type=float, default=DEFAULT_PEDESTAL_V,
-                        help="ADC pedestal voltage in V (default: 1.5)")
+                        help="ADC pedestal voltage in V (default: 1.5); uniform-clip fallback "
+                             "when --clip_thresholds is not given")
+    parser.add_argument("--clip_thresholds", type=str, default=None,
+                        help="YAML of per-channel ADC clip bounds {ch: [lo_mV, hi_mV]} "
+                             "(from pedestal_extraction/pedestal_analysis.py); per-channel "
+                             "asymmetric clip, overrides the uniform --pedestal_voltage clip")
 
     # Per-channel noise temperatures (workaround until DB has calibrated values)
     parser.add_argument("--noise_temperatures", type=str, default=None,
@@ -502,6 +511,15 @@ if __name__ == "__main__":
                        adc_max - args.pedestal_voltage * units.V)
     logger.info(f"ADC clip range (pedestal={args.pedestal_voltage:.2f}V): "
                 f"[{_adc_clip_range[0]/units.mV:.0f}, {_adc_clip_range[1]/units.mV:.0f}] mV")
+
+    if args.clip_thresholds is not None:
+        with open(args.clip_thresholds) as f:
+            clip_data = yaml.safe_load(f)
+        _adc_clip_per_channel = {int(ch): (lo * units.mV, hi * units.mV)
+                                 for ch, (lo, hi) in clip_data["clip_thresholds_mV"].items()}
+        logger.info(f"Loaded per-channel ADC clip thresholds from {args.clip_thresholds} "
+                    f"(ch0 [{_adc_clip_per_channel[0][0]/units.mV:.0f}, "
+                    f"{_adc_clip_per_channel[0][1]/units.mV:.0f}] mV)")
 
     # Trigger thresholds
     high_low_trigger_thresholds = {

@@ -119,6 +119,7 @@ rule throw_chunk:
         ft_dir           = config["ft_noise_dir"],
         ft_mask          = config["ft_clean_mask"],
         trigger_vrms     = config.get("trigger_vrms", ""),
+        clip_thresholds  = config.get("clip_thresholds", ""),
         pedestal_voltage = config.get("pedestal_voltage", 1.5),
         fiducial_rmax    = config.get("fiducial_rmax", ""),
         flavor           = config.get("flavor", "e"),
@@ -149,6 +150,8 @@ rule throw_chunk:
         if [ -n "{params.trigger_vrms}" ]; then VRMS_ARG="--trigger_vrms {params.trigger_vrms}"; fi
         RMAX_ARG=""
         if [ -n "{params.fiducial_rmax}" ]; then RMAX_ARG="--fiducial_rmax {params.fiducial_rmax}"; fi
+        CLIP_ARG=""
+        if [ -n "{params.clip_thresholds}" ]; then CLIP_ARG="--clip_thresholds {params.clip_thresholds}"; fi
 
         {params.python_bin} {params.sim_script} \
             --config {params.sim_config} \
@@ -165,6 +168,7 @@ rule throw_chunk:
             --ft_seed {params.ft_seed} \
             --ft_clean_mask {params.ft_mask} \
             $VRMS_ARG \
+            $CLIP_ARG \
             $RMAX_ARG \
             --pedestal_voltage {params.pedestal_voltage}
         rc=$?

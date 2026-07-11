@@ -21,7 +21,7 @@ General-purpose RNO-G simulation with a FLOWER trigger model and two noise modes
 
 1. **Measured noise injection.** Real forced-trigger (FT) waveforms replace synthetic thermal noise via `--ft_noise_dir`. See [noise modes](#noise-modes).
 
-2. **Asymmetric ADC saturation.** Models the off-center pedestal bias of the RADIANT ADC via `--pedestal_voltage`. See [ADC pedestal](#adc-pedestal-and-asymmetric-saturation) and [`pedestal_extraction/`](pedestal_extraction/).
+2. **Asymmetric ADC saturation.** Models the off-center pedestal bias of the RADIANT ADC. Clipping is per-channel from measured pedestals via `--clip_thresholds <yaml>` (the shipped per-station YAMLs carry the v9 production bounds); `--pedestal_voltage` is the uniform-clip fallback. See [ADC pedestal](#adc-pedestal-and-asymmetric-saturation) and [`pedestal_extraction/`](pedestal_extraction/).
 
 3. **FLOWER trigger model.** `triggerBoardResponse` + `highLowThreshold`. First-pass approximation; see [known limitations](#known-limitations).
 
@@ -73,7 +73,7 @@ In FT mode, the trigger-path Vrms is loaded from a YAML file (`--trigger_vrms`).
 
 The RADIANT ADC digitizes a 0-2.5V range. The pedestal bias sits at ~1.5V, off-center from the 1.25V midpoint, making the effective clip range asymmetric in pedestal-subtracted coordinates: [-1500, +1000] mV for a 1.5V pedestal.
 
-`--pedestal_voltage` accepts a single value for all channels. For per-channel precision, use `analogToDigitalConverter.set_pedestal_voltage(dict)` programmatically. See [`pedestal_extraction/`](pedestal_extraction/) for measured per-channel values.
+`--clip_thresholds <yaml>` applies per-channel asymmetric bounds `{ch: [lo_mV, hi_mV]}` from measured pedestals; the shipped `pedestal_extraction/clip_thresholds_station{NN}.yaml` carry the v9 production values. `--pedestal_voltage` is the uniform fallback (a single value for all channels) when no clip file is given. See [`pedestal_extraction/`](pedestal_extraction/).
 
 ## Usage
 
