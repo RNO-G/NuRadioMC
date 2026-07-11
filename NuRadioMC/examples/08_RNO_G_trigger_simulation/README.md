@@ -27,6 +27,10 @@ General-purpose RNO-G simulation with a FLOWER trigger model and two noise modes
 
 All three are optional. Without `--ft_noise_dir`, thermal noise is used. Without `--pedestal_voltage`, the ADC range is symmetric. The FLOWER trigger is always active.
 
+## Data requirements
+
+Measured-noise mode needs standard RNO-G full-waveform run data (`station{id}_run*.root`) for the station and year, obtained through normal collaboration data access; the pool selects `FORCE` events itself, so no pre-filtering is needed. The detector description comes from MongoDB (default) or a `--detector_file`. The shipped clean masks, trigger vrms, and ADC clip thresholds are the 2022 production values (station-23 detector epoch 2022-10-01); other years or detector epochs need re-derivation with the tools in `noise_analysis/` and `pedestal_extraction/`. See [`production/`](production/) for running at scale.
+
 ## Files
 
 | File | Description |

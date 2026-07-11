@@ -68,6 +68,24 @@ The lgE labels in `energies` are converted to `10^lgE` eV for `simulate.py --ene
 takes energy in eV. `throw_chunk` always passes `--nur_output` (so the NUR is written) and
 `--trigger_vrms` / `--pedestal_voltage` for the calibrated FLOWER trigger.
 
+## Data requirements
+
+A collaborator needs, for their station and year:
+
+- Standard RNO-G full-waveform run data (`station{id}_run*.root`) in `ft_noise_dir`, obtained
+  through normal collaboration data access. The pool selects `FORCE` events itself, so no
+  pre-filtering is needed.
+- A clean mask for that station and year (`ft_clean_mask`); the shipped
+  `noise_analysis/ft_cleaning/clean_mask_station{NN}.npz` are 2022. Running without a mask is
+  allowed but injects contaminated FT events.
+- The detector description: MongoDB access (leave `detector_file` empty, it queries at
+  `event_time`) or a detector file.
+- Trigger vrms and ADC clip thresholds: the shipped
+  `noise_analysis/trigger_vrms/trigger_vrms_station{NN}.yaml` and
+  `pedestal_extraction/clip_thresholds_station{NN}.yaml` are the 2022 production values
+  (station-23 detector epoch 2022-10-01). Other years or detector epochs need re-derivation
+  with the tools in those directories.
+
 ## Use
 
 Copy and edit the config, then dry-run:
