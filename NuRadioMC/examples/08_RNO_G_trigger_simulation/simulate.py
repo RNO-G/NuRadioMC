@@ -109,7 +109,13 @@ class FTNoisePool:
         self._file_idx = 0
 
         self._flagged = set()
-        if clean_mask_path and os.path.exists(clean_mask_path):
+        if clean_mask_path:
+            if not os.path.exists(clean_mask_path):
+                raise FileNotFoundError(
+                    f"FT clean mask not found: {clean_mask_path}. Running "
+                    f"unmasked injects contaminated FT events that inflate "
+                    f"the noise-trigger rate; omit the mask argument only "
+                    f"deliberately.")
             mask_data = np.load(clean_mask_path)
             for r, e, c in zip(mask_data['runNum'], mask_data['eventNum'],
                                mask_data['is_clean']):
