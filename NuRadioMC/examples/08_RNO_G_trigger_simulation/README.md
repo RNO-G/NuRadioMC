@@ -176,3 +176,24 @@ This branch (`ft_noise_trigger_sim`) also carries these NuRadioMC modifications:
 4. **`rnog_detector`**: response_chain dict-to-list format conversion for exported detector files
 5. **`highLowThreshold`**: channel ID included in trace_start_time warning
 6. **`noiseImporter`**: trigger copy injection and two-stage mode. Retained on the branch but no longer used by this example, which injects FT noise in-script (see above).
+
+## Production quickstart
+
+`production/` holds a Snakemake workflow that runs `simulate.py` at scale: one chunk per
+SLURM job producing NUR + HDF5 + ledger, throwing until each energy bin reaches a target
+triggered count, then writing a per-bin manifest. All site-specific values live in
+`production/config/config.yaml`.
+
+```bash
+cd production
+cp config/config.yaml.example config/config.yaml
+# edit config/config.yaml (paths, station, energies, targets, accounts)
+snakemake -n                                                # dry-run
+
+# full run: launch the driver detached so it survives an SSH drop
+tmux new-session -d -s production \
+  'snakemake --executor slurm --jobs 200 --workflow-profile config/profile'
+```
+
+See `production/README.md` for the config-key table, account routing, and the single-chunk
+pilot recipe.
