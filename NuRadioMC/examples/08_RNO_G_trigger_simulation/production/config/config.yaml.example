@@ -24,6 +24,11 @@ ft_seed_base: 2026042400
 target_triggers_per_bin: 40000
 safety_margin: 1.5
 
+# Optional per-bin triggered target overrides (defaults to target_triggers_per_bin).
+# Use when a bin's achievable clean-rate ceiling is below the global target.
+# target_per_bin:
+#   "16.0": 5500
+
 energies:
   - "16.0"
   - "16.5"

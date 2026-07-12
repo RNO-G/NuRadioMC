@@ -18,7 +18,7 @@ Usage:
     snakemake -n                                        # dry-run
     snakemake --executor slurm --jobs 200 --workflow-profile config/profile
 """
-import math
+import glob as _glob
 from pathlib import Path
 
 configfile: "config/config.yaml"
@@ -31,7 +31,12 @@ LOG_DIR = WORKFLOW_DIR / "workflow_logs"
 
 ENERGIES = [str(e) for e in config["energies"]]
 TARGET_TRIGGERS = config["target_triggers_per_bin"]
-SAFETY = config["safety_margin"]
+TARGET_PER_BIN = {str(k): int(v) for k, v in config.get("target_per_bin", {}).items()}
+
+
+def target_for_energy(e):
+    """Per-bin triggered target, defaulting to the scalar target_triggers_per_bin."""
+    return TARGET_PER_BIN.get(str(e), TARGET_TRIGGERS)
 
 ACCOUNTS = config["accounts"]
 ROUTING_GRAIN = 10
@@ -61,33 +66,23 @@ def account_for_chunk(chunk_id: int):
     return ACCOUNTS[-1]
 
 
-def n_chunks_for_energy(e: str) -> int:
-    """Chunks needed to confidently exceed TARGET_TRIGGERS for this energy."""
-    rate = config["trigger_rates"][e]
-    thrown_total = TARGET_TRIGGERS / rate * SAFETY
-    return max(1, math.ceil(thrown_total / config["thrown_per_chunk"][e]))
-
-
-CHUNK_IDS = {e: list(range(n_chunks_for_energy(e))) for e in ENERGIES}
-
-
 def all_chunk_ledgers(energy):
-    return [DATA_DIR / f"lgE{energy}" / f"lgE{energy}_c{i:04d}_ledger.csv"
-            for i in CHUNK_IDS[energy]]
+    """On-disk ledgers for a bin, globbed (tolerant of missing/non-contiguous chunk ids).
+
+    Production preemption can leave scattered chunk-id gaps (this run lost ~40 chunks to
+    mgc-open preemption). The finalize stage consumes whatever completed rather than the
+    planned contiguous 0..n_chunks-1 range, so a lost chunk never re-demands a throw.
+    """
+    return sorted(_glob.glob(str(DATA_DIR / f"lgE{energy}" / f"lgE{energy}_c*_ledger.csv")))
 
 
-total_chunks = sum(len(CHUNK_IDS[e]) for e in ENERGIES)
-total_thrown = sum(len(CHUNK_IDS[e]) * config["thrown_per_chunk"][e] for e in ENERGIES)
-print("[production workflow] plan:")
+print("[production workflow] on-disk plan (glob):")
+total_on_disk = 0
 for e in ENERGIES:
-    n = len(CHUNK_IDS[e])
-    thrown = n * config["thrown_per_chunk"][e]
-    rate = config["trigger_rates"][e]
-    expected_trig = int(thrown * rate)
-    print(f"  lgE {e}: {n:4d} chunks x {config['thrown_per_chunk'][e]:>9} thrown "
-          f"= {thrown:>12,} thrown, ~{expected_trig:>7,} expected triggers "
-          f"(target {TARGET_TRIGGERS:,}, safety {SAFETY}x)")
-print(f"  TOTAL: {total_chunks} chunks, {total_thrown:,} thrown")
+    n = len(all_chunk_ledgers(e))
+    total_on_disk += n
+    print(f"  lgE {e}: {n:4d} chunks on disk (target {target_for_energy(e):,})")
+print(f"  TOTAL: {total_on_disk} chunks on disk")
 
 
 rule all:
@@ -188,7 +183,7 @@ rule truncate_lgE:
     log:
         LOG_DIR / "truncate_lgE{energy}.log",
     params:
-        target = TARGET_TRIGGERS,
+        target = lambda wc: target_for_energy(wc.energy),
     script:
         "scripts/truncate_to_target.py"
 

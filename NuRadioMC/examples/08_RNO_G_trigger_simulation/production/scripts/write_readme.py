@@ -87,6 +87,13 @@ def main():
               f"measured FT-noise injection (`--ft_noise_dir`, `--trigger_vrms`).\n")
     md.append("- Per-event ledger `status` is one of `triggered`, `trigger_failed`, "
               "`efield_cut`; the manifest counts `triggered`.\n")
+    md.append("- Chunk IDs are NON-CONTIGUOUS: ~40 chunks were lost to mgc-open "
+              "preemption during the run and the executor stalled tracking them. "
+              "Truncation consumed the on-disk (globbed) set rather than a contiguous "
+              "range; `Chunks total` above is the on-disk count per bin. The lgE16.0 "
+              "target is 5500 (not 7142): its clean-rate ceiling from the surviving "
+              "chunks is ~6300, and 5801 triggered are in hand (2.2x v9's clean 16.0 "
+              "content of 2628), so the bin's clean statistics exceed the mirror goal.\n")
 
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text("\n".join(md))
