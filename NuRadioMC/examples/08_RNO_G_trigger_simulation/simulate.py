@@ -66,6 +66,8 @@ TILE_OVERLAP = 200  # samples of Hann crossfade between FT tiles at 5 GHz
 _ft_noise_pool = None
 _adc_clip_range = None
 _adc_clip_per_channel = None
+# st13 measured ch0 trigger model ("normal" | "measured_8x" | "measured_dead")
+_ch0_trigger_model = "normal"
 
 
 class FTNoisePool:
@@ -423,7 +425,14 @@ if __name__ == "__main__":
                         help="NuRadioMC YAML config file")
     parser.add_argument("--station_id", type=int, required=True)
     parser.add_argument("--detector_file", '--det', type=str, default=None,
-                        help="Detector description file (default: query MongoDB)")
+                        help="Detector description file (default: RNOG_DETECTOR_FILE env var, "
+                             "else query MongoDB)")
+    parser.add_argument("--ch0_trigger_model",
+                        choices=["normal", "measured_8x", "measured_dead"], default="normal",
+                        help="st13 measured ch0 trigger model. measured_8x: ch0 count trace "
+                             "x1/8 + 4-count absolute floor (>=8x-suppressed trigger path from "
+                             "the daqstatus scaler bound). measured_dead: ch0 removed from the "
+                             "2-of-4 (conservative bracket). normal: standard 3.759-sigma ch0.")
 
     # Event generation
     parser.add_argument("--neutrino_file", type=str, default=None,
@@ -476,6 +485,7 @@ if __name__ == "__main__":
     parser.add_argument("--event_time", type=str, default="2022-10-01")
 
     args = parser.parse_args()
+    _ch0_trigger_model = args.ch0_trigger_model
 
     # Determine noise mode
     use_ft_noise = args.ft_noise_dir is not None
@@ -497,9 +507,12 @@ if __name__ == "__main__":
 
     _override_noise_false = use_ft_noise and config.get("noise", True)
 
-    # Detector
+    # Detector. The file path may come from --detector_file or, so the production config
+    # need not embed a detector-export path, from the RNOG_DETECTOR_FILE env var. If neither
+    # is set, the DB is queried at --event_time.
+    detector_file = args.detector_file or os.environ.get("RNOG_DETECTOR_FILE")
     det = rnog_detector.Detector(
-        detector_file=args.detector_file, log_level=logging.INFO,
+        detector_file=detector_file, log_level=logging.INFO,
         always_query_entire_description=False,
         select_stations=args.station_id)
 
@@ -778,6 +791,27 @@ if __name__ == "__main__":
                                   for ch, vrms in zip(DEEP_TRIGGER_CHANNELS, vrms_after_gain)}
                 threshold_low = {ch: int(round(-threshold * vrms))
                                  for ch, vrms in zip(DEEP_TRIGGER_CHANNELS, vrms_after_gain)}
+
+                if _ch0_trigger_model != "normal":
+                    # Measured st13 ch0 trigger model (daqstatus servo + Task B harness): ch0
+                    # runs at an absolute 4-count floor on an >=8x-suppressed trigger path.
+                    # Cast the trigger count traces to float so the fractional 1/8-scaled ch0
+                    # and float thresholds satisfy get_high_low_triggers' dtype==type check
+                    # (int-trace/int-threshold gives identical crossings, so ch1-3 are
+                    # unchanged). ch1-3 stay at their 3.759-sigma count thresholds.
+                    for _ch in DEEP_TRIGGER_CHANNELS:
+                        _tc = station.get_trigger_channel(_ch)
+                        _tc.set_trace(_tc.get_trace().astype(np.float64), _tc.get_sampling_rate())
+                    threshold_high = {ch: float(v) for ch, v in threshold_high.items()}
+                    threshold_low = {ch: float(v) for ch, v in threshold_low.items()}
+                    if _ch0_trigger_model == "measured_8x":
+                        _t0 = station.get_trigger_channel(0)
+                        _t0.set_trace(_t0.get_trace() / 8.0, _t0.get_sampling_rate())
+                        threshold_high[0] = 4.0
+                        threshold_low[0] = -4.0
+                    elif _ch0_trigger_model == "measured_dead":
+                        threshold_high[0] = 1.0e9
+                        threshold_low[0] = -1.0e9
 
                 trigger_sim.run(
                     evt, station, det_arg,
