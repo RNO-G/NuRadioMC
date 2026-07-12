@@ -26,7 +26,7 @@ target_triggers_per_bin: 7142
 safety_margin: 1.5
 
 target_per_bin:
-  "16.0": 5500
+  "16.0": 7142
 
 energies:
   - "16.0"
