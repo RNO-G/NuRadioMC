@@ -53,8 +53,8 @@ def main():
     md.append(f"Simulation for RNO-G station {station_id}, interaction type "
               f"`{interaction}`, produced by the `production/` Snakemake workflow with "
               f"`simulate.py` (measured FT-noise injection). Contains "
-              f"**{grand['kept']:,} kept triggered events** ({target:,} target per energy "
-              f"bin) across {len(rows)} bins.\n")
+              f"**{grand['kept']:,} kept triggered events** (per-bin triggered targets; "
+              f"see the Kept column) across {len(rows)} bins.\n")
 
     md.append("## Dataset summary\n")
     md.append("| lgE | Thrown | Triggered (all) | Trig/thrown | Kept (target) | Chunks total | Chunks kept |")

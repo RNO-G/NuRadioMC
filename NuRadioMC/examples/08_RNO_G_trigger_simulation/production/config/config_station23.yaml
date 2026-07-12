@@ -1,0 +1,69 @@
+sim_script: /storage/group/szw5718/default/bryan/rno-g/deep_cr_pipeline/ft_calibrated_prod_wt/NuRadioMC/examples/08_RNO_G_trigger_simulation/simulate.py
+sim_config: /storage/group/szw5718/default/bryan/rno-g/deep_cr_pipeline/ft_calibrated_prod_wt/NuRadioMC/examples/08_RNO_G_trigger_simulation/RNO_config.yaml
+python_bin: python3
+pythonpath: /storage/group/szw5718/default/bryan/rno-g/deep_cr_pipeline/ft_calibrated_prod_wt
+env_setup: "source /storage/home/blh5615/miniconda3/etc/profile.d/conda.sh && conda activate /storage/group/szw5718/default/bryan/rno-g/deep_cr_pipeline/envs/root_py311"
+
+data_dir: /storage/group/szw5718/default/bryan/rno-g/data/cr_sims/nc/station23/calibrated_2026_07_12
+
+station_id: 23
+detector_file: /storage/group/szw5718/default/bryan/rno-g/detector_exports/detector_calibrated_response_season2022_2026_07_11.json.xz
+event_time: "2022-10-01"
+
+ft_noise_dir: /storage/group/szw5718/default/bryan/rno-g/data/forced_triggers/station23
+ft_clean_mask: /storage/group/szw5718/default/bryan/rno-g/deep_cr_pipeline/ft_calibrated_prod_wt/NuRadioMC/examples/08_RNO_G_trigger_simulation/noise_analysis/ft_cleaning/clean_mask_station23.npz
+trigger_vrms: /storage/group/szw5718/default/bryan/rno-g/deep_cr_search/results/calibrated_prod_2026_07_12/trigger_vrms/trigger_vrms_station23_calibrated.yaml
+clip_thresholds: /storage/group/szw5718/default/bryan/rno-g/deep_cr_pipeline/ft_calibrated_prod_wt/NuRadioMC/examples/08_RNO_G_trigger_simulation/pedestal_extraction/clip_thresholds_station23.yaml
+pedestal_voltage: 1.5
+fiducial_rmax: 200
+
+flavor: e
+interaction_type: nc
+ch0_trigger_model: normal
+ft_seed_base: 2026071223
+
+target_triggers_per_bin: 7142
+safety_margin: 1.5
+
+target_per_bin:
+  "16.0": 5500
+
+energies:
+  - "16.0"
+  - "16.5"
+  - "17.0"
+  - "17.5"
+  - "18.0"
+  - "18.5"
+  - "19.0"
+
+trigger_rates:
+  "16.0": 0.0010
+  "16.5": 0.0132
+  "17.0": 0.0427
+  "17.5": 0.0866
+  "18.0": 0.1217
+  "18.5": 0.1471
+  "19.0": 0.1643
+
+thrown_per_chunk:
+  "16.0": 30000
+  "16.5": 30000
+  "17.0": 6000
+  "17.5": 4500
+  "18.0": 3500
+  "18.5": 3000
+  "19.0": 2500
+
+slurm_resources:
+  "16.0": {mem_mb: 4500, runtime_min: 240}
+  "16.5": {mem_mb: 4500, runtime_min: 240}
+  "17.0": {mem_mb: 4500, runtime_min: 90}
+  "17.5": {mem_mb: 4500, runtime_min: 90}
+  "18.0": {mem_mb: 4500, runtime_min: 90}
+  "18.5": {mem_mb: 4500, runtime_min: 90}
+  "19.0": {mem_mb: 4500, runtime_min: 90}
+
+accounts:
+  - {account: dfc13_mri, partition: mgc-mri, weight: 100}
+  - {account: dfc13_mri, partition: mgc-open, weight: 100}
