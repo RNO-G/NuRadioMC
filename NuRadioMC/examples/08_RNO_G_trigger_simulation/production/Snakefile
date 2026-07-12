@@ -118,6 +118,7 @@ rule throw_chunk:
         pedestal_voltage = config.get("pedestal_voltage", 1.5),
         fiducial_rmax    = config.get("fiducial_rmax", ""),
         flavor           = config.get("flavor", "e"),
+        ch0_model        = config.get("ch0_trigger_model", "normal"),
         station_id       = config["station_id"],
         interaction      = config["interaction_type"],
         data_dir         = lambda wc: str(DATA_DIR / f"lgE{wc.energy}"),
@@ -165,6 +166,7 @@ rule throw_chunk:
             $VRMS_ARG \
             $CLIP_ARG \
             $RMAX_ARG \
+            --ch0_trigger_model {params.ch0_model} \
             --pedestal_voltage {params.pedestal_voltage}
         rc=$?
 

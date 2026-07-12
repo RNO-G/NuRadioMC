@@ -19,6 +19,7 @@ fiducial_rmax: ""
 
 flavor: e
 interaction_type: nc
+ch0_trigger_model: normal
 ft_seed_base: 2026042400
 
 target_triggers_per_bin: 40000
