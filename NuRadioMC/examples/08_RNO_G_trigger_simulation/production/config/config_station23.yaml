@@ -12,7 +12,7 @@ event_time: "2022-10-01"
 
 ft_noise_dir: /storage/group/szw5718/default/bryan/rno-g/data/forced_triggers/station23
 ft_clean_mask: /storage/group/szw5718/default/bryan/rno-g/deep_cr_pipeline/ft_calibrated_prod_wt/NuRadioMC/examples/08_RNO_G_trigger_simulation/noise_analysis/ft_cleaning/clean_mask_station23.npz
-trigger_vrms: /storage/group/szw5718/default/bryan/rno-g/deep_cr_search/results/calibrated_prod_2026_07_12/trigger_vrms/trigger_vrms_station23_calibrated.yaml
+trigger_vrms: /storage/group/szw5718/default/bryan/rno-g/deep_cr_pipeline/ft_calibrated_prod_wt/NuRadioMC/examples/08_RNO_G_trigger_simulation/noise_analysis/trigger_vrms/trigger_vrms_station23_calibrated.yaml
 clip_thresholds: /storage/group/szw5718/default/bryan/rno-g/deep_cr_pipeline/ft_calibrated_prod_wt/NuRadioMC/examples/08_RNO_G_trigger_simulation/pedestal_extraction/clip_thresholds_station23.yaml
 pedestal_voltage: 1.5
 fiducial_rmax: 200
