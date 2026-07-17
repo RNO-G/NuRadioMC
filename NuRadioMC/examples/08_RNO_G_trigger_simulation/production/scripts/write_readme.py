@@ -87,13 +87,23 @@ def main():
               f"measured FT-noise injection (`--ft_noise_dir`, `--trigger_vrms`).\n")
     md.append("- Per-event ledger `status` is one of `triggered`, `trigger_failed`, "
               "`efield_cut`; the manifest counts `triggered`.\n")
-    md.append("- Chunk IDs are NON-CONTIGUOUS: ~40 chunks were lost to mgc-open "
-              "preemption during the run and the executor stalled tracking them. "
-              "Truncation consumed the on-disk (globbed) set rather than a contiguous "
-              "range; `Chunks total` above is the on-disk count per bin. The lgE16.0 "
-              "target is 5500 (not 7142): its clean-rate ceiling from the surviving "
-              "chunks is ~6300, and 5801 triggered are in hand (2.2x v9's clean 16.0 "
-              "content of 2628), so the bin's clean statistics exceed the mirror goal.\n")
+    md.append("- Chunk IDs are NON-CONTIGUOUS: chunks were lost to mgc-open preemption "
+              "during the run (the Snakemake slurm executor is preemption-blind and "
+              "stalled tracking the lost jobids). Truncation consumed the on-disk "
+              "(globbed) ledger set rather than a contiguous range, so `Chunks total` "
+              "above is the on-disk count per bin. Every bin, including lgE16.0, is "
+              f"truncated to the same {target:,}-trigger target (see the Kept column); "
+              "lgE16.0 preemption losses were recovered with a fresh mgc-mri-only chunk "
+              "wave (new, non-contiguous chunk ids).\n")
+    md.append("- lgE16.0 rate post-mortem: the 16.0 chunk counts were first sized from "
+              "priors extrapolated off the higher-energy trigger-rate trend, which is "
+              "unreliable at the near-threshold bin. Production-measured 16.0 per-thrown "
+              "rates diverged sharply from those priors (station 23 measured 0.00257 vs "
+              "prior 0.00173, +48%; station 13 measured 0.00167 vs prior 0.00338, -51%), "
+              "because the trigger rate falls steeply through threshold and the "
+              "measured_8x ch0 model (station 13) further suppresses low-energy "
+              "efficiency. Only the production-measured rate is trustworthy at 16.0; "
+              "chunk counts were re-sized from it.\n")
 
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text("\n".join(md))

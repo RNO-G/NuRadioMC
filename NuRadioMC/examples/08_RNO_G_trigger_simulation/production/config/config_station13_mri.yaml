@@ -4,23 +4,23 @@ python_bin: python3
 pythonpath: /storage/group/szw5718/default/bryan/rno-g/deep_cr_pipeline/ft_calibrated_prod_wt
 env_setup: "source /storage/home/blh5615/miniconda3/etc/profile.d/conda.sh && conda activate /storage/group/szw5718/default/bryan/rno-g/deep_cr_pipeline/envs/root_py311"
 
-data_dir: /storage/group/szw5718/default/bryan/rno-g/data/cr_sims/nc/station23/calibrated_2026_07_12
+data_dir: /storage/group/szw5718/default/bryan/rno-g/data/cr_sims/nc/station13/calibrated_2026_07_12
 
-station_id: 23
+station_id: 13
 detector_file: /storage/group/szw5718/default/bryan/rno-g/detector_exports/detector_calibrated_response_season2022_2026_07_11.json.xz
 event_time: "2022-10-01"
 
-ft_noise_dir: /storage/group/szw5718/default/bryan/rno-g/data/forced_triggers/station23
-ft_clean_mask: /storage/group/szw5718/default/bryan/rno-g/deep_cr_pipeline/ft_calibrated_prod_wt/NuRadioMC/examples/08_RNO_G_trigger_simulation/noise_analysis/ft_cleaning/clean_mask_station23.npz
-trigger_vrms: /storage/group/szw5718/default/bryan/rno-g/deep_cr_search/results/calibrated_prod_2026_07_12/trigger_vrms/trigger_vrms_station23_calibrated.yaml
-clip_thresholds: /storage/group/szw5718/default/bryan/rno-g/deep_cr_pipeline/ft_calibrated_prod_wt/NuRadioMC/examples/08_RNO_G_trigger_simulation/pedestal_extraction/clip_thresholds_station23.yaml
+ft_noise_dir: /storage/group/szw5718/default/bryan/rno-g/data/forced_triggers/station13
+ft_clean_mask: /storage/group/szw5718/default/bryan/rno-g/deep_cr_pipeline/ft_calibrated_prod_wt/NuRadioMC/examples/08_RNO_G_trigger_simulation/noise_analysis/ft_cleaning/clean_mask_station13.npz
+trigger_vrms: /storage/group/szw5718/default/bryan/rno-g/deep_cr_search/results/calibrated_prod_2026_07_12/trigger_vrms/trigger_vrms_station13_calibrated.yaml
+clip_thresholds: /storage/group/szw5718/default/bryan/rno-g/deep_cr_pipeline/ft_calibrated_prod_wt/NuRadioMC/examples/08_RNO_G_trigger_simulation/pedestal_extraction/clip_thresholds_station13.yaml
 pedestal_voltage: 1.5
 fiducial_rmax: 200
 
 flavor: e
 interaction_type: nc
-ch0_trigger_model: normal
-ft_seed_base: 2026071223
+ch0_trigger_model: measured_8x
+ft_seed_base: 2026071213
 
 target_triggers_per_bin: 7142
 safety_margin: 1.5
@@ -38,13 +38,13 @@ energies:
   - "19.0"
 
 trigger_rates:
-  "16.0": 0.0010
-  "16.5": 0.0132
-  "17.0": 0.0427
-  "17.5": 0.0866
-  "18.0": 0.1217
-  "18.5": 0.1471
-  "19.0": 0.1643
+  "16.0": 0.00371
+  "16.5": 0.02496
+  "17.0": 0.0657
+  "17.5": 0.11613
+  "18.0": 0.14875
+  "18.5": 0.17394
+  "19.0": 0.19669
 
 thrown_per_chunk:
   "16.0": 30000
@@ -66,4 +66,3 @@ slurm_resources:
 
 accounts:
   - {account: dfc13_mri, partition: mgc-mri, weight: 100}
-  - {account: dfc13_mri, partition: mgc-open, weight: 100}
