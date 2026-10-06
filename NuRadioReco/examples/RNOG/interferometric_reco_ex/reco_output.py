@@ -1,4 +1,4 @@
-"""Result HDF5 writer of the 3D reconstruction driver and the output contract it keeps.
+"""Result writers of the 3D reconstruction driver and the output contract they keep.
 
 Every dataset name, dtype and definition listed here is consumed downstream (classifier
 features, coherent-sum alignment, cuts, combined event tables); a change to any of them
@@ -11,6 +11,7 @@ import re
 import h5py
 import numpy as np
 
+from NuRadioReco.framework.channel import Channel
 from NuRadioReco.modules.interferometricDirectionReconstruction3D import RECO_VERSION
 
 BASE_KEYS = ['rho', 'phi', 'z', 'max_corr']
@@ -40,6 +41,7 @@ OPTIONAL_KEYS = [
 PEAK_FIELDS = ['rho', 'phi', 'z', 'corr', 'map_snr']
 IDENTITY_KEYS = ['run_number', 'event_number', 'source_file']
 COHERENT_GROUP = 'coherent_waveforms'
+COHERENT_CHANNEL_BASE = 100
 SKIPPED_RESULT_KEYS = {'run_number', 'event_number', 'source_file', 'coarse_peaks', 'coherent_times'}
 FILE_ATTRS = ['mode', 'n_events', 'validation', 'reco_version', 'detector_delay_hash',
               'detector_epoch', 'delay_corrections_hash', 'delay_corrections_file']
@@ -76,6 +78,14 @@ def is_versioned_key(key):
     return VERSIONED_KEY.search(key) is not None
 
 
+def first_values(results):
+    """Every key of a chunk's result dicts with the value of the first event that carries it."""
+    first = {}
+    for r in reversed(results):
+        first.update(r)
+    return first
+
+
 def numeric_result_keys(results, channels, validation):
     """Datasets to write for a list of per-event result dicts, in the driver's historical order.
 
@@ -83,18 +93,20 @@ def numeric_result_keys(results, channels, validation):
     present in a result, then every key of a result that starts with `peak_`, ends in
     `_vpol` or `_hpol`, or holds a scalar number. A key counts when any event of the
     chunk carries it, so an event with fewer saved peaks than the others does not drop
-    their columns.
+    their columns. A key that holds an array is left out (the summed waveforms of the
+    polarization groups go to the `coherent_waveforms` group), except the coarse peaks
+    of a polarization group, `coarse_peaks_<group>`.
     """
     numeric_keys = list(BASE_KEYS)
     if validation:
         numeric_keys.extend(validation_keys(channels))
     optional_keys = list(OPTIONAL_KEYS)
     existing = set(numeric_keys) | set(optional_keys)
-    first = {}
-    for r in reversed(results):
-        first.update(r)
+    first = first_values(results)
     for k in sorted(first):
         if k in existing or k in SKIPPED_RESULT_KEYS:
+            continue
+        if np.ndim(first[k]) and not k.startswith('coarse_peaks_'):
             continue
         if k.startswith('peak_') or k.endswith(('_vpol', '_hpol')):
             optional_keys.append(k)
@@ -123,6 +135,50 @@ def stacked_peaks(peak_lists):
     return out
 
 
+def coherent_datasets(results):
+    """Datasets of the `coherent_waveforms` group for a list of per-event result dicts.
+
+    `coherent_times` becomes `times` and `coherent_wf_<i>` becomes `peak_<i>` with one row
+    per event. With polarization groups the module returns both under each group's suffix
+    as well; they become `times_<group>` and `peak_<i>_<group>`. A time axis is that of the
+    first event that carries it, and an event without a waveform has a row of zeros.
+
+    Returns:
+        Dict dataset name -> array, empty when no event carries a waveform.
+    """
+    first = first_values(results)
+    datasets = {}
+    for key in sorted(first):
+        if key.startswith('coherent_times'):
+            datasets[key[len('coherent_'):]] = first[key]
+        elif key.startswith('coherent_wf_'):
+            datasets['peak_' + key[len('coherent_wf_'):]] = np.array(
+                [r.get(key, np.zeros_like(first[key])) for r in results])
+    return datasets
+
+
+def coherent_channels(result):
+    """Channels with the summed waveforms of one event, for the driver's `--save-nur` file.
+
+    The waveform of saved peak `i` of the primary result (`coherent_wf_<i>`) becomes
+    channel `COHERENT_CHANNEL_BASE + i`, at the sampling rate of `coherent_times`. The
+    copies per polarization group (`coherent_wf_<i>_<group>`) are written to the results
+    file only.
+
+    Returns:
+        List of Channel, empty when the reconstruction stored no waveform for the event.
+    """
+    channels = []
+    for key in sorted(k for k in result if k.startswith('coherent_wf_')):
+        index = key[len('coherent_wf_'):]
+        if index.isdigit():
+            times = result['coherent_times']
+            channel = Channel(COHERENT_CHANNEL_BASE + int(index))
+            channel.set_trace(result[key], 1.0 / (times[1] - times[0]))
+            channels.append(channel)
+    return channels
+
+
 def write_results_h5(path, results, channels, mode, validation, attrs=None):
     """Write per-event reconstruction results to an HDF5 file.
 
@@ -140,34 +196,36 @@ def write_results_h5(path, results, channels, mode, validation, attrs=None):
     groups the coarse peaks of each group are written as `coarse_peaks_<group>` of shape
     (n_events, n_peaks, 4), see `stacked_peaks`.
 
-    With `save_coherent_waveforms` the first result carries `coherent_times` and
+    With `save_coherent_waveforms` the results carry `coherent_times` and
     `coherent_wf_<i>`, written as the `times` and `peak_<i>` datasets of the
-    `coherent_waveforms` group (one row per event).
+    `coherent_waveforms` group (one row per event), see `coherent_datasets`.
+
+    Every array is built before the file is opened, so results that cannot be stacked
+    raise without leaving a file.
 
     Side effects:
         Overwrites `path`.
     """
-    numeric_keys = numeric_result_keys(results, channels, validation)
+    columns = {}
+    for key in numeric_result_keys(results, channels, validation):
+        if key.startswith('coarse_peaks_'):
+            columns[key] = stacked_peaks([r.get(key, []) for r in results])
+        else:
+            columns[key] = np.array([r.get(key, np.nan) for r in results])
+    waveforms = coherent_datasets(results)
     with h5py.File(path, 'w') as f:
         grp = f.create_group('results')
-        for key in numeric_keys:
-            if key.startswith('coarse_peaks_'):
-                data = stacked_peaks([r.get(key, []) for r in results])
-            else:
-                data = np.array([r.get(key, np.nan) for r in results])
+        for key, data in columns.items():
             grp.create_dataset(key, data=data)
         grp.create_dataset('run_number', data=np.array([r['run_number'] for r in results], dtype=int))
         grp.create_dataset('event_number', data=np.array([r['event_number'] for r in results], dtype=int))
         filenames = [r.get('source_file', '') for r in results]
         grp.create_dataset('source_file', data=filenames, dtype=h5py.special_dtype(vlen=str))
 
-        if 'coherent_times' in results[0]:
+        if waveforms:
             wf_grp = f.create_group(COHERENT_GROUP)
-            wf_grp.create_dataset('times', data=results[0]['coherent_times'])
-            for wf_key in sorted(k for k in results[0] if k.startswith('coherent_wf_')):
-                peak_idx = wf_key.split('_')[-1]
-                wfs = np.array([r.get(wf_key, np.zeros_like(results[0][wf_key])) for r in results])
-                wf_grp.create_dataset(f'peak_{peak_idx}', data=wfs)
+            for name, data in waveforms.items():
+                wf_grp.create_dataset(name, data=data)
 
         if validation:
             for val_key, val_dtype, val_default in VALIDATION_COUNT_KEYS:

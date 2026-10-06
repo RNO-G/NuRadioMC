@@ -41,10 +41,9 @@ from NuRadioReco.modules.interferometricDirectionReconstruction3D import (
     InterferometricReco3D, check_detector_consistency, snapshot_search_dirs,
     table_files_from_config)
 from NuRadioReco.modules.RNO_G.channelPreprocessor import load_delay_corrections
-from NuRadioReco.framework.channel import Channel
 
 from reco_config import misplaced_preprocessor_keys, reader_options
-from reco_output import write_results_h5
+from reco_output import coherent_channels, write_results_h5
 from pair_store import DEFAULT_MARGIN_NS, PairStoreWriter, config_pair_weights, cut_pairs
 from reco_pass2 import (antenna_type, compute_first_arrival_angles, cross_type_pair_signs,
                          pass2_options, pass2_search_config, pass2_template, ray_tracer_backend)
@@ -520,8 +519,6 @@ def main():
         surface_channels = {ch for ch in channels if antenna_type(det, station_id, ch) == 'lpda'}
         air_tracer = propagation.get_propagation_module('air_ice')(ice, log_level=logging.WARNING)
 
-    COH_WF_CHANNEL_BASE = 100
-
     nur_writer = None
     if args.save_nur:
         from NuRadioReco.modules.io.eventWriter import eventWriter
@@ -708,23 +705,10 @@ def main():
             result['source_file'] = os.path.basename(input_file)
 
             if nur_writer is not None:
-                n_coh = config.get('n_coherent_waveforms', 1)
-                coh_ch_ids = [COH_WF_CHANNEL_BASE + i for i in range(n_coh)]
-                stn1_out = evt1.get_station(station_id)
-                for wf_key in sorted(k for k in result
-                                     if k.startswith('coherent_wf_')):
-                    pk_idx = int(wf_key.split('_')[-1])
-                    ch_id = COH_WF_CHANNEL_BASE + pk_idx
-                    ch = Channel(channel_id=ch_id)
-                    wf_times = result.get('coherent_times')
-                    sr = 1.0 / (wf_times[1] - wf_times[0]) * 1e9 if wf_times is not None else 10e9
-                    ch.set_trace(result[wf_key], sr)
-                    stn1_out.add_channel(ch)
                 evt_out = NREvent(evt1.get_run_number(), evt1.get_id())
                 stn_out = NRStation(station_id)
-                for ch_id in coh_ch_ids:
-                    if stn1_out.has_channel(ch_id):
-                        stn_out.add_channel(stn1_out.get_channel(ch_id))
+                for ch in coherent_channels(result):
+                    stn_out.add_channel(ch)
                 evt_out.set_station(stn_out)
                 nur_writer.run(evt_out)
 
