@@ -32,7 +32,7 @@ class channelAntennaDedispersion:
             "LPDA": [0, 0], # the sensitive direction of an LPDA is the boresight direction
             "bicone": [90 * units.deg, 0], # the sensitive direction of a dipole is perpendicular to its orientation
             "vpol": [90 * units.deg, 0], # the sensitive direction of a dipole is perpendicular to its orientation
-            "hpol": [0, 0], # the sensitive direction of a dipole is along it's direction
+            "hpol": [90 * units.deg, 0], # the sensitive direction of a slot antenna is perpendicular to its orientation
         }
 
         if additional_antennas is not None:
