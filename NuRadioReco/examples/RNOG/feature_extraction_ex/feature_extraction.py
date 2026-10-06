@@ -10,19 +10,14 @@ import json
 import logging
 import os
 import re
-import sys
 
 import h5py
 import pandas as pd
 import yaml
 
-from NuRadioReco.modules.RNO_G.dataProviderNuRadio import dataProviderNuRadio
-from NuRadioReco.modules.RNO_G.dataProviderRNOG import dataProviderRNOG
+from NuRadioReco.modules.RNO_G.dataProviderSetup import init_detector, select_data_provider
 from NuRadioReco.modules.RNO_G.stationFeatureExtractor import stationFeatureExtractor
 from NuRadioReco.utilities.io_utilities import parse_event_ids
-
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir, "interferometric_reco_ex"))
-from interferometric_reco_3d_advanced import init_detector  # noqa: E402
 
 logger = logging.getLogger("NuRadioReco.examples.RNOG.feature_extraction")
 
@@ -114,15 +109,8 @@ def extract_features(config, input_files, event_filter=None):
         file_basename = os.path.basename(path)
         if event_filter is not None and "by_file" in event_filter and file_basename not in event_filter["by_file"]:
             continue
-        if path.endswith(".nur"):
-            provider = dataProviderNuRadio()
-            provider.begin(path, det, preprocessor_config=config.get("preprocessor"))
-        else:
-            provider = dataProviderRNOG()
-            reader_kwargs = dict(config.get("reader_kwargs") or {})
-            reader_kwargs["mattak_kwargs"] = {"read_daq_status": False, "backend": "uproot",
-                                              **reader_kwargs.get("mattak_kwargs", {})}
-            provider.begin(path, det, reader_kwargs=reader_kwargs, preprocessor_config=config.get("preprocessor"))
+        provider = select_data_provider(path, det, reader_kwargs=config.get("reader_kwargs"),
+                                        preprocessor_config=config.get("preprocessor"))
         energy = re.search(r"lgE_?([0-9.]+)", file_basename) if path.endswith(".nur") else None
         for event in iter_events(provider, event_filter, file_basename):
             station = event.get_station()

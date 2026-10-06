@@ -39,7 +39,7 @@ A YAML file. The driver reads these keys; any other key at the top level raises:
 | Key | Meaning |
 |---|---|
 | `station_id`, `year`, `experiment_id` | Name the output path; `station_id` also selects the detector description |
-| `detector_file`, `detector_date` | Detector description, as for the reconstruction driver in `../interferometric_reco_ex/` |
+| `detector_file`, `detector_date` | Detector description, read by `NuRadioReco.modules.RNO_G.dataProviderSetup.init_detector` |
 | `preprocessor` | Passed to `channelPreprocessor` through the data provider. The module does no preprocessing of its own |
 | `reader_kwargs` | Passed to the reader of the data provider |
 | `output_root_dir` | Root of the output path. Default: the environment variable `FEATURE_OUTPUT_ROOT`, then `./feature_extraction` |
