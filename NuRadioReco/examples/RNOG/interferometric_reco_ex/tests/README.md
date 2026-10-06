@@ -43,13 +43,12 @@ Pytest suite for the 3D interferometric reconstruction (`NuRadioReco/modules/int
 | `test_reco_scoring.py` | unit (fast) | scoring arithmetic: truth join by (source file, run number), PA reference and angular separation, bounded-blend Xmax point, signal selection, truth device from the run comment and the helper SNR pattern, the run comment found from the harness file naming, pulser residual summary, cluster bootstrap |
 | `test_output_contract.py` | contract | the module returns exactly the contract keys under the reference configuration (others must carry a `_v<N>` suffix) with their definitions (peak 0 is the primary result, SNR summaries from the per-channel SNRs, isolation ratio from the coarse peaks), polarization groups suffix every key, the results file has the contract datasets, dtypes and provenance attributes including `reco_version`, and the `coherent_waveforms` group with `save_coherent_waveforms` |
 | `test_config_gating.py` | contract | every configuration key added since the golden-master reference code (module and preprocessor) is registered with its inert value, and setting it to that value leaves the reconstruction and the preprocessed traces bit-identical; the split z grid keys, which have no inert value, and the driver-owned `preprocessor` block are listed separately; no shipped config in `configs/` carries a key the module does not know, and none puts a `channelPreprocessor` key at the top level, where the driver would ignore it (the driver now stops on such a key) |
-| `test_real_pulser_golden.py` | golden master (real data) | ten-event voltage-only fixtures of station 23 run 1000, station 22 run 2090 and station 21 run 476 preprocessed with the record chain inside the test: (rho, phi, z, max_corr) per event to 1e-6 and per-pair residual medians at the pulser truth to 0.15 ns against `golden/real_pulser_golden.json`; a 1 ns shift of one channel moves its pair residuals by 1 ns |
-| `make_real_pulser_fixtures.py` | helper (needs mattak, run as a SLURM job) | cuts the voltage-only fixtures from the pulser runs and writes their manifests |
+| `test_real_pulser_golden.py` | golden master (real data) | ten-event voltage-only fixtures of station 23 run 1000, station 22 run 2090 and station 21 run 476 preprocessed with the record chain inside the test: (rho, phi, z, max_corr) per event to 1e-6 and per-pair residual medians at the pulser truth to 0.15 ns against the stored reference `real_pulser_golden.json`; a 1 ns shift of one channel moves its pair residuals by 1 ns. Fixtures and reference are read from a folder outside the repository, see [Real-pulser data](#real-pulser-data) |
+| `make_real_pulser_fixtures.py` | helper (needs mattak, run as a SLURM job) | cuts the voltage-only fixtures from the pulser runs and writes them with their manifests to the folder given with `--out-dir`, which has to be outside the repository |
 | `synthetic.py` | helper | builds events whose traces carry a band-limited pulse at the table travel times of a chosen source, using the reconstruction's own table loader and antenna geometry; `make_doublet_event` adds a second pulse at the solution_1 time with a per-channel amplitude and phase rotation; also holds the record preprocessor block and `same_value`, the field comparison (NaN equal to NaN) of the tests that require a fresh instance's result |
 | `conftest.py` | helper | fixtures, the reference reconstruction configuration, the `slow` and `airice` markers |
 | `golden/st23_synthetic_golden.json` | reference | stored output for `test_golden_master.py` |
-| `golden/st{23,22,21}_run{1000,2090,476}_voltage_reference.nur` and `_manifest.json` | fixtures | raw mattak voltages of ten pulser events each, reconstruction channels only, with the selection and truth device recorded in the manifest |
-| `golden/real_pulser_golden.json` | reference | stored output for `test_real_pulser_golden.py` |
+| `golden/real_pulser_data.sha256` | reference | SHA-256 values of the seven files `test_real_pulser_golden.py` reads from outside the repository |
 
 The synthetic events test the search machinery against exactly the geometry it assumes, with no simulation in the loop. The accuracy gates in `test_reco_known_answer.py` and `test_golden_master.py` sit at the level measured on the current code (median 1.05 degree, 68th percentile 1.69 degree, 88 percent within 3 degrees over the 16-source set at SNR 20), with margin; the gate values are in the tests. They are measured rather than fixed because the current search settles 1 to 3.5 degrees off on several ideal geometries at any SNR, and about 30 degrees off on one deep source. A change that improves this passes; one that worsens it fails.
 
@@ -72,7 +71,8 @@ Inputs are set with environment variables:
 | `RECO3D_TEST_TABLES` | all reconstruction tests | root of the in-ice travel-time tables (`station{N}/` subdirectories); defaults to `NURADIO_TABLE_DIR` |
 | `RECO3D_TEST_DETECTOR_FILE` | all reconstruction tests | exported detector description to use instead of the RNO-G database (station 23 at 2022-10-01) |
 | `RECO3D_TEST_DETECTOR_DIR` | `test_pulser_truth.py`, `test_real_pulser_golden.py` | directory of the per-station exports `rnog_station{N}_2022-10-01.json.xz`; defaults to the directory of `RECO3D_TEST_DETECTOR_FILE` |
-| `RECO3D_REGEN_PULSER_GOLDEN=1` | `test_real_pulser_golden.py` | rewrite the real-pulser reference from the imported code instead of comparing |
+| `RECO3D_TEST_PULSER_DATA` | `test_real_pulser_golden.py` | folder with the real-pulser fixtures, manifests and reference; no default |
+| `RECO3D_REGEN_PULSER_GOLDEN=1` | `test_real_pulser_golden.py` | write the real-pulser reference into that folder from the imported code instead of comparing |
 | `RECO3D_TEST_AIRICE_TABLES` | `test_above_surface_reco.py`, `test_split_z_grid.py` | root of the air-ice tables; no default |
 | `RECO3D_REGEN_GOLDEN=1` | `test_golden_master.py` | rewrite the golden reference from the imported code instead of comparing |
 
@@ -86,9 +86,29 @@ RECO3D_REGEN_GOLDEN=1 python -m pytest -q test_golden_master.py
 
 ## Test data
 
-- Every test but `test_real_pulser_golden.py` is synthetic. That one reads the calibration-pulser fixtures under `golden/` (raw voltages of ten events per run, under 2 MB each, committed as `*reference*.nur`), which the fixture script cut from station 23 run 1000, station 22 run 2090 and station 21 run 476.
+- Every test but `test_real_pulser_golden.py` is synthetic. That one reads calibration-pulser data that are not part of the repository, see [Real-pulser data](#real-pulser-data).
 - The travel-time tables are read from disk and are not part of the repository; the detector description comes from the RNO-G database or a file.
 - Regenerate the golden reference only when a change to in-ice behaviour is intended, and say why in the commit.
+
+### Real-pulser data
+
+`test_real_pulser_golden.py` reads seven files that the repository does not carry: the fixtures `st{23,22,21}_run{1000,2090,476}_voltage_reference.nur` (raw mattak voltages of ten calibration-pulser events each, reconstruction channels only, under 2 MB each), a `_manifest.json` per fixture with the selection and the truth device, and `real_pulser_golden.json`, the stored output of the test. They are kept on the RNO-G Chicago server under `/data/reconstruction/test_data/reco3d/v1`.
+
+Set `RECO3D_TEST_PULSER_DATA` to a copy of that folder; there is no default. Before use the test compares the SHA-256 value of each file with `golden/real_pulser_data.sha256`, which has the format of `sha256sum`. When the variable is not set, names no folder, or the folder lacks a file, the four tests skip with a message that names the missing data and the server folder. A file that is present with another checksum fails them.
+
+To regenerate, write into a new folder outside the repository; a released folder is not changed:
+
+```bash
+# fixtures and manifests, once per run (stations, runs and devices as in FIXTURES of the test); needs mattak
+python make_real_pulser_fixtures.py --station 23 --run 1000 --device 0 --input /path/to/station23/run1000 \
+    --detector-file /path/to/station23_detector_export.json.xz --out-dir /path/to/new_folder
+# reference: writes real_pulser_golden.json into the folder, the checksums are not compared
+RECO3D_TEST_PULSER_DATA=/path/to/new_folder RECO3D_REGEN_PULSER_GOLDEN=1 python -m pytest -q test_real_pulser_golden.py
+# checksum list
+(cd /path/to/new_folder && sha256sum *.nur *.json) > golden/real_pulser_data.sha256
+```
+
+When only the reference changes, copy the fixtures and manifests into the new folder and skip the first step. Commit the new list with the reason, and name the new folder in the skip message of the test once it is on the server.
 
 ## Known limitations
 
