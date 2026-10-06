@@ -1,0 +1,64 @@
+# 3D interferometric reconstruction config: cosmic-ray search, recommended.
+#
+# reco3d_cr.yaml plus the candidate search with its tie band and noise ceiling
+# (thresholds validated on the VPol group only) and the 2022 v2 delay
+# corrections (applied to ROOT input only); see the Candidate search section of
+# INTERFEROMETRIC_RECONSTRUCTION_README.md.
+
+station_id: 23
+channels: [0, 1, 2, 3, 5, 6, 7, 9, 10, 22, 23, 4, 8, 11, 21]
+
+polarization_groups:
+  vpol: [0, 1, 2, 3, 5, 6, 7, 9, 10, 22, 23]
+  hpol: [4, 8, 11, 21]
+hpol_weight_scale: 1.0
+
+coord_system: "cylindrical"
+hierarchical: true
+multi_ray_types: false
+multiray_combo_mode: "grouped"
+
+coarse_limits: [1, 250, 0, 360, -100, 0]
+coarse_n_rho: 30
+coarse_n_z: 100
+coarse_step_sizes: [0, 3, 0]
+coarse_n_peaks: 7
+coarse_peak_separation: [50, 15, 50]
+
+refine_window: [15, 3, 15]
+refine_step_sizes: [1, 0.3, 1]
+
+limits: [1, 250, 0, 360, -100, 0]
+
+n_peaks_save: 3
+n_coherent_waveforms: 3
+
+# Paths: set NURADIO_TABLE_DIR and NURADIO_DELAY_CORRECTIONS_DIR (detector: live database at detector_date)
+time_delay_tables: "${NURADIO_TABLE_DIR}"
+multiray_table_name_pattern: "st{station_id}_ch{ch}_rz_table_{ray_type}.npz"
+detector_date: "2022-10-01"
+
+apply_upsampling: true
+apply_dedispersion: false
+
+preprocessor:
+  apply_cable_delay: true
+  apply_hw_phase_removal: true
+  apply_bandpass: true
+  bandpass_band: [0.1, 0.7]
+  bandpass_order: 10
+  bandpass_filter_type: "butter"
+  apply_cw_removal: true
+  apply_delay_corrections: true
+  delay_corrections_file: "${NURADIO_DELAY_CORRECTIONS_DIR}/delay_corrections_2022_v2.yaml"
+
+hilbert_envelope_mode: null
+interp_method: "linear"
+snr_pair_weighting: true
+correlation_normalization: "energy"
+apply_hann_window: true
+
+candidate_search: ["envelope:traces", "envelope:correlation", "raw"]
+candidate_tie_band: 0.0054
+candidate_tie_band_max_raw_corr: 0.035
+candidate_fill_saved_peaks: true
