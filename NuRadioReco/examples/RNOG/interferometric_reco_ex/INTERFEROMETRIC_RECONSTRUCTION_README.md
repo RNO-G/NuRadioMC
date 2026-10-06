@@ -210,6 +210,8 @@ Set `n_peaks_save: 3` in the config to retain the top N peaks from the correlati
 
 The columns of a results file are the union over its events: an event whose search filled fewer peak slots than another event of the file, or that lacks any other field, has NaN there. With `polarization_groups` the coarse peaks of each group are written as `coarse_peaks_<group>` of shape (N, n_peaks, 4) holding (rho, phi, z, corr), n_peaks being the largest number in the file and the rows of an event beyond its own number NaN.
 
+Set `save_coarse_map: true` to get the coarse correlation map of the hierarchical search in the result dict of `run` and `reconstruct_from_pairs`: `coarse_map_v1` of shape (n_rho, n_phi, n_z) with its axes `coarse_map_rho_v1` (m), `coarse_map_phi_v1` (deg) and `coarse_map_z_v1` (m). It is the map the map SNR of the saved peaks is read on: the map of the search chain, in candidate mode that of the raw chain or, without one, of the first chain. With `polarization_groups` every group has its map under the group's suffix (`coarse_map_v1_hpol`). An event without a coarse peak has no map, and the driver's results file does not store the maps. Without the key the result is unchanged.
+
 ### Search geometry options
 
 Three keys change how the refine grids are placed and how the tables are read at their top row. All default to the behaviour without them.
@@ -447,6 +449,7 @@ All optional features are off by default. Enable via config YAML or CLI flags.
 | Feature | Config key | CLI flag | Default |
 |---------|-----------|----------|---------|
 | Multi-peak retention | `n_peaks_save: 3` | -- | 1 (single peak) |
+| Coarse map in the result dict | `save_coarse_map: true` | -- | false |
 | Per-polarization | `polarization_groups: {vpol: [...], hpol: [...]}` | -- | None (all channels together) |
 | Coherent waveforms | `save_coherent_waveforms: true`, `n_coherent_waveforms: 3` | -- | false |
 | Validation metrics | `validation: true` | `--validation` | false |

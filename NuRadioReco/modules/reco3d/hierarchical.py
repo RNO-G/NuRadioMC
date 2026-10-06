@@ -567,6 +567,13 @@ class HierarchicalMixin:
         Candidate search and Two-arrival polish objective sections of
         ``INTERFEROMETRIC_RECONSTRUCTION_README.md``.
 
+        With ``save_coarse_map`` the result also holds the coarse correlation
+        map the map SNR of the saved peaks is read on, ``coarse_map_v1`` of
+        shape (n_rho, n_phi, n_z), and its axes ``coarse_map_rho_v1`` (m),
+        ``coarse_map_phi_v1`` (deg) and ``coarse_map_z_v1`` (m): the map of the
+        search chain, in candidate mode that of the raw chain or, without one,
+        of the first chain. A map kept on the GPU is downloaded.
+
         Parameters
         ----------
         evt : Event
@@ -1163,5 +1170,10 @@ class HierarchicalMixin:
                 mean_corr_c, rho_vec_c, phi_vec_c, z_vec_c,
                 channel_snrs, coarse_peaks, config, windowed_snrs)
             result.update(val)
+        if config.get('save_coarse_map', False):
+            result['coarse_map_v1'] = snr_map if isinstance(snr_map, np.ndarray) else snr_map[:]
+            result['coarse_map_rho_v1'] = rho_vec_c
+            result['coarse_map_phi_v1'] = phi_vec_deg_c
+            result['coarse_map_z_v1'] = z_vec_c
 
         return result

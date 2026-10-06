@@ -331,7 +331,7 @@ class InterferometricReco3D(
         'pass2_volume', 'rx_arrival_mode', 'cross_type_sign_mode',
         'save_pair_store', 'pair_store_margin_ns', 'pair_store_dtype',
         'region_hypotheses', 'far_field_hypothesis', 'far_field_lobe_guard_ns',
-        'channel_position_shift', 'ice_model', 'reader_kwargs',
+        'channel_position_shift', 'ice_model', 'reader_kwargs', 'save_coarse_map',
     }
 
     def begin(self, station_id, config, det):
@@ -485,8 +485,8 @@ class InterferometricReco3D(
                 (``_candidate_chains``, ``_polish_levels``), a non-boolean
                 ``candidate_include_refined``, ``candidate_fill_saved_peaks``,
                 ``candidate_diagnostics``, ``tolerant_table_edge``,
-                ``subbin_coarse_seeds``, ``region_hypotheses`` or
-                ``far_field_hypothesis``, an unknown
+                ``subbin_coarse_seeds``, ``region_hypotheses``,
+                ``far_field_hypothesis`` or ``save_coarse_map``, an unknown
                 ``refine_window_mode``, an
                 invalid tie band or noise ceiling (``_candidate_tie_band``,
                 ``_candidate_tie_band_max_raw_corr``), two-arrival settings
@@ -522,7 +522,8 @@ class InterferometricReco3D(
             self._polish_levels(config)
         for key in ('candidate_include_refined', 'candidate_fill_saved_peaks',
                     'candidate_diagnostics', 'tolerant_table_edge',
-                    'subbin_coarse_seeds', 'region_hypotheses', 'far_field_hypothesis'):
+                    'subbin_coarse_seeds', 'region_hypotheses', 'far_field_hypothesis',
+                    'save_coarse_map'):
             if not isinstance(config.get(key, False), bool):
                 raise ValueError(f"{key} must be a boolean")
         guard = config.get('far_field_lobe_guard_ns')
