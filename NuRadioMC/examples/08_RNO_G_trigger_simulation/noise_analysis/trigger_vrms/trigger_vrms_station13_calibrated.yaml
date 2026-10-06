@@ -1,0 +1,18 @@
+trigger_vrms_V:
+  0: 4.466136e-3
+  1: 3.387901e-3
+  2: 2.683482e-3
+  3: 3.137378e-3
+metadata:
+  station_id: 13
+  event_time: '2022-10-01'
+  detector_response: database trigger response, calibrated season-2022 readout response
+  measurement: >
+    median trigger-path Vrms over the clean-masked 2022 forced-trigger pool
+    (measure_trigger_vrms_full.py; 277,974 events, 429 runs). Run-to-run standard deviation
+    ch0 0.390 / ch1 0.045 / ch2 0.037 / ch3 0.131 mV.
+  note: >
+    Use with a detector description that carries the calibrated readout response. The
+    calibrated ch0 readout response is about 4.8 times below the database one, which raises
+    the ch0 value. The trigger path of ch0 is suppressed in this station, so the production
+    ran with --ch0_trigger_model measured_8x; this Vrms then only sets the VGA gain.

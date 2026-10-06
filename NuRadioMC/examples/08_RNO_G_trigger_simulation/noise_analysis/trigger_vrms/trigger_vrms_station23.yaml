@@ -1,0 +1,15 @@
+trigger_vrms_V:
+  0: 0.004102
+  1: 0.004627
+  2: 0.003703
+  3: 0.002625
+metadata:
+  station_id: 23
+  event_time: '2022-10-01'
+  detector_response: database
+  measurement: >
+    sampled measurement of 200 tiled forced-trigger noise realizations, adopted for the
+    February 2026 production (script not included)
+  note: >
+    measure_trigger_vrms_full.py on the full 2022 pool gives 4.298 / 5.069 / 4.162 / 2.980 mV
+    for channels 0 to 3, 5 to 13 percent above these values. The production kept these values.
