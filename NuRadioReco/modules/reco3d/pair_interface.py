@@ -16,14 +16,20 @@ class PairSet(namedtuple('PairSet', ['channels', 'pairs', 'series', 'snr', 'snr_
 
     Fields:
         channels: Tuple of channel ids in the order the traces were read.
+
         pairs: Tuple of (ch_a, ch_b) channel pairs, ``itertools.combinations`` of
             ``channels``; lag = t_a - t_b.
+
         series: Dict envelope mode (None raw, 'traces', 'correlation') -> CorrPacked
             over ``pairs`` at full length (the sample lags of every mode coincide).
+
         snr: Dict channel -> record SNR (3-sample window), empty when not computed.
+
         snr_windowed: Dict channel -> SNR over ``settings['snr_window_ns']``, or empty.
+
         settings: Dict of the preprocessing keys the series depend on
             (``apply_hann_window``, ``correlation_normalization``, ``snr_window_ns``).
+
         windows: None for complete series, else (n_pairs, 2) lag windows in ns
             outside which the series were cut (zeros there).
     """
@@ -83,23 +89,30 @@ class PairInterfaceMixin:
 
         Args:
             pairs: PairSet from ``compute_pairs`` or ``pair_store.PairStore.event``.
+
             config: Reconstruction config dict or YAML path. Its channels must be
                 listed in the order of ``pairs.channels``; its
                 ``apply_hann_window`` and ``correlation_normalization`` (and
                 ``snr_window_ns`` when set) must be those the series were made with.
+
             channel_mask: Channels removed from the channel list (and so from every
                 polarization group) before the search.
+
             pair_weights: Dict (ch_a, ch_b) -> weight that replaces the SNR pair
                 weights of every searched pair; either channel order is accepted.
+
             channel_delay_shift: Dict channel -> ns added to the channel's cable
                 delay, the convention of the delay-corrections files: the lag axis
                 of every series of a pair (a, b) moves by shift_b - shift_a, as if
                 the traces had been preprocessed with that extra correction.
+
             channel_polarity: Dict channel -> +1 or -1. The raw series of a pair is
                 multiplied by the product of its channels' polarities, which equals
                 negating the traces bit for bit; envelopes carry no polarity.
+
             station: Station that receives the result parameters and supplies the
                 traces of ``save_coherent_waveforms``, or None.
+
             channel_position_shift: Dict channel -> (dx, dy) in m added to the channel's
                 horizontal position in every place the search reads positions (grid,
                 refine and optimizer kernels, lag windows, region and far-field
@@ -165,11 +178,15 @@ class PairInterfaceMixin:
 
         Args:
             pairs: PairSet of one event.
+
             settings: List of dicts of ``reconstruct_from_pairs`` keyword arguments (config,
                 channel_mask, pair_weights, channel_delay_shift, channel_polarity,
                 channel_position_shift).
+
             coarse_backend: Optional coarse-map backend (e.g. GPU); None uses the CPU kernel.
+
             stats: Optional dict that receives the batch timing.
+
             batch_grids: Also batch the refine and polish grids of the settings.
 
         Returns:
@@ -305,7 +322,7 @@ class PairInterfaceMixin:
         horizontal separation D. So the delay at any source whose distance to a
         lies in r cell i, at a depth in z cell j, lies between the corner extremes
         of cell (i, j) of table a minus those of the cells (i', j) of table b with
-        |i' - i| <= ceil(D / dr) + 1. Cells with a non-finite corner or outside a
+        ``|i' - i| <= ceil(D / dr) + 1``. Cells with a non-finite corner or outside a
         table never enter (they bound nothing the kernels read); at a table's top
         node the top row alone stands for the cell above it, since a source there
         reads that row while a taller table reads its next cell. The bound runs

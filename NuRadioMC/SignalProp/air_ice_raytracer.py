@@ -3,7 +3,7 @@
 Adapted from the RNO-G antenna-positioning package
 (https://github.com/RNO-G/antenna-positioning/blob/main/AntPosCal/ray_tracing/air_ice_raytracer.py).
 Changes for use in NuRadioMC: the in-ice leg ends at one common depth just below the
-surface (`SURFACE_DEPTH`), the air leg uses the same speed of light as the in-ice tracer,
+surface (``SURFACE_DEPTH``), the air leg uses the same speed of light as the in-ice tracer,
 the entry-point bisection continues when a midpoint lies beyond the reach of in-ice rays,
 and accessor methods after `get_launch_angle` expose the path length, the in-ice
 attenuation and the entry angles to the `air_ice` propagator and the table generator.
