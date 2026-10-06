@@ -65,6 +65,14 @@ The clip and the readout FT noise are applied when the traces are resampled for 
 | `--clip_thresholds` | YAML with `clip_thresholds_mV: {channel: [low, high]}` in mV, relative to the pedestal |
 | `--noise_temperatures` | JSON with `{channel: temperature}` in kelvin |
 
+The tools that produce these files are in this folder:
+
+- [`noise_analysis/ft_cleaning/`](noise_analysis/ft_cleaning/): clean mask of the FT pool.
+- [`noise_analysis/trigger_vrms/`](noise_analysis/trigger_vrms/): trigger-path noise Vrms, with the values of the 2022 season.
+- [`pedestal_extraction/`](pedestal_extraction/): ADC clip thresholds from pedestal runs, with the values of the 2022 season.
+
+The shipped values belong to the detector description of 2022-10-01 and the FT data of 2022. Other years need a new measurement.
+
 ## Usage
 
 Measured FT noise:
@@ -75,9 +83,9 @@ python simulate.py \
     --energy 1e18 \
     --n_events 1000 \
     --ft_noise_dir /path/to/forced_triggers/station23 \
-    --trigger_vrms /path/to/trigger_vrms_station23.yaml \
+    --trigger_vrms noise_analysis/trigger_vrms/trigger_vrms_station23.yaml \
     --ft_clean_mask /path/to/clean_mask_station23.npz \
-    --clip_thresholds /path/to/clip_thresholds_station23.yaml \
+    --clip_thresholds pedestal_extraction/clip_thresholds_station23.yaml \
     --ft_seed 12345 \
     --nur_output \
     --output_file output.hdf5 \

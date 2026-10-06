@@ -1,0 +1,17 @@
+trigger_vrms_V:
+  0: 3.247549e-3
+  1: 2.385429e-3
+  2: 1.643651e-3
+  3: 1.948858e-3
+metadata:
+  station_id: 23
+  event_time: '2022-10-01'
+  detector_response: database trigger response, calibrated season-2022 readout response
+  measurement: >
+    median trigger-path Vrms over the clean-masked 2022 forced-trigger pool
+    (measure_trigger_vrms_full.py; 317,340 events, 507 runs). Run-to-run standard deviation
+    ch0 0.049 / ch1 0.054 / ch2 0.033 / ch3 0.042 mV.
+  note: >
+    Use with a detector description that carries the calibrated readout response. The values
+    are below the database-response ones because the calibrated readout response is 1.4 to
+    2.5 times above the database one.

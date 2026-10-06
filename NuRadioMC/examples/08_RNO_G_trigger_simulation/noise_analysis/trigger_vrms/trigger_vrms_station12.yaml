@@ -1,0 +1,10 @@
+trigger_vrms_V:
+  0: 5.0408e-3
+  1: 6.0087e-3
+  2: 3.2731e-3
+  3: 3.8167e-3
+metadata:
+  station_id: 12
+  event_time: '2022-10-01'
+  detector_response: database
+  measurement: median trigger-path Vrms over the full 2022 forced-trigger pool (measure_trigger_vrms_full.py)
