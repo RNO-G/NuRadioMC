@@ -208,6 +208,8 @@ At start-up and again at the first event's epoch the driver runs `check_detector
 
 Set `n_peaks_save: 3` in the config to retain the top N peaks from the correlation map. Each peak gets its own fields: `peak_0_rho`, `peak_0_phi`, `peak_0_z`, `peak_0_corr`, `peak_0_map_snr` (and similarly for peaks 1, 2). The primary result (`rho`, `phi`, `z`, `max_corr`) always matches peak 0.
 
+The columns of a results file are the union over its events: an event whose search filled fewer peak slots than another event of the file, or that lacks any other field, has NaN there. With `polarization_groups` the coarse peaks of each group are written as `coarse_peaks_<group>` of shape (N, n_peaks, 4) holding (rho, phi, z, corr), n_peaks being the largest number in the file and the rows of an event beyond its own number NaN.
+
 ### Search geometry options
 
 Three keys change how the refine grids are placed and how the tables are read at their top row. All default to the behaviour without them.
