@@ -203,6 +203,12 @@ jobs:
       run: |
         NuRadioMC/test/examples/test_rnog_trigger_simulation.sh
 
+    - name: "RNO-G forced-trigger noise simulation example"
+      if: always()
+      run: |
+        pip install pandas
+        NuRadioMC/test/examples/test_rnog_ft_noise_simulation.sh
+
     - name: Upload coverage data
       if: always()
       uses: ./.github/actions/upload-coverage-data
