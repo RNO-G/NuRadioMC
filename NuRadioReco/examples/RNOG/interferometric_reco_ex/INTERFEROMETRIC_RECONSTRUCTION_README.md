@@ -145,6 +145,8 @@ Which preprocessing steps are applied is controlled by the config file (see tabl
 
 If you are integrating the reconstruction module into your own processing chain rather than using the driver script, the module expects waveforms that have at minimum had cable delays applied. See the config options below for the full set of preprocessing the driver applies.
 
+The two set-up steps of the driver are public functions of `NuRadioReco.modules.RNO_G.dataProviderSetup`, for any script that reads RNO-G data or simulations. `init_detector(config)` returns the detector description for `station_id`, read from `detector_file` when the config has one and from the RNO-G database otherwise, updated to `detector_date` (default 2022-10-01). `select_data_provider(input_file, det, reader_kwargs=None, preprocessor_config=None)` returns the provider of an input with `begin` called: `dataProviderNuRadio` for a `.nur` file, `dataProviderRNOG` for a run folder or ROOT file, with `reader_kwargs` merged over the mattak defaults `read_daq_status: False` and `backend: uproot`. `init_detector` also stays importable from the driver.
+
 The driver reads two preprocessing keys at the top level of the config, `apply_upsampling` and `apply_dedispersion`. Every other step is configured in the `preprocessor:` block, which is passed to `channelPreprocessor` (inside `dataProviderRNOG` or `dataProviderNuRadio`); a `channelPreprocessor` key written at the top level, such as `apply_bandpass: true`, would have no effect, so the driver stops with an error naming it (`misplaced_preprocessor_keys` in `reco_config.py`). The defaults are those of `channelPreprocessor`:
 
 | Config key | Default | Description |
@@ -386,7 +388,7 @@ Position shifts are not a trace operation: the driver passes the station's `posi
 
 The driver auto-detects ROOT vs NUR input. For ROOT files, it uses `readRNOGData` with `read_daq_status=False` to avoid requiring the `combined` tree (not present in all data versions). No other changes needed. With that setting a run folder needs `waveforms.root` and `headers.root` only; `daqstatus.root`, which hand-carried runs can lack, is required only by a caller that reads it.
 
-A `reader_kwargs` block in the config is passed to `readRNOGData.begin` on top of these defaults, for example `reader_kwargs: {select_triggers: FORCE}` to reconstruct only the forced triggers of a run. Its `mattak_kwargs` entry is merged key by key into the driver's (`read_daq_status: false`, `backend: uproot`), so a config changes only the keys it names (`reader_options` in `reco_config.py`). NUR input does not read the block.
+A `reader_kwargs` block in the config is passed to `readRNOGData.begin` on top of these defaults, for example `reader_kwargs: {select_triggers: FORCE}` to reconstruct only the forced triggers of a run. Its `mattak_kwargs` entry is merged key by key into the driver's (`read_daq_status: false`, `backend: uproot`), so a config changes only the keys it names (`select_data_provider`, below). NUR input does not read the block.
 
 ```bash
 python interferometric_reco_3d_advanced.py \

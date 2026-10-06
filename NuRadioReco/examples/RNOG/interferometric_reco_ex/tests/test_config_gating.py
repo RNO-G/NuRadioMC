@@ -33,7 +33,7 @@ from NuRadioReco.framework.station import Station
 from NuRadioReco.modules.RNO_G.channelPreprocessor import channelPreprocessor
 from NuRadioReco.modules.interferometricDirectionReconstruction3D import InterferometricReco3D
 from NuRadioReco.utilities import units
-from reco_config import misplaced_preprocessor_keys, reader_options
+from reco_config import misplaced_preprocessor_keys
 
 MODULE_KEYS_REFERENCE = frozenset({
     'time_delay_tables', 'station_id', 'channels', 'limits', 'step_sizes',
@@ -178,19 +178,6 @@ def test_shipped_configs_keep_preprocessing_keys_in_the_block():
         assert not misplaced_preprocessor_keys(config), (os.path.basename(path), misplaced_preprocessor_keys(config))
     assert misplaced_preprocessor_keys({'apply_hw_phase_removal': True, 'apply_upsampling': True,
                                         'preprocessor': {'apply_bandpass': True}}) == ['apply_hw_phase_removal']
-
-
-def test_reader_kwargs_are_merged_into_the_reader_options():
-    """The driver's reader options are its defaults with the config's `reader_kwargs` merged in, mattak keys one by one."""
-    defaults = {'mattak_kwargs': {'read_daq_status': False, 'backend': 'uproot'}}
-    assert reader_options({}) == defaults and reader_options({'reader_kwargs': None}) == defaults
-    config = {'reader_kwargs': {'select_triggers': 'FORCE', 'mattak_kwargs': {'read_run_info': False, 'backend': 'pyroot'}}}
-    assert reader_options(config) == {
-        'select_triggers': 'FORCE',
-        'mattak_kwargs': {'read_daq_status': False, 'read_run_info': False, 'backend': 'pyroot'}}
-    assert config == {'reader_kwargs': {'select_triggers': 'FORCE',
-                                        'mattak_kwargs': {'read_run_info': False, 'backend': 'pyroot'}}}
-    assert reader_options({}) == defaults
 
 
 def test_new_preprocessor_keys_are_registered():

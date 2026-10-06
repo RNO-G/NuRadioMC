@@ -18,7 +18,6 @@ pairs reproduce the pass-1 results exactly through ``reco_from_pairs.py``.
 """
 
 import argparse
-import datetime
 import itertools
 import os
 import yaml
@@ -26,12 +25,9 @@ import time
 import numpy as np
 import logging
 
-import NuRadioReco.detector.detector as detector
-from NuRadioReco.detector.RNO_G import rnog_detector
 from NuRadioReco.modules.channelResampler import channelResampler
 from NuRadioReco.modules.channelAntennaDedispersion import channelAntennaDedispersion
-from NuRadioReco.modules.RNO_G.dataProviderRNOG import dataProviderRNOG
-from NuRadioReco.modules.RNO_G.dataProviderNuRadio import dataProviderNuRadio
+from NuRadioReco.modules.RNO_G.dataProviderSetup import init_detector, select_data_provider
 from NuRadioReco.utilities import units
 from NuRadioReco.detector.antennapattern import AntennaPatternProvider
 from NuRadioMC.SignalProp import propagation
@@ -42,7 +38,7 @@ from NuRadioReco.modules.interferometricDirectionReconstruction3D import (
     table_files_from_config)
 from NuRadioReco.modules.RNO_G.channelPreprocessor import load_delay_corrections
 
-from reco_config import misplaced_preprocessor_keys, reader_options
+from reco_config import misplaced_preprocessor_keys
 from reco_output import coherent_channels, write_results_h5
 from pair_store import DEFAULT_MARGIN_NS, PairStoreWriter, config_pair_weights, cut_pairs
 from reco_pass2 import (antenna_type, compute_first_arrival_angles, cross_type_pair_signs,
@@ -51,26 +47,6 @@ from reco_pass2 import (antenna_type, compute_first_arrival_angles, cross_type_p
 logger = logging.getLogger("reco3d.iterative")
 
 ice = greenland_simple()
-
-
-def init_detector(config):
-    """Build and update a Detector from config."""
-    det_file = config.get('detector_file', None)
-    det_date_str = config.get('detector_date', '2022-10-01')
-    det_date = datetime.datetime.fromisoformat(det_date_str)
-    station_id = config['station_id']
-
-    if det_file:
-        det = rnog_detector.Detector(
-            detector_file=det_file,
-            log_level=logging.WARNING,
-            select_stations=station_id,
-        )
-    else:
-        det = detector.Detector(source="rnog_mongo")
-
-    det.update(det_date)
-    return det
 
 
 def compute_arrival_angles(rho, phi_deg, z, station_id, det, channels):
@@ -539,17 +515,8 @@ def main():
                 and file_basename not in event_filter['by_file']:
             continue
 
-        if is_nur:
-            data_provider = dataProviderNuRadio()
-            data_provider.begin(
-                input_file, det, preprocessor_config=preproc_config)
-        else:
-            data_provider = dataProviderRNOG()
-            data_provider.begin(
-                input_file, det,
-                reader_kwargs=reader_options(config),
-                preprocessor_config=preproc_config,
-            )
+        data_provider = select_data_provider(
+            input_file, det, reader_kwargs=config.get('reader_kwargs'), preprocessor_config=preproc_config)
         event_ids = data_provider.get_event_ids()
 
         emitter_pos = None
