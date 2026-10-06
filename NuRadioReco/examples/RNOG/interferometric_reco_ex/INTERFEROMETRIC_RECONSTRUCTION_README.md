@@ -384,7 +384,7 @@ Position shifts are not a trace operation: the driver passes the station's `posi
 
 ## Real data (ROOT files)
 
-The driver auto-detects ROOT vs NUR input. For ROOT files, it uses `readRNOGData` with `read_daq_status=False` to avoid requiring the `combined` tree (not present in all data versions). No other changes needed.
+The driver auto-detects ROOT vs NUR input. For ROOT files, it uses `readRNOGData` with `read_daq_status=False` to avoid requiring the `combined` tree (not present in all data versions). No other changes needed. With that setting a run folder needs `waveforms.root` and `headers.root` only; `daqstatus.root`, which hand-carried runs can lack, is required only by a caller that reads it.
 
 A `reader_kwargs` block in the config is passed to `readRNOGData.begin` on top of these defaults, for example `reader_kwargs: {select_triggers: FORCE}` to reconstruct only the forced triggers of a run. Its `mattak_kwargs` entry is merged key by key into the driver's (`read_daq_status: false`, `backend: uproot`), so a config changes only the keys it names (`reader_options` in `reco_config.py`). NUR input does not read the block.
 

@@ -70,10 +70,11 @@ def get_time_offset(trigger_type):
         raise KeyError(f"Unknown trigger type: {trigger_type}. Known are: {known_trigger_types}. Abort ....")
 
 
-def _all_files_in_directory(mattak_dir):
+def _all_files_in_directory(mattak_dir, read_daq_status=True):
     """
     Checks if all Mattak root files are in a directory.
     Ignoring runinfo.root because (asaik) not all runs have those and information is currently not read by Mattak.
+    Ignoring daqstatus.root when the caller does not read it: hand-carried runs can lack the file.
     There are mattak directories which produce a ReferenceError when reading. They have a "combined.root" which is
     apparently empty but are missing the daqstatus, pedestal, and header file.
 
@@ -81,6 +82,10 @@ def _all_files_in_directory(mattak_dir):
     ----------
     mattak_dir: str
         Path to a mattak directory
+
+    read_daq_status: bool
+        Whether mattak will read daqstatus.root (its ``read_daq_status`` argument). If False, the file is not
+        required. (Default: True)
 
     Returns
     -------
@@ -97,7 +102,7 @@ def _all_files_in_directory(mattak_dir):
         return False
 
     if full_run:
-        req_files = ["daqstatus.root", "headers.root"]
+        req_files = ["daqstatus.root", "headers.root"] if read_daq_status else ["headers.root"]
         for file in req_files:
             if not os.path.exists(os.path.join(mattak_dir, file)):
                 logging.error(f"File {file} could not be found in {mattak_dir}")
@@ -263,6 +268,8 @@ class readRNOGData:
             Dictionary of arguments for mattak.Dataset.Dataset. (Default: {})
             Example: Select a mattak "backend". Options are "auto", "pyroot", "uproot". If "auto" is selected,
             pyroot is used if available otherwise a "fallback" to uproot is used. (Default: "auto")
+            With ``read_daq_status=False`` a run directory without daqstatus.root is read; otherwise such a
+            directory is skipped as incomplete.
 
         overwrite_sampling_rate: float
             Set sampling rate of the imported waveforms. This overwrites what is read out from runinfo
@@ -364,7 +371,7 @@ class readRNOGData:
 
             if os.path.isdir(dir_file):
 
-                if not _all_files_in_directory(dir_file):
+                if not _all_files_in_directory(dir_file, self._mattak_kwargs.get("read_daq_status", True)):
                     self.logger.error(f"Incomplete directory: {dir_file}. Skip ...")
                     continue
 
