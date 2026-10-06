@@ -111,7 +111,8 @@ class OutputsMixin:
             channels: List of channel IDs.
 
         Returns:
-            Dict mapping channel ID to travel time (seconds), or NaN.
+            Dict mapping channel ID to travel time (ns); NaN where the table holds
+            no ray solution, minus infinity for a position outside the table.
         """
         phi_rad = phi_deg * (np.pi / 180.0)
         x = rho * np.cos(phi_rad) + self._pa_center[0]

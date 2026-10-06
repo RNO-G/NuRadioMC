@@ -14,6 +14,7 @@ Pytest suite for the 3D interferometric reconstruction (`NuRadioReco/modules/int
 | File | Kind | What it checks |
 |---|---|---|
 | `test_tables_contract.py` | contract (fast) | NPZ keys and uniform grid, physical bounds on every travel time, in-ice tables NaN above the surface, combined table equal to the minimum over ray types bit for bit, solution-ordered tables consistent, NaN coverage of the search volume per channel |
+| `test_travel_times.py` | unit (fast) | the public lookup `travel_times`: bit for bit the three private calls it replaces (source matrix, table coordinates, interpolator) at 63 positions, the table values in ns at the position about the phased-array centre (between the straight-line time in vacuum and twice it), the single-point method of the summed waveform within 1e-9 ns, NaN in the shadow zone of a channel and minus infinity above the in-ice tables |
 | `test_reco_known_answer.py` | known answer | exact recovery (0.2 degree, 2 m) on five geometries the current configuration resolves exactly at SNR 50; an accuracy gate over 16 sources at SNR 20; two-table multiray and polarization-group configurations; saved-peak ordering |
 | `test_reco_invariances.py` | property | global time shift, amplitude scale, channel insertion order, azimuth rotation, SNR degradation, no confident peak on pure noise |
 | `test_golden_master.py` | golden master | eight seeded synthetic events compared bit-tight (1e-6) to a stored reference, plus an accuracy gate |
