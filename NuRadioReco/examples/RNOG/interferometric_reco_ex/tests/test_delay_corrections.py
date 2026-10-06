@@ -100,9 +100,8 @@ def test_load_rejects_incomplete_files(tmp_path):
 
 
 def test_unknown_preprocessor_keys_raise():
-    """A misspelt or foreign key is an error, not a silent no-op."""
-    with pytest.raises(ValueError, match='apply_notch'):
-        channelPreprocessor().begin({'apply_notch': True})
+    """A misspelt or foreign key is an error, not a silent no-op; the notch keys are known."""
+    channelPreprocessor().begin({'apply_notch': True, 'notch_bands': [[0.399, 0.407]]})
     with pytest.raises(ValueError, match='apply_bandpas'):
         channelPreprocessor().begin({'apply_bandpas': True})
 

@@ -138,6 +138,8 @@ PREPROCESSOR_INERT_VALUES = {
     'apply_delay_corrections': False,
     'delay_corrections_file': None,
     'channels': None,
+    'apply_notch': False,
+    'notch_bands': ((0.399 * units.GHz, 0.407 * units.GHz),),
 }
 COMPARED_KEYS = ['rho', 'phi', 'z', 'max_corr'] + [f'peak_{i}_{f}' for i in range(3) for f in ('rho', 'phi', 'z', 'corr', 'map_snr')]
 
