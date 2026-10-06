@@ -859,7 +859,7 @@ def get_variable_window_size_correlation(data_trace, template_trace, window_size
 from scipy import stats as _stats
 from scipy.ndimage import (maximum_filter1d as _max_filter1d,
                            minimum_filter1d as _min_filter1d)
-from scipy.signal import correlate as _correlate, hilbert as _hilbert
+from scipy.signal import hilbert as _hilbert
 
 
 def get_maximum_peak_to_peak_amplitude(trace, win_size=6):
@@ -932,7 +932,11 @@ def get_spectral_features(trace, sampling_rate, fmin=None, fmax=None,
     entropy = float(-np.sum(p_norm * np.log(p_safe)))
 
     log_p = np.log10(np.clip(p, 1e-30, None))
-    slope, _, _, _, _ = _stats.linregress(f, log_p)
+    # least-squares slope in closed form: scipy.stats.linregress spends most of its time on input checks
+    n_f = len(f)
+    sx = f.sum()
+    sy = log_p.sum()
+    slope = (n_f * (f * log_p).sum() - sx * sy) / (n_f * (f * f).sum() - sx * sx)
 
     cum_power = np.cumsum(p)
     cum_power_norm = cum_power / cum_power[-1]
@@ -962,7 +966,27 @@ _IMPULSE_TEMPLATE_CACHE = {}
 
 
 def _build_impulse_templates(n_samples, sampling_rate):
-    """Build a library of idealised impulse templates for correlation."""
+    """
+    Build the idealised impulse templates and the spectra used to correlate against them.
+
+    Each template is normalised to zero mean and unit standard deviation and padded with zeros
+    to ``2 * n_samples``, so that one forward and one inverse FFT of a trace give its correlation
+    with all templates.
+
+    Parameters
+    ----------
+    n_samples : int
+        Trace length
+    sampling_rate : float
+        Sampling rate of the trace
+
+    Returns
+    -------
+    names : tuple of str
+        Template names
+    spectra_conj : ndarray
+        Complex conjugate of the padded templates' real FFT, shape (n_templates, n_samples + 1)
+    """
     key = (n_samples, sampling_rate)
     if key in _IMPULSE_TEMPLATE_CACHE:
         return _IMPULSE_TEMPLATE_CACHE[key]
@@ -996,37 +1020,52 @@ def _build_impulse_templates(n_samples, sampling_rate):
     sinc_pulse = np.nan_to_num(sinc_pulse, nan=1.0)
     templates["sinc"] = sinc_pulse
 
-    _IMPULSE_TEMPLATE_CACHE[key] = templates
-    return templates
+    names = tuple(templates)
+    stacked = np.stack([templates[name] for name in names])
+    padded = np.zeros((len(names), 2 * n_samples))
+    padded[:, :n_samples] = (stacked - stacked.mean(axis=1, keepdims=True)) / stacked.std(axis=1, keepdims=True)
 
-
-def _normalized_correlation_max(trace, template, floor=1e-10):
-    """Return the maximum absolute normalised cross-correlation in [0, 1]."""
-    t_norm = trace - np.mean(trace)
-    p_norm = template - np.mean(template)
-    t_std = np.std(t_norm)
-    p_std = np.std(p_norm)
-    if t_std < floor or p_std < floor:
-        return 0.0
-    t_norm = t_norm / t_std
-    p_norm = p_norm / p_std
-    corr = _correlate(t_norm, p_norm, mode="same") / len(trace)
-    return float(np.max(np.abs(corr)))
+    _IMPULSE_TEMPLATE_CACHE[key] = names, np.conj(np.fft.rfft(padded, axis=1))
+    return _IMPULSE_TEMPLATE_CACHE[key]
 
 
 def get_impulse_template_correlations(trace, sampling_rate):
-    """Correlate a trace against idealised impulse templates.
+    """
+    Correlate a trace against idealised impulse templates.
 
-    Returns a dict mapping template name (``delta``, ``bipolar``,
-    ``gaussian``, ``bipolar_wide``, ``sinc``) to the largest absolute normalised
-    correlation, in [0, 1].
+    The trace and each template are normalised to zero mean and unit standard deviation. The
+    correlation is the one of ``scipy.signal.correlate(trace, template, mode='same')`` divided
+    by the trace length, computed for all templates with one FFT of the trace.
+
+    Parameters
+    ----------
+    trace : array of floats
+        Trace of a waveform
+    sampling_rate : float
+        Sampling rate of the trace
+
+    Returns
+    -------
+    dict
+        Template name (``delta``, ``bipolar``, ``gaussian``, ``bipolar_wide``, ``sinc``) to the
+        largest absolute normalised correlation, in [0, 1]. All zero for a constant trace.
     """
     n = len(trace)
-    templates = _build_impulse_templates(n, sampling_rate)
-    return {
-        name: _normalized_correlation_max(trace, tmpl)
-        for name, tmpl in templates.items()
-    }
+    names, spectra_conj = _build_impulse_templates(n, sampling_rate)
+
+    t_std = np.std(trace)
+    if t_std < 1e-10:
+        return {name: 0.0 for name in names}
+
+    padded = np.zeros(2 * n)
+    padded[:n] = (trace - np.mean(trace)) / t_std
+    circular = np.fft.irfft(np.fft.rfft(padded) * spectra_conj, n=2 * n, axis=1)
+    # lags -(n-1) .. n-1 in the order of scipy's "full" output, then its centred "same" part
+    full = np.concatenate([circular[:, n + 1:], circular[:, :n]], axis=1)
+    start = (n - 1) // 2
+    max_corr = np.max(np.abs(full[:, start:start + n] / n), axis=1)
+
+    return {name: float(c) for name, c in zip(names, max_corr)}
 
 
 def get_extended_impulsivity(trace):
