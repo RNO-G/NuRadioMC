@@ -371,7 +371,8 @@ def main():
     parser.add_argument("--validation", action="store_true",
                         help="Record per-channel SNR and correlation quality metrics")
     parser.add_argument("--save-nur", type=str, default=None,
-                        help="Write events with coherent WF channels to NUR file")
+                        help="Write the events with coherent WF channels to this NUR file; the file is "
+                             "written even when no event has a stored waveform (see save_coherent_waveforms)")
     parser.add_argument("--auto-gpu", action="store_true",
                         help="Detect an available GPU and enable the GPU "
                              "reco backend (overrides use_gpu in config).")
@@ -704,10 +705,11 @@ def main():
             result['event_number'] = int(eid[1])
             result['source_file'] = os.path.basename(input_file)
 
-            if nur_writer is not None:
+            coh_channels = coherent_channels(result) if nur_writer is not None else []
+            if coh_channels:
                 evt_out = NREvent(evt1.get_run_number(), evt1.get_id())
                 stn_out = NRStation(station_id)
-                for ch in coherent_channels(result):
+                for ch in coh_channels:
                     stn_out.add_channel(ch)
                 evt_out.set_station(stn_out)
                 nur_writer.run(evt_out)
@@ -731,7 +733,7 @@ def main():
         reco2.end()
 
     if nur_writer is not None:
-        nur_writer.end()
+        nur_writer.end(write_empty_file=True)
 
     report = event_report or det_report
     attrs = {

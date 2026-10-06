@@ -337,7 +337,23 @@ class eventWriter:
                                  "`check_for_duplicates=True` to the begin method.".format(event_id, run_number))
         return
 
-    def end(self):
+    def end(self, write_empty_file=False):
+        """
+        Close the output file.
+
+        Parameters
+        ----------
+        write_empty_file: bool (default False)
+            If True and no event was written, write a file that holds the file header only; the readers
+            open it as a file without events. If False, no file is written in that case.
+
+        Returns
+        -------
+        number_of_events: int
+            The number of events written
+        """
+        if write_empty_file and not self.__number_of_events:
+            self.__write_fout_header()
         if self.__fout is not None:
             self.__fout.close()
             logger.info(f"closing file {self.__filename}.")
