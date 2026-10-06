@@ -106,6 +106,8 @@ python simulate.py \
 
 For parallel runs give every job its own `--index` and `--output_file`. The index offsets the event ids.
 
+[`production/`](production/) holds a Snakemake workflow that runs the measured-noise mode on a SLURM cluster, one chunk of events per job, until every energy bin has a target number of triggered events.
+
 `python simulate.py --help` lists all arguments.
 
 ## Fiducial volume
