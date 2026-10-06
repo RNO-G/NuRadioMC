@@ -22,6 +22,8 @@ from the NOAA ETOPO1 dataset via www.opentopodata.org.
 - Improve time_logger functionality - yielding significant reduction in simulation time (25-40%). Smaller improvements to logging.
 - Added optional zero-padding (`pre_pulse_time`, `post_pulse_time`) to the efieldToVoltageConverterPerEfield module so that the antenna
   response is applied as a linear instead of a circular convolution. The default (no padding) is unchanged.
+- Added the example NuRadioMC/examples/08_RNO_G_trigger_simulation: RNO-G trigger simulation with measured forced-trigger noise,
+  asymmetric ADC saturation and a per-event ledger.
 
 bugfixes:
 - Fixing bug in the simulation of non-trigger channels when an event is splitted into multiple events based on the signal arrival time.
