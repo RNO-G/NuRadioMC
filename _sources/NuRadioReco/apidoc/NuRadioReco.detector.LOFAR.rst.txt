@@ -1,0 +1,15 @@
+NuRadioReco.detector.LOFAR package
+==================================
+
+.. automodule:: NuRadioReco.detector.LOFAR
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   NuRadioReco.detector.LOFAR.analog_components

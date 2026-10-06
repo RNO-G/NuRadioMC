@@ -1,0 +1,37 @@
+NuRadioReco.utilities package
+=============================
+
+.. automodule:: NuRadioReco.utilities
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   NuRadioReco.utilities.analytic_pulse
+   NuRadioReco.utilities.constants
+   NuRadioReco.utilities.cr_flux
+   NuRadioReco.utilities.dataservers
+   NuRadioReco.utilities.diodeSimulator
+   NuRadioReco.utilities.fft
+   NuRadioReco.utilities.framework_utilities
+   NuRadioReco.utilities.geometryUtilities
+   NuRadioReco.utilities.ice
+   NuRadioReco.utilities.interferometry
+   NuRadioReco.utilities.io_utilities
+   NuRadioReco.utilities.logging
+   NuRadioReco.utilities.matched_filter
+   NuRadioReco.utilities.metaclasses
+   NuRadioReco.utilities.minimization
+   NuRadioReco.utilities.noise
+   NuRadioReco.utilities.particle_names
+   NuRadioReco.utilities.signal_processing
+   NuRadioReco.utilities.templates
+   NuRadioReco.utilities.timing
+   NuRadioReco.utilities.trace_utilities
+   NuRadioReco.utilities.units
+   NuRadioReco.utilities.version

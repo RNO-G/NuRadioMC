@@ -1,0 +1,1266 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NuRadioReco.modules.efieldRadioInterferometricReconstruction module &mdash; NuRadio 3.2.0-dev documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/styling.css?v=3350586d" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=596fb6d1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="NuRadioReco.modules.efieldTimeDirectionFitter module" href="NuRadioReco.modules.efieldTimeDirectionFitter.html" />
+    <link rel="prev" title="NuRadioReco.modules.efieldGalacticNoiseAdder module" href="NuRadioReco.modules.efieldGalacticNoiseAdder.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../main.html" class="icon icon-home">
+            NuRadio
+              <img src="../../_static/logo_small.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../Introduction/pages/welcome_page.html">Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../Introduction/pages/quickstart.html">How to get started</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../Introduction/pages/quickstart.html#installation">Installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../Introduction/pages/quickstart.html#simulating-a-neutrino-detector-with-nuradiomc">Simulating a neutrino detector with NuRadioMC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../Introduction/pages/quickstart.html#reading-a-nur-file">Reading a <code class="docutils literal notranslate"><span class="pre">.nur</span></code> file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../Introduction/pages/quickstart.html#running-a-simple-analysis-with-nuradioreco">Running a simple analysis with NuRadioReco</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../Introduction/pages/installation.html">Installing NuRadioMC / NuRadioReco</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../Introduction/pages/installation.html#requirements">Requirements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../Introduction/pages/installation.html#installation-using-pip">Installation using <code class="docutils literal notranslate"><span class="pre">pip</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../Introduction/pages/installation.html#development-version">Development version</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../Introduction/pages/installation.html#optional-dependencies">Optional Dependencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../Introduction/pages/installation.html#not-pip-installable-packages">Not pip-installable packages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../Introduction/pages/installation.html#other-optional-packages">Other optional packages</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../Introduction/pages/conventions.html">Some notes on conventions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../Introduction/pages/conventions.html#units">Units</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../Introduction/pages/conventions.html#fourier-transformations">Fourier transformations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../Introduction/pages/conventions.html#coordinates">Coordinates</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../Introduction/pages/conventions.html#default-coordinate-system">Default coordinate system</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../Introduction/pages/conventions.html#points">Points</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../Introduction/pages/conventions.html#angles">Angles</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../Introduction/pages/conventions.html#directions">Directions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../Introduction/pages/conventions.html#electic-fields">Electic Fields</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../Introduction/pages/conventions.html#times">Times</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../Introduction/pages/conventions.html#particle-types">Particle types</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../Introduction/pages/contributing.html">Contributing to NuRadioMC</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../Introduction/pages/contributing.html#installing-nuradiomc-for-developers">Installing NuRadioMC for developers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../Introduction/pages/contributing.html#workflow">Workflow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../Introduction/pages/contributing.html#test-coverage">Test coverage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../Introduction/pages/contributing.html#coding-conventions">Coding conventions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../Introduction/pages/contributing.html#how-to">How to</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../Introduction/pages/contributing.html#writing-docstrings">Writing docstrings</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../Introduction/pages/contributing.html#update-the-version-number-dependencies">Update the version number / dependencies</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../Introduction/pages/contributing.html#writing-additional-documentation">Writing additional documentation</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../Introduction/pages/contributing.html#compiling-the-documentation">Compiling the documentation</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../Introduction/pages/contributing.html#headings-and-text">Headings and text</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../Introduction/pages/contributing.html#lists">Lists</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../Introduction/pages/contributing.html#links-and-cross-references">Links and cross-references</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../Introduction/pages/contributing.html#showing-code">Showing code</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="../pages/welcome_page.html">NuRadioReco Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../pages/event_structure.html">Data Structure</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../pages/event_structure.html#nur-files-and-how-to-use-them">.nur Files and How to Use Them</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../pages/event_structure.html#philosophy-and-basic-structure">Philosophy and Basic Structure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/event_structure.html#reading-and-writing-nur-files">Reading and Writing .nur Files</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../pages/event_structure.html#parameter-storage">Parameter Storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../pages/event_structure.html#list-of-data-classes">List of Data Classes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../pages/event_structure.html#event">Event</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/event_structure.html#radio-shower">Radio Shower</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/event_structure.html#simshower">SimShower</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/event_structure.html#simemitter">SimEmitter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/event_structure.html#particle">Particle</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/event_structure.html#station">Station</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/event_structure.html#trigger">Trigger</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/event_structure.html#simstation">SimStation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/event_structure.html#basetrace">BaseTrace</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/event_structure.html#electric-field">Electric Field</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/event_structure.html#channel">Channel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/event_structure.html#hybrid-information">Hybrid Information</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/event_structure.html#hybrid-shower">Hybrid Shower</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/event_structure.html#hybrid-detector">Hybrid Detector</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../pages/detector_tree.html">Detector Description</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../pages/detector/detector.html">Detector Description</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/detector.html#the-detector-class">The Detector Class</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/detector.html#detector-description-formats">Detector Description Formats</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../pages/detector/detector.html#database">DataBase</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../pages/detector/detector.html#json">JSON</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../pages/detector/detector.html#dictionary">Dictionary</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../pages/detector/detector.html#signal-chain-responses">Signal Chain Responses</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/detector.html#genericdetector">GenericDetector</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../pages/detector/detector.html#event-specific-changes">Event-Specific Changes</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/detector.html#detector-description-in-event-files">Detector Description in Event Files</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../pages/detector/detector.html#writing-the-detector">Writing the Detector</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../pages/detector/detector.html#reading-the-detector">Reading the Detector</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../pages/detector/detector.html#detector-viewer">Detector Viewer</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../pages/detector/detector_database_fields.html">Properties of Detector Description</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/detector_database_fields.html#antennas">Antennas</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../pages/detector/detector_database_fields.html#further-discussion-on-antenna-coordinates">Further Discussion on Antenna Coordinates</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/detector_database_fields.html#adc-table">ADC Table</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../pages/detector/antennamodels.html">Antenna Models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../pages/detector/antennamodels.html#implementation-of-antenna-models">Implementation of Antenna Models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../pages/detector/antennamodels.html#overview-of-available-antenna-models">Overview of available Antenna Models</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#bicone-v8-infair">bicone_v8_InfAir</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#bicone-v8-inffirn">bicone_v8_InfFirn</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#bicone-v8-inf-n1-32">bicone_v8_inf_n1.32</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#bicone-v8-inf-n1-4">bicone_v8_inf_n1.4</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#bicone-v8-inf-n1-78">bicone_v8_inf_n1.78</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#createlpda-100mhz-inffirn">createLPDA_100MHz_InfFirn</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#createlpda-100mhz-v2-inffirn">createLPDA_100MHz_v2_InfFirn</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#createlpda-100mhz-inffirn-n1-4">createLPDA_100MHz_InfFirn_n1.4</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#createlpda-100mhz-v2-inffirn-n1-4">createLPDA_100MHz_v2_InfFirn_n1.4</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#createlpda-100mhz-z1cm-infirn-rg">createLPDA_100MHz_z1cm_InFirn_RG</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#createlpda-100mhz-z1cm-infirn-boresighttoboundary">createLPDA_100MHz_z1cm_InFirn_BoresightToBoundary</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#createlpda-100mhz-z10cm-infirn-rg">createLPDA_100MHz_z10cm_InFirn_RG</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#createlpda-100mhz-z1m-infirn-rg">createLPDA_100MHz_z1m_InFirn_RG</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#createlpda-100mhz-z2m-infirn-rg">createLPDA_100MHz_z2m_InFirn_RG</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#createlpda-100mhz-z2m-infirn-backlobe-norg">createLPDA_100MHz_z2m_InFirn_Backlobe_NoRG</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#createlpda-100mhz-z3m-inair-rg">createLPDA_100MHz_z3m_InAir_RG</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#createlpda-100mhz-z3m-infirn-boresighttoboundary">createLPDA_100MHz_z3m_InFirn_BoresightToBoundary</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#createlpda-100mhz-z3mandlpdalen-infirn-boresighttoboundary">createLPDA_100MHz_z3mAndLPDALen_InFirn_BoresightToBoundary</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#createlpda-100mhz-z5m-infirn-rg">createLPDA_100MHz_z5m_InFirn_RG</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#createlpda-100mhz-z10m-infirn-rg">createLPDA_100MHz_z10m_InFirn_RG</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#createlpda-100mhz-z100m-infirn-rg">createLPDA_100MHz_z100m_InFirn_RG</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#createlpda-100mhz-z200m-infirn-rg">createLPDA_100MHz_z200m_InFirn_RG</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#createlpda-100mhz-infair">createLPDA_100MHz_InfAir</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#createlpda-100mhz-z1cm-inair-rg">createLPDA_100MHz_z1cm_InAir_RG</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#createlpda-100mhz-z1m-infirn-rg-v2">createLPDA_100MHz_z1m_InFirn_RG_v2</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#dip7cm-hpol-inffirn">dip7cm_hpol_infFirn</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#dip7cm-z260mm-infirn-rg">dip7cm_z260mm_InFirn_RG</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#dip7cm-z1m-infirn-rg">dip7cm_z1m_InFirn_RG</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#dip7cm-z2m-infirn-rg">dip7cm_z2m_InFirn_RG</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#dip7cm-z3m-infirn-rg-nearhorizontalhd">dip7cm_z3m_InFirn_RG_NearHorizontalHD</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#dip7cm-z5m-infirn-rg">dip7cm_z5m_InFirn_RG</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#dip7cm-z10m-infirn-rg">dip7cm_z10m_InFirn_RG</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#dip7cm-z200m-infirn-rg">dip7cm_z200m_InFirn_RG</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#dip7cm-z100m-infirn-rg">dip7cm_z100m_InFirn_RG</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#dip7cm-infair-s12">dip7cm_infAir_s12</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#dip7cm-z270mm-inair">dip7cm_z270mm_InAir</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#dip7cm-z1m-inair">dip7cm_z1m_InAir</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#dip7cm-z1m-inair-rg-nearhorizontalhd">dip7cm_z1m_InAir_RG_NearHorizontalHD</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#dip7cm-z1m-inair-rg-nearhorizontalhd2">dip7cm_z1m_InAir_RG_NearHorizontalHD2</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#dip7cm-z2m-inair">dip7cm_z2m_InAir</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#dip7cm-z5m-inair">dip7cm_z5m_InAir</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#rnog-vpol-4inch-center-n1-73">RNOG_vpol_4inch_center_n1.73</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#rnog-vpol-4inch-half-n1-73">RNOG_vpol_4inch_half_n1.73</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#rnog-vpol-4inch-wall-n1-73">RNOG_vpol_4inch_wall_n1.73</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#rnog-vpol-v3-5inch-center-n1-74">RNOG_vpol_v3_5inch_center_n1.74</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#rnog-hpol-v4-8inch-center-n1-74">RNOG_hpol_v4_8inch_center_n1.74</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#rnog-quadslot-v1-n1-74">RNOG_quadslot_v1_n1.74</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#rnog-quadslot-v2-n1-74">RNOG_quadslot_v2_n1.74</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#rnog-quadslot-v2-rescaled-finefreq">RNOG_quadslot_v2_rescaled_fineFreq</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#rnog-quadslot-v3-air-rescaled-to-n1-74">RNOG_quadslot_v3_air_rescaled_to_n1.74</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#skala-inffirn">SKALA_InfFirn</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#smallblackspider-ground2-measured">SmallBlackSpider_ground2_measured</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#butterfly-ground2">Butterfly_ground2</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#butterfly-ground2-east">Butterfly_ground2_East</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#butterfly-ground2-north">Butterfly_ground2_North</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../pages/detector/antennamodels.html#additional-models">Additional Models</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#rnog-vpol-v1-n1-4">RNOG_vpol_v1_n1.4</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#rnog-vpol-v1-n1-73">RNOG_vpol_v1_n1.73</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#fourslot-inffirn">fourslot_InfFirn</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#greenland-vpol-inffirn">greenland_vpol_InfFirn</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#trislot-rnog">trislot_RNOG</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#dipole-ara-bicone-infinitefirn">dipole_ARA_bicone_infinitefirn</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#xfdtd-hpol-150mmhole-n1-78">XFDTD_Hpol_150mmHole_n1.78</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#xfdtd-vpol-crossfeed-150mmhole-n1-78">XFDTD_Vpol_CrossFeed_150mmHole_n1.78</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/antennamodels.html#xfdtd-vpol-crossfeed-150mmhole-n1-78-inffirn">XFDTD_Vpol_CrossFeed_150mmHole_n1.78_InfFirn</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../pages/detector/rnog.html">The RNO-G detector class and database interface</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/rnog.html#detector-time-and-database-time">Detector time and database time</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/rnog.html#database-structure">Database structure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/rnog.html#signal-chain">Signal Chain</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/rnog.html#response-class">Response class</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/detector/rnog.html#detector-class">Detector class</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../pages/times.html">Overview of times</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../pages/times.html#station-time-event-time">Station time (Event time)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../pages/times.html#trace-start-times-in-channels">Trace start times in channels</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/times.html#trace-start-times-in-e-fields">Trace start times in E-fields</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/times.html#trigger-times">Trigger times</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../pages/times.html#overview-of-modules-that-affect-time">Overview of modules that affect time</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../pages/nur_modules.html">Modules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../pages/nur_modules.html#basic-module-structure">Basic Module Structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../pages/nur_modules.html#logging">Logging</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../pages/event_display.html">Event Display</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pages/utilities.html">Utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../pages/utilities.html#unit-system">Unit System</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../pages/utilities.html#fourier-transformation">Fourier Transformation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../pages/utilities.html#metaclasses">Metaclasses</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../pages/utilities.html#singleton">Singleton</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 current"><a class="reference internal" href="../pages/code_documentation.html">Code Documentation</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="NuRadioReco.framework.html">NuRadioReco.framework package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="NuRadioReco.framework.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.framework.base_shower.html">NuRadioReco.framework.base_shower module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.framework.base_station.html">NuRadioReco.framework.base_station module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.framework.base_trace.html">NuRadioReco.framework.base_trace module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.framework.channel.html">NuRadioReco.framework.channel module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.framework.electric_field.html">NuRadioReco.framework.electric_field module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.framework.emitter.html">NuRadioReco.framework.emitter module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.framework.event.html">NuRadioReco.framework.event module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.framework.hybrid_information.html">NuRadioReco.framework.hybrid_information module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.framework.hybrid_shower.html">NuRadioReco.framework.hybrid_shower module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.framework.parameter_storage.html">NuRadioReco.framework.parameter_storage module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.framework.parameters.html">NuRadioReco.framework.parameters module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.framework.particle.html">NuRadioReco.framework.particle module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.framework.radio_shower.html">NuRadioReco.framework.radio_shower module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.framework.sim_channel.html">NuRadioReco.framework.sim_channel module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.framework.sim_emitter.html">NuRadioReco.framework.sim_emitter module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.framework.sim_station.html">NuRadioReco.framework.sim_station module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.framework.station.html">NuRadioReco.framework.station module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.framework.trigger.html">NuRadioReco.framework.trigger module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3 current"><a class="reference internal" href="NuRadioReco.modules.html">NuRadioReco.modules package</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="NuRadioReco.modules.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.modules.ARA.html">NuRadioReco.modules.ARA package</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.modules.ARIANNA.html">NuRadioReco.modules.ARIANNA package</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.modules.LOFAR.html">NuRadioReco.modules.LOFAR package</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.modules.RNO_G.html">NuRadioReco.modules.RNO_G package</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.modules.base.html">NuRadioReco.modules.base package</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.modules.custom.html">NuRadioReco.modules.custom package</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.modules.iftElectricFieldReconstructor.html">NuRadioReco.modules.iftElectricFieldReconstructor package</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.modules.io.html">NuRadioReco.modules.io package</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.modules.likelihood_reconstruction.html">NuRadioReco.modules.likelihood_reconstruction package</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.modules.measured_noise.html">NuRadioReco.modules.measured_noise package</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.modules.neutrinoDirectionReconstructor.html">NuRadioReco.modules.neutrinoDirectionReconstructor package</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.modules.neutrinoVertexReconstructor.html">NuRadioReco.modules.neutrinoVertexReconstructor package</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.modules.phasedarray.html">NuRadioReco.modules.phasedarray package</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.modules.trigger.html">NuRadioReco.modules.trigger package</a></li>
+</ul>
+</li>
+<li class="toctree-l4 current"><a class="reference internal" href="NuRadioReco.modules.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.modules.analogToDigitalConverter.html">NuRadioReco.modules.analogToDigitalConverter module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.modules.beamFormingDirectionFitter.html">NuRadioReco.modules.beamFormingDirectionFitter module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.modules.channelAddCableDelay.html">NuRadioReco.modules.channelAddCableDelay module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.modules.channelAntennaDedispersion.html">NuRadioReco.modules.channelAntennaDedispersion module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.modules.channelBandPassFilter.html">NuRadioReco.modules.channelBandPassFilter module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.modules.channelCWNotchFilter.html">NuRadioReco.modules.channelCWNotchFilter module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.modules.channelGalacticNoiseAdder.html">NuRadioReco.modules.channelGalacticNoiseAdder module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.modules.channelGenericNoiseAdder.html">NuRadioReco.modules.channelGenericNoiseAdder module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.modules.channelIceThermalNoiseAdder.html">NuRadioReco.modules.channelIceThermalNoiseAdder module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.modules.channelLengthAdjuster.html">NuRadioReco.modules.channelLengthAdjuster module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.modules.channelReadoutWindowCutter.html">NuRadioReco.modules.channelReadoutWindowCutter module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.modules.channelResampler.html">NuRadioReco.modules.channelResampler module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.modules.channelSignalReconstructor.html">NuRadioReco.modules.channelSignalReconstructor module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.modules.channelSinewaveSubtraction.html">NuRadioReco.modules.channelSinewaveSubtraction module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.modules.channelStopFilter.html">NuRadioReco.modules.channelStopFilter module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.modules.channelTemplateCorrelation.html">NuRadioReco.modules.channelTemplateCorrelation module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.modules.channelTimeOffsetCalculator.html">NuRadioReco.modules.channelTimeOffsetCalculator module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.modules.channelTimeWindow.html">NuRadioReco.modules.channelTimeWindow module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.modules.correlationDirectionFitter.html">NuRadioReco.modules.correlationDirectionFitter module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.modules.cosmicRayEnergyReconstructor.html">NuRadioReco.modules.cosmicRayEnergyReconstructor module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.modules.efieldGalacticNoiseAdder.html">NuRadioReco.modules.efieldGalacticNoiseAdder module</a></li>
+<li class="toctree-l5 current"><a class="current reference internal" href="#">NuRadioReco.modules.efieldRadioInterferometricReconstruction module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.modules.efieldTimeDirectionFitter.html">NuRadioReco.modules.efieldTimeDirectionFitter module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.modules.efieldToVoltageConverter.html">NuRadioReco.modules.efieldToVoltageConverter module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.modules.efieldToVoltageConverterPerEfield.html">NuRadioReco.modules.efieldToVoltageConverterPerEfield module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.modules.electricFieldBandPassFilter.html">NuRadioReco.modules.electricFieldBandPassFilter module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.modules.electricFieldResampler.html">NuRadioReco.modules.electricFieldResampler module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.modules.electricFieldSignalReconstructor.html">NuRadioReco.modules.electricFieldSignalReconstructor module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.modules.eventTypeIdentifier.html">NuRadioReco.modules.eventTypeIdentifier module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.modules.sphericalWaveFitter.html">NuRadioReco.modules.sphericalWaveFitter module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.modules.templateDirectionFitter.html">NuRadioReco.modules.templateDirectionFitter module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.modules.voltageToAnalyticEfieldConverter.html">NuRadioReco.modules.voltageToAnalyticEfieldConverter module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.modules.voltageToEfieldConverter.html">NuRadioReco.modules.voltageToEfieldConverter module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.modules.voltageToEfieldConverterPerChannel.html">NuRadioReco.modules.voltageToEfieldConverterPerChannel module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.modules.voltageToEfieldConverterPerChannelGroup.html">NuRadioReco.modules.voltageToEfieldConverterPerChannelGroup module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="NuRadioReco.detector.html">NuRadioReco.detector package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="NuRadioReco.detector.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.detector.ARA.html">NuRadioReco.detector.ARA package</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.detector.ARIANNA.html">NuRadioReco.detector.ARIANNA package</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.detector.LOFAR.html">NuRadioReco.detector.LOFAR package</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.detector.RNO_G.html">NuRadioReco.detector.RNO_G package</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="NuRadioReco.detector.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.detector.amp.html">NuRadioReco.detector.amp module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.detector.antennapattern.html">NuRadioReco.detector.antennapattern module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.detector.detector.html">NuRadioReco.detector.detector module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.detector.detector_base.html">NuRadioReco.detector.detector_base module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.detector.detector_sql.html">NuRadioReco.detector.detector_sql module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.detector.detector_sys_uncertainties.html">NuRadioReco.detector.detector_sys_uncertainties module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.detector.filterresponse.html">NuRadioReco.detector.filterresponse module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.detector.generic_detector.html">NuRadioReco.detector.generic_detector module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.detector.response.html">NuRadioReco.detector.response module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.detector.sql_to_json.html">NuRadioReco.detector.sql_to_json module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.detector.test_detector_db.html">NuRadioReco.detector.test_detector_db module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.detector.visualize_detector.html">NuRadioReco.detector.visualize_detector module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="NuRadioReco.utilities.html">NuRadioReco.utilities package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="NuRadioReco.utilities.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.utilities.analytic_pulse.html">NuRadioReco.utilities.analytic_pulse module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.utilities.constants.html">NuRadioReco.utilities.constants module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.utilities.cr_flux.html">NuRadioReco.utilities.cr_flux module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.utilities.dataservers.html">NuRadioReco.utilities.dataservers module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.utilities.diodeSimulator.html">NuRadioReco.utilities.diodeSimulator module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.utilities.fft.html">NuRadioReco.utilities.fft module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.utilities.framework_utilities.html">NuRadioReco.utilities.framework_utilities module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.utilities.geometryUtilities.html">NuRadioReco.utilities.geometryUtilities module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.utilities.ice.html">NuRadioReco.utilities.ice module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.utilities.interferometry.html">NuRadioReco.utilities.interferometry module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.utilities.io_utilities.html">NuRadioReco.utilities.io_utilities module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.utilities.logging.html">NuRadioReco.utilities.logging module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.utilities.matched_filter.html">NuRadioReco.utilities.matched_filter module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.utilities.metaclasses.html">NuRadioReco.utilities.metaclasses module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.utilities.minimization.html">NuRadioReco.utilities.minimization module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.utilities.noise.html">NuRadioReco.utilities.noise module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.utilities.particle_names.html">NuRadioReco.utilities.particle_names module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.utilities.signal_processing.html">NuRadioReco.utilities.signal_processing module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.utilities.templates.html">NuRadioReco.utilities.templates module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.utilities.timing.html">NuRadioReco.utilities.timing module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.utilities.trace_utilities.html">NuRadioReco.utilities.trace_utilities module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.utilities.units.html">NuRadioReco.utilities.units module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="NuRadioReco.utilities.version.html">NuRadioReco.utilities.version module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../pages/howto_documentation.html">Manuals</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../pages/how_to/vertex_reconstruction.html">Use the Vertex Reconstruction Modules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../pages/how_to/vertex_reconstruction.html#creating-lookup-tables">Creating Lookup Tables</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/how_to/vertex_reconstruction.html#creating-electric-field-templates">Creating Electric Field Templates</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/how_to/vertex_reconstruction.html#d-vs-3d-vertex-reconstructor">2D vs. 3D Vertex Reconstructor</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../pages/how_to/coreas_interpolation.html">Using the cosmic-ray pulse interpolator in NRR</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../pages/how_to/coreas_interpolation.html#initialising-the-interpolator">Initialising the interpolator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/how_to/coreas_interpolation.html#interpolating-signals">Interpolating signals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/how_to/coreas_interpolation.html#what-happens-when-you-initialise-a-signal-interpolator">What happens when you initialise a signal interpolator?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/how_to/coreas_interpolation.html#some-tips-to-work-with-fluence-interpolation">Some tips to work with fluence interpolation</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../pages/how_to/likelihood_reconstruction.html">Likelihood-based forward folding reconstruction</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../pages/how_to/likelihood_reconstruction.html#neutrino-reconstruction">Neutrino reconstruction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pages/how_to/likelihood_reconstruction.html#electric-field-reconstruction">Electric-field reconstruction</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../NuRadioMC/pages/welcome_page.html">NuRadioMC Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../NuRadioMC/pages/HDF5_structure.html">HDF5 output structure</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../NuRadioMC/pages/HDF5_structure.html#opening-the-hdf5-file">Opening the HDF5 file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../NuRadioMC/pages/HDF5_structure.html#what-s-behind-the-hdf5-files">What’s behind the HDF5 files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../NuRadioMC/pages/HDF5_structure.html#hdf5-structure">HDF5 structure</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../NuRadioMC/pages/HDF5_structure.html#hdf5-file-attributes">HDF5 file attributes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../NuRadioMC/pages/HDF5_structure.html#hdf5-file-contents">HDF5 file contents</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../NuRadioMC/pages/HDF5_structure.html#station-data">Station data</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../NuRadioMC/pages/code_documentation.html">Code Documentation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../NuRadioMC/apidoc/NuRadioMC.EvtGen.html">NuRadioMC.EvtGen package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../NuRadioMC/apidoc/NuRadioMC.EvtGen.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/apidoc/NuRadioMC.EvtGen.NuRadioMCtoAraSim.html">NuRadioMC.EvtGen.NuRadioMCtoAraSim module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/apidoc/NuRadioMC.EvtGen.NuRadioProposal.html">NuRadioMC.EvtGen.NuRadioProposal module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/apidoc/NuRadioMC.EvtGen.create_tau_tab.html">NuRadioMC.EvtGen.create_tau_tab module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/apidoc/NuRadioMC.EvtGen.generate_cylinder.html">NuRadioMC.EvtGen.generate_cylinder module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/apidoc/NuRadioMC.EvtGen.generate_unforced.html">NuRadioMC.EvtGen.generate_unforced module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/apidoc/NuRadioMC.EvtGen.generator.html">NuRadioMC.EvtGen.generator module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/apidoc/NuRadioMC.EvtGen.generator_ASCII.html">NuRadioMC.EvtGen.generator_ASCII module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/apidoc/NuRadioMC.EvtGen.generator_skeleton.html">NuRadioMC.EvtGen.generator_skeleton module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/apidoc/NuRadioMC.EvtGen.hdf5_to_ASCII.html">NuRadioMC.EvtGen.hdf5_to_ASCII module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/apidoc/NuRadioMC.EvtGen.proposal_table_manager.html">NuRadioMC.EvtGen.proposal_table_manager module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/apidoc/NuRadioMC.EvtGen.readARAEventList.html">NuRadioMC.EvtGen.readARAEventList module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/apidoc/NuRadioMC.EvtGen.readEventList_ASCII.html">NuRadioMC.EvtGen.readEventList_ASCII module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../NuRadioMC/apidoc/NuRadioMC.SignalGen.html">NuRadioMC.SignalGen package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../NuRadioMC/apidoc/NuRadioMC.SignalGen.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/apidoc/NuRadioMC.SignalGen.ARZ.html">NuRadioMC.SignalGen.ARZ package</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../NuRadioMC/apidoc/NuRadioMC.SignalGen.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/apidoc/NuRadioMC.SignalGen.HCRB2017.html">NuRadioMC.SignalGen.HCRB2017 module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/apidoc/NuRadioMC.SignalGen.askaryan.html">NuRadioMC.SignalGen.askaryan module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/apidoc/NuRadioMC.SignalGen.emitter.html">NuRadioMC.SignalGen.emitter module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/apidoc/NuRadioMC.SignalGen.parametrizations.html">NuRadioMC.SignalGen.parametrizations module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../NuRadioMC/apidoc/NuRadioMC.SignalProp.html">NuRadioMC.SignalProp package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../NuRadioMC/apidoc/NuRadioMC.SignalProp.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/apidoc/NuRadioMC.SignalProp.AnalyticRayTracingImpl.html">NuRadioMC.SignalProp.AnalyticRayTracingImpl package</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../NuRadioMC/apidoc/NuRadioMC.SignalProp.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/apidoc/NuRadioMC.SignalProp.analyticraytracing.html">NuRadioMC.SignalProp.analyticraytracing module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/apidoc/NuRadioMC.SignalProp.directRayTracing.html">NuRadioMC.SignalProp.directRayTracing module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/apidoc/NuRadioMC.SignalProp.propagation.html">NuRadioMC.SignalProp.propagation module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/apidoc/NuRadioMC.SignalProp.propagation_base_class.html">NuRadioMC.SignalProp.propagation_base_class module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/apidoc/NuRadioMC.SignalProp.radioproparaytracing.html">NuRadioMC.SignalProp.radioproparaytracing module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../NuRadioMC/apidoc/NuRadioMC.simulation.html">NuRadioMC.simulation package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../NuRadioMC/apidoc/NuRadioMC.simulation.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/apidoc/NuRadioMC.simulation.output_writer_hdf5.html">NuRadioMC.simulation.output_writer_hdf5 module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/apidoc/NuRadioMC.simulation.simulation.html">NuRadioMC.simulation.simulation module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/apidoc/NuRadioMC.simulation.time_logger.html">NuRadioMC.simulation.time_logger module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../NuRadioMC/apidoc/NuRadioMC.utilities.html">NuRadioMC.utilities package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../NuRadioMC/apidoc/NuRadioMC.utilities.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/apidoc/NuRadioMC.utilities.Veff.html">NuRadioMC.utilities.Veff module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/apidoc/NuRadioMC.utilities.attenuation.html">NuRadioMC.utilities.attenuation module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/apidoc/NuRadioMC.utilities.birefringence.html">NuRadioMC.utilities.birefringence module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/apidoc/NuRadioMC.utilities.cross_sections.html">NuRadioMC.utilities.cross_sections module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/apidoc/NuRadioMC.utilities.dump_hdf5.html">NuRadioMC.utilities.dump_hdf5 module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/apidoc/NuRadioMC.utilities.earth_attenuation.html">NuRadioMC.utilities.earth_attenuation module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/apidoc/NuRadioMC.utilities.fluxes.html">NuRadioMC.utilities.fluxes module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/apidoc/NuRadioMC.utilities.inelasticities.html">NuRadioMC.utilities.inelasticities module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/apidoc/NuRadioMC.utilities.medium.html">NuRadioMC.utilities.medium module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/apidoc/NuRadioMC.utilities.medium_base.html">NuRadioMC.utilities.medium_base module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/apidoc/NuRadioMC.utilities.merge_hdf5.html">NuRadioMC.utilities.merge_hdf5 module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/apidoc/NuRadioMC.utilities.muon_flux.html">NuRadioMC.utilities.muon_flux module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/apidoc/NuRadioMC.utilities.plotting.html">NuRadioMC.utilities.plotting module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/apidoc/NuRadioMC.utilities.runner.html">NuRadioMC.utilities.runner module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/apidoc/NuRadioMC.utilities.runner_example.html">NuRadioMC.utilities.runner_example module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/apidoc/NuRadioMC.utilities.split_hdf5.html">NuRadioMC.utilities.split_hdf5 module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../NuRadioMC/pages/manuals.html">Manuals</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../NuRadioMC/pages/Manuals/veff_tutorial.html">Example: Calculating effective volume</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../NuRadioMC/pages/Manuals/veff_tutorial.html#run-an-effective-volume-simulation">Run an effective volume simulation</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/pages/Manuals/veff_tutorial.html#generating-the-input-event-list">Generating the input event list</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/pages/Manuals/veff_tutorial.html#running-the-simulation">Running the simulation</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/pages/Manuals/veff_tutorial.html#visualization-of-results">Visualization of results</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../NuRadioMC/pages/Manuals/expected_sensitivities_tutorial.html">Example: Calculating expected sensitivities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../NuRadioMC/pages/Manuals/example-multi_station_coincidences.html">Example: Multi-station coincidences</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../NuRadioMC/pages/Manuals/example-multi_station_coincidences.html#generation-of-detector-layout">1. Generation of detector layout</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../NuRadioMC/pages/Manuals/example-multi_station_coincidences.html#detector-simulation">2. Detector simulation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../NuRadioMC/pages/Manuals/example-multi_station_coincidences.html#running-the-simulation">3. Running the simulation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../NuRadioMC/pages/Manuals/example-multi_station_coincidences.html#analyzing-the-output">4. Analyzing the output</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../NuRadioMC/pages/Manuals/event_generation.html">Event Generation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../NuRadioMC/pages/Manuals/event_generation.html#events-in-a-cylindrical-volume">Events in a cylindrical volume</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/pages/Manuals/event_generation.html#input-parameters">Input parameters</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/pages/Manuals/event_generation.html#data-sets-and-attributes">Data sets and attributes</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../NuRadioMC/pages/Manuals/event_generation.html#atmospheric-muons-generated-on-a-flat-surface">Atmospheric muons generated on a flat surface</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../NuRadioMC/pages/Manuals/event_generation.html#nuradioproposal-as-a-standalone-module">NuRadioProposal as a standalone module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../NuRadioMC/pages/Manuals/signal_generation_shower.html">Signal Generation (from in-ice showers)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../NuRadioMC/pages/Manuals/signal_generation_shower.html#frequency-domain-parameterisations">Frequency-domain parameterisations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../NuRadioMC/pages/Manuals/signal_generation_shower.html#arz-semi-analytical-model">ARZ - semi-analytical model</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../NuRadioMC/pages/Manuals/signal_generation_shower.html#validity-of-the-parameterisations-and-the-arz-model">Validity of the parameterisations and the ARZ model</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../NuRadioMC/pages/Manuals/signal_generation_shower.html#timing">Timing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../NuRadioMC/pages/Manuals/signal_generation_shower.html#using-the-same-shower-random-seed">Using the same shower. Random seed</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../NuRadioMC/pages/Manuals/signal_generation_shower.html#fft-normalisation">FFT normalisation</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../NuRadioMC/pages/Manuals/shower_simulation.html">In-ice shower simulation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../NuRadioMC/pages/Manuals/signal_generation_emitter.html">Signal Generation (emitter)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../NuRadioMC/pages/Manuals/signal_generation_emitter.html#spice-pulser">SPice Pulser</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../NuRadioMC/pages/Manuals/signal_propagation.html">Signal Propagation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../NuRadioMC/pages/Manuals/signal_propagation.html#propagation-module">Propagation module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../NuRadioMC/pages/Manuals/signal_propagation.html#ray-tracing">Ray tracing</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/pages/Manuals/signal_propagation.html#analytical-ray-tracer">Analytical ray tracer</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/pages/Manuals/signal_propagation.html#radiopropa-numerical-ray-tracer-in-development">RadioPropa numerical ray tracer (in development)</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../NuRadioMC/pages/Manuals/signal_propagation.html#example-scripts">Example scripts</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/pages/Manuals/signal_propagation.html#how-to-calculate-an-analytic-ray-path">How to calculate an analytic ray path</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/pages/Manuals/signal_propagation.html#how-to-calculate-an-radiopropa-ray-path">How to calculate an radiopropa ray path</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../NuRadioMC/pages/Manuals/icemodels.html">Ice and attenuation models</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../NuRadioMC/pages/Manuals/icemodels.html#ice-model-implementation">Ice model implementation</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/pages/Manuals/icemodels.html#the-icemodel-and-icemodel-simple-class">The IceModel and IceModel_Simple class</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/pages/Manuals/icemodels.html#radiopropaicewrapper">RadioPropaIceWrapper</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../NuRadioMC/pages/Manuals/icemodels.html#available-models-in-nuradiomc">Available models in NuRadioMC</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/pages/Manuals/icemodels.html#simple-ice-models">Simple ice models</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/pages/Manuals/icemodels.html#radiopropa-ice-models">RadioPropa ice models</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/pages/Manuals/icemodels.html#attenuation-model">Attenuation model</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/pages/Manuals/icemodels.html#using-specific-models">Using specific models</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../NuRadioMC/pages/Manuals/icemodels.html#example-script">Example script</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../NuRadioMC/pages/Manuals/icemodels.html#birefringence-ice-models">Birefringence Ice Models</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/pages/Manuals/icemodels.html#available-birefringence-ice-models">Available Birefringence Ice Models</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/pages/Manuals/icemodels.html#ice-flow-direction">Ice-Flow Direction</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/pages/Manuals/icemodels.html#available-birefringence-propagation-options">Available Birefringence Propagation Options</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../NuRadioMC/pages/Manuals/icemodels.html#using-specific-birefringence-models">Using specific birefringence models</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../NuRadioMC/pages/Manuals/simulation_configuration.html">Simulation and configuration</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../NuRadioMC/pages/Manuals/simulation_configuration.html#steering-files">Steering files</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../NuRadioMC/pages/Manuals/simulation_configuration.html#config-files">Config files</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../NuRadioMC/pages/Manuals/simulation_configuration.html#detector-description">Detector description</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../NuRadioMC/pages/Manuals/simulation_configuration.html#detector-simulation">Detector simulation</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../NuRadioMC/pages/Manuals/running_on_a_cluster.html">Running on a cluster</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../NuRadioMC/pages/Manuals/running_on_a_cluster.html#generate-input-files">1. Generate input files</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../NuRadioMC/pages/Manuals/running_on_a_cluster.html#generate-job-sh-scripts">2. Generate job *.sh scripts</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../NuRadioMC/pages/Manuals/running_on_a_cluster.html#submit-jobs-to-the-cluster">3. Submit jobs to the cluster</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../NuRadioMC/pages/Manuals/running_on_a_cluster.html#merge-individual-hdf5-output-files">4. Merge individual hdf5 output files</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../Experiments/welcome_page.html">Experiment-specific features</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../Experiments/lofar/overview.html">LOFAR</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../main.html">NuRadio</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../main.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../pages/welcome_page.html">NuRadioReco Documentation</a></li>
+          <li class="breadcrumb-item"><a href="../pages/code_documentation.html">Code Documentation</a></li>
+          <li class="breadcrumb-item"><a href="NuRadioReco.modules.html">NuRadioReco.modules package</a></li>
+      <li class="breadcrumb-item active">NuRadioReco.modules.efieldRadioInterferometricReconstruction module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/NuRadioReco/apidoc/NuRadioReco.modules.efieldRadioInterferometricReconstruction.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-NuRadioReco.modules.efieldRadioInterferometricReconstruction">
+<span id="nuradioreco-modules-efieldradiointerferometricreconstruction-module"></span><h1>NuRadioReco.modules.efieldRadioInterferometricReconstruction module<a class="headerlink" href="#module-NuRadioReco.modules.efieldRadioInterferometricReconstruction" title="Link to this heading"></a></h1>
+<dl class="py data">
+<dt class="sig sig-object py" id="NuRadioReco.modules.efieldRadioInterferometricReconstruction.logger">
+<span class="sig-prename descclassname"><span class="pre">NuRadioReco.modules.efieldRadioInterferometricReconstruction.</span></span><span class="sig-name descname"><span class="pre">logger</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;NuRadioLogger</span> <span class="pre">NuRadioReco.efieldRadioInterferometricReconstruction</span> <span class="pre">(ERROR)&gt;</span></em><a class="headerlink" href="#NuRadioReco.modules.efieldRadioInterferometricReconstruction.logger" title="Link to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>This module hosts to classes</dt><dd><ul class="simple">
+<li><p>efieldInterferometricDepthReco</p></li>
+<li><p>efieldInterferometricAxisReco (TODO: Not yet implemented)</p></li>
+</ul>
+</dd>
+</dl>
+<p>The radio-interferometric reconstruction (RIT) was proposed in [1].
+The implementation here is based on work published in [2].</p>
+<p>[1]: H. Schoorlemmer, W. R. Carvalho Jr., arXiv:2006.10348
+[2]: F. Schlueter, T. Huege, doi:10.1088/1748-0221/16/07/P07048</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricDepthReco">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">NuRadioReco.modules.efieldRadioInterferometricReconstruction.</span></span><span class="sig-name descname"><span class="pre">efieldInterferometricDepthReco</span></span><a class="reference internal" href="../../_modules/NuRadioReco/modules/efieldRadioInterferometricReconstruction.html#efieldInterferometricDepthReco"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricDepthReco" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>This class reconstructs the depth of the maximum of the longitudinal profile of the
+beam-formed radio emission: X_RIT along a given axis. X_RIT is found to correlate with X_max.
+This correlation may depend on the zenith angle, the frequency band, and detector layout
+(if the detector is very irregular).</p>
+<p>For the reconstruction, a shower axis is needed. The radio emission in the vxB polarisation is used
+(and thus the arrival direction is needed).</p>
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricDepthReco.begin" title="NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricDepthReco.begin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">begin</span></code></a>([interpolation, signal_kind, debug])</p></td>
+<td><p>Set module config.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricDepthReco.end" title="NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricDepthReco.end"><code class="xref py py-obj docutils literal notranslate"><span class="pre">end</span></code></a>()</p></td>
+<td><p>Plot reconstructed depth vs true depth of shower maximum (Xmax).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricDepthReco.reconstruct_interferometric_depth" title="NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricDepthReco.reconstruct_interferometric_depth"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reconstruct_interferometric_depth</span></code></a>(traces, ...)</p></td>
+<td><p>Returns Gauss-parameters fitted to the &quot;peak&quot; of the interferometic longitudinal profile along the shower axis.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricDepthReco.run" title="NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricDepthReco.run"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run</span></code></a>(evt, det[, use_MC_geometry, use_MC_pulses])</p></td>
+<td><p>Run interferometric reconstruction of depth of coherent signal.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricDepthReco.sample_longitudinal_profile" title="NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricDepthReco.sample_longitudinal_profile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample_longitudinal_profile</span></code></a>(traces, times, ...)</p></td>
+<td><p>Returns the longitudinal profile of the interferometic signal sampled along the shower axis.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricDepthReco.update_atmospheric_model_and_refractivity_table" title="NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricDepthReco.update_atmospheric_model_and_refractivity_table"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_atmospheric_model_and_refractivity_table</span></code></a>(shower)</p></td>
+<td><p>Updates model of the atmosphere and tabulated, integrated refractive index according to shower properties.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricDepthReco.begin">
+<span class="sig-name descname"><span class="pre">begin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">interpolation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_kind</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'power'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/NuRadioReco/modules/efieldRadioInterferometricReconstruction.html#efieldInterferometricDepthReco.begin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricDepthReco.begin" title="Link to this definition"></a></dt>
+<dd><p>Set module config.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>interpolation</strong><span class="classifier">bool</span></dt><dd><p>If true, use a linear interpolation to match sampling of the beamformed signal trace and the individual time-shifted antenna traces.
+Default is True, False is not yet implemented</p>
+</dd>
+<dt><strong>signal_kind</strong><span class="classifier">str</span></dt><dd><p>Define which signal “metric” is used on the beamformed traces. Default “power” : sum over the squared amplitudes in a 100 ns window around the peak.
+Other options are “amplitude” or “hilbert_sum”</p>
+</dd>
+<dt><strong>debug</strong><span class="classifier">bool</span></dt><dd><p>If true, show some debug plots (Default: False).</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricDepthReco.sample_longitudinal_profile">
+<span class="sig-name descname"><span class="pre">sample_longitudinal_profile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">traces</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">station_positions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shower_axis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">core</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depths</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distances</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/NuRadioReco/modules/efieldRadioInterferometricReconstruction.html#efieldInterferometricDepthReco.sample_longitudinal_profile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricDepthReco.sample_longitudinal_profile" title="Link to this definition"></a></dt>
+<dd><p>Returns the longitudinal profile of the interferometic signal sampled along the shower axis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>traces</strong><span class="classifier">array(number_of_antennas, samples)</span></dt><dd><p>Electric field traces (one polarisation of it, usually vxB) for all antennas/stations.</p>
+</dd>
+<dt><strong>times</strong><span class="classifier">array(number_of_antennas, samples)</span></dt><dd><p>Time vectors corresponding to the electric field traces.</p>
+</dd>
+<dt><strong>station_positions</strong><span class="classifier">array(number_of_antennas, 3)</span></dt><dd><p>Position of each antenna.</p>
+</dd>
+<dt><strong>shower_axis</strong><span class="classifier">array(3,)</span></dt><dd><p>Axis/direction along which the interferometric signal is sampled. Anchor is “core”.</p>
+</dd>
+<dt><strong>core</strong><span class="classifier">array(3,)</span></dt><dd><p>Shower core. Keep in mind that the altitudes (z-coordinate) matters.</p>
+</dd>
+<dt><strong>depths</strong><span class="classifier">array (optinal)</span></dt><dd><p>Define the positions (slant depth along the axis) at which the interferometric signal is sampled.
+Instead of “depths” you can provide “distances”.</p>
+</dd>
+<dt><strong>distances</strong><span class="classifier">array (optinal)</span></dt><dd><p>Define the positions (geometrical distance from core along the axis) at which the interferometric signal is sampled.
+Instead of “distances” you can provide “depths”.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>signals</strong><span class="classifier">array</span></dt><dd><p>Interferometric singals sampled along the given axis</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricDepthReco.reconstruct_interferometric_depth">
+<span class="sig-name descname"><span class="pre">reconstruct_interferometric_depth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">traces</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">station_positions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shower_axis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">core</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lower_depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">400</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upper_depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">800</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bin_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_profile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/NuRadioReco/modules/efieldRadioInterferometricReconstruction.html#efieldInterferometricDepthReco.reconstruct_interferometric_depth"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricDepthReco.reconstruct_interferometric_depth" title="Link to this definition"></a></dt>
+<dd><p>Returns Gauss-parameters fitted to the “peak” of the interferometic
+longitudinal profile along the shower axis.</p>
+<p>A initial samping range and size in defined by “lower_depth”, “upper_depth”, “bin_size”.
+However if the “peak”, i.e., maximum signal is found at an edge the sampling range in
+continually increased (with a min/max depth of 0/2000 g/cm^2). The Gauss is fitted around the
+found peak with a refined sampling (use 20 samples in this narrow range).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>traces</strong><span class="classifier">array(number_of_antennas, samples)</span></dt><dd><p>Electric field traces (one polarisation of it, usually vxB) for all antennas/stations.</p>
+</dd>
+<dt><strong>times</strong><span class="classifier">array(number_of_antennas, samples)</span></dt><dd><p>Time vectors corresponding to the electric field traces.</p>
+</dd>
+<dt><strong>station_positions</strong><span class="classifier">array(number_of_antennas, 3)</span></dt><dd><p>Position of each antenna.</p>
+</dd>
+<dt><strong>shower_axis</strong><span class="classifier">array(3,)</span></dt><dd><p>Axis/direction along which the interferometric signal is sampled. Anchor is “core”.</p>
+</dd>
+<dt><strong>core</strong><span class="classifier">array(3,)</span></dt><dd><p>Shower core. Keep in mind that the altitudes (z-coordinate) matters.</p>
+</dd>
+<dt><strong>lower_depth</strong><span class="classifier">float</span></dt><dd><p>Define the lower edge for the inital sampling (default: 400 g/cm2).</p>
+</dd>
+<dt><strong>upper_depth</strong><span class="classifier">float</span></dt><dd><p>Define the upper edge for the inital sampling (default: 800 g/cm2).</p>
+</dd>
+<dt><strong>bin_size</strong><span class="classifier">float</span></dt><dd><p>Define the step size pf the inital sampling (default: 100 g/cm2).
+The refined sampling around the peak region is / 10 this value.</p>
+</dd>
+<dt><strong>return_profile</strong><span class="classifier">bool</span></dt><dd><p>If true return the sampled profile in addition to the Gauss parameter (default: False).</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>If return_profile is True</dt><dd><dl class="simple">
+<dt>depths_corse<span class="classifier">np.array</span></dt><dd><p>Depths along shower axis coarsely sampled</p>
+</dd>
+<dt>depths_fine<span class="classifier">np.array</span></dt><dd><p>Depths along shower axis finely sampled (used in fitting)</p>
+</dd>
+<dt>signals_corese<span class="classifier">np.array</span></dt><dd><p>Beamformed signals along shower axis coarsely sampled</p>
+</dd>
+<dt>signals_fine<span class="classifier">np.array</span></dt><dd><p>Beamformed signals along shower axis finely sampled (used in fitting)</p>
+</dd>
+<dt>popt<span class="classifier">list</span></dt><dd><p>List of fitted Gauss parameters (amplitude, position, width)</p>
+</dd>
+</dl>
+</dd>
+<dt>If return_profile is False:</dt><dd><dl class="simple">
+<dt>popt<span class="classifier">list</span></dt><dd><p>List of fitted Gauss parameters (amplitude, position, width)</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricDepthReco.update_atmospheric_model_and_refractivity_table">
+<span class="sig-name descname"><span class="pre">update_atmospheric_model_and_refractivity_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shower</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/NuRadioReco/modules/efieldRadioInterferometricReconstruction.html#efieldInterferometricDepthReco.update_atmospheric_model_and_refractivity_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricDepthReco.update_atmospheric_model_and_refractivity_table" title="Link to this definition"></a></dt>
+<dd><p>Updates model of the atmosphere and tabulated, integrated refractive index according to shower properties.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>shower</strong><span class="classifier">BaseShower</span></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricDepthReco.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">evt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">det</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_MC_geometry</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_MC_pulses</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/NuRadioReco/modules/efieldRadioInterferometricReconstruction.html#efieldInterferometricDepthReco.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricDepthReco.run" title="Link to this definition"></a></dt>
+<dd><p>Run interferometric reconstruction of depth of coherent signal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>evt</strong><span class="classifier">Event</span></dt><dd><p>Event to run the module on.</p>
+</dd>
+<dt><strong>det</strong><span class="classifier">Detector</span></dt><dd><p>Detector description</p>
+</dd>
+<dt><strong>use_MC_geometry</strong><span class="classifier">bool</span></dt><dd><p>if true, take geometry from sim_shower. Results will than also be stored in sim_shower</p>
+</dd>
+<dt><strong>use_MC_pulses</strong><span class="classifier">bool</span></dt><dd><p>if true, take electric field trace from sim_station</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricDepthReco.end">
+<span class="sig-name descname"><span class="pre">end</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/NuRadioReco/modules/efieldRadioInterferometricReconstruction.html#efieldInterferometricDepthReco.end"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricDepthReco.end" title="Link to this definition"></a></dt>
+<dd><p>Plot reconstructed depth vs true depth of shower maximum (Xmax).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricAxisReco">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">NuRadioReco.modules.efieldRadioInterferometricReconstruction.</span></span><span class="sig-name descname"><span class="pre">efieldInterferometricAxisReco</span></span><a class="reference internal" href="../../_modules/NuRadioReco/modules/efieldRadioInterferometricReconstruction.html#efieldInterferometricAxisReco"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricAxisReco" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricDepthReco" title="NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricDepthReco"><code class="xref py py-class docutils literal notranslate"><span class="pre">efieldInterferometricDepthReco</span></code></a></p>
+<p>Class to reconstruct the shower axis with beamforming.</p>
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricAxisReco.begin" title="NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricAxisReco.begin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">begin</span></code></a>([interpolation, signal_kind, debug])</p></td>
+<td><p>Set module config.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricAxisReco.end" title="NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricAxisReco.end"><code class="xref py py-obj docutils literal notranslate"><span class="pre">end</span></code></a>()</p></td>
+<td><p>Plot reconstructed depth vs true depth of shower maximum (Xmax).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricAxisReco.find_maximum_in_plane" title="NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricAxisReco.find_maximum_in_plane"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_maximum_in_plane</span></code></a>(xs, ys, p_axis, ...)</p></td>
+<td><p>Sample interferometric signals in 2-d plane (vxB-vxvxB) perpendicular to a given axis on a rectangular/quadratic grid.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricAxisReco.reconstruct_interferometric_depth" title="NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricAxisReco.reconstruct_interferometric_depth"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reconstruct_interferometric_depth</span></code></a>(traces, ...)</p></td>
+<td><p>Returns Gauss-parameters fitted to the &quot;peak&quot; of the interferometic longitudinal profile along the shower axis.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricAxisReco.reconstruct_shower_axis" title="NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricAxisReco.reconstruct_shower_axis"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reconstruct_shower_axis</span></code></a>(traces, times, ...)</p></td>
+<td><p>Run interferometric reconstruction of the shower axis.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricAxisReco.run" title="NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricAxisReco.run"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run</span></code></a>(evt, det[, use_MC_geometry, use_MC_pulses])</p></td>
+<td><p>Run interferometric reconstruction of depth of coherent signal.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricAxisReco.sample_lateral_cross_section" title="NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricAxisReco.sample_lateral_cross_section"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample_lateral_cross_section</span></code></a>(traces, times, ...)</p></td>
+<td><p>Sampling the &quot;cross section&quot;, i.e., 2d-lateral distribution of the beam formed signal for a slice in the atmosphere.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricAxisReco.sample_longitudinal_profile" title="NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricAxisReco.sample_longitudinal_profile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample_longitudinal_profile</span></code></a>(traces, times, ...)</p></td>
+<td><p>Returns the longitudinal profile of the interferometic signal sampled along the shower axis.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricAxisReco.update_atmospheric_model_and_refractivity_table" title="NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricAxisReco.update_atmospheric_model_and_refractivity_table"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_atmospheric_model_and_refractivity_table</span></code></a>(shower)</p></td>
+<td><p>Updates model of the atmosphere and tabulated, integrated refractive index according to shower properties.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricAxisReco.find_maximum_in_plane">
+<span class="sig-name descname"><span class="pre">find_maximum_in_plane</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_axis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">station_positions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">traces</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/NuRadioReco/modules/efieldRadioInterferometricReconstruction.html#efieldInterferometricAxisReco.find_maximum_in_plane"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricAxisReco.find_maximum_in_plane" title="Link to this definition"></a></dt>
+<dd><p>Sample interferometric signals in 2-d plane (vxB-vxvxB) perpendicular to a given axis on a rectangular/quadratic grid.
+The orientation of the plane is defined by the radiotools.coordinatesytem.cstrafo argument.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>xs</strong><span class="classifier">array</span></dt><dd><p>x-coordinates defining the sampling positions.</p>
+</dd>
+<dt><strong>ys</strong><span class="classifier">array</span></dt><dd><p>y-coordinates defining the sampling positions.</p>
+</dd>
+<dt><strong>p_axis</strong><span class="classifier">array(3,)</span></dt><dd><p>Origin of the 2-d plane along the axis.</p>
+</dd>
+<dt><strong>station_positions</strong><span class="classifier">array(number_of_antennas, 3)</span></dt><dd><p>Position of each antenna.</p>
+</dd>
+<dt><strong>traces</strong><span class="classifier">array(number_of_antennas, samples)</span></dt><dd><p>Electric field traces (one polarisation of it, usually vxB) for all antennas/stations.</p>
+</dd>
+<dt><strong>times</strong><span class="classifier">array(number_of_antennas, samples)</span></dt><dd><p>Time vectors corresponding to the electric field traces.</p>
+</dd>
+<dt><strong>cs</strong><span class="classifier">radiotools.coordinatesytem.cstrafo</span></dt><dd></dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>idx</strong><span class="classifier">int</span></dt><dd><p>Index of the entry with the largest signal (np.argmax(signals))</p>
+</dd>
+<dt><strong>signals</strong><span class="classifier">array(len(xs), len(ys))</span></dt><dd><p>Interferometric signal</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricAxisReco.sample_lateral_cross_section">
+<span class="sig-name descname"><span class="pre">sample_lateral_cross_section</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">traces</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">station_positions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shower_axis_inital</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">core</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shower_axis_mc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">core_mc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relative</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_grid_spacing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">60</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">centered_around_truth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cross_section_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deg_resolution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">np.float64(8.726646259971648e-05)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/NuRadioReco/modules/efieldRadioInterferometricReconstruction.html#efieldInterferometricAxisReco.sample_lateral_cross_section"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricAxisReco.sample_lateral_cross_section" title="Link to this definition"></a></dt>
+<dd><p>Sampling the “cross section”, i.e., 2d-lateral distribution of the beam formed signal for a slice in the atmosphere.
+It is looking for the maximum in the lateral distribution with an (stupid) iterative grid search.</p>
+<p>Returns the position and the strenght of the maximum signal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>traces</strong><span class="classifier">array(number_of_antennas, samples)</span></dt><dd><p>Electric field traces (one polarisation of it, usually vxB) for all antennas/stations.</p>
+</dd>
+<dt><strong>times</strong><span class="classifier">array(number_of_antennas, samples)</span></dt><dd><p>Time vectors corresponding to the electric field traces.</p>
+</dd>
+<dt><strong>station_positions</strong><span class="classifier">array(number_of_antennas, 3)</span></dt><dd><p>Position of each antenna.</p>
+</dd>
+<dt><strong>shower_axis_inital</strong><span class="classifier">array(3,)</span></dt><dd><p>Axis/direction which is used as initial guess for the true shower axis.
+Around this axis the interferometric signals are sample on 2-d planes.</p>
+</dd>
+<dt><strong>core</strong><span class="classifier">array(3,)</span></dt><dd><p>Shower core which is used as initial guess. Keep in mind that the altitudes (z-coordinate) matters.</p>
+</dd>
+<dt><strong>depth</strong><span class="classifier">np.array</span></dt><dd></dd>
+<dt><strong>cs</strong><span class="classifier">radiotools.coordinatesytem.cstrafo</span></dt><dd></dd>
+<dt><strong>shower_axis_mc</strong><span class="classifier">np.array(3,)</span></dt><dd></dd>
+<dt><strong>core_mc</strong><span class="classifier">np.array(3,)</span></dt><dd></dd>
+<dt><strong>relative</strong><span class="classifier">bool (Default: False)</span></dt><dd><p>If True, the size of the search grid is relative to the distance between the MC axis and the inital guess axis.
+The search grid will by a 20 x 20 and just include the MC axis. It is made sure that the MC axis is not at a
+grid point. If False, see <em class="xref py py-obj">centered_around_truth</em>.</p>
+</dd>
+<dt><strong>initial_grid_spacing</strong><span class="classifier">double</span></dt><dd><p>Initial spacing of your grid points in meters. (Default: 60m)</p>
+</dd>
+<dt><strong>centered_around_truth</strong><span class="classifier">bool (Default: True)</span></dt><dd><p>Only used when <em class="xref py py-obj">relative == False</em>. If True, the search grid will be constructed around the MC axis. The size
+and spacing between grid points is determined by <em class="xref py py-obj">cross_section_size</em> and <em class="xref py py-obj">initial_grid_spacing</em>. If False,
+the search grid is constructed around the inital guess axis. It ensured that the MC-axis is within the search grid.
+that means the grid size might be abitrary large (which makes the reconstruction very slow) if the inital axis is far off
+the MC axis.</p>
+</dd>
+<dt><strong>cross_section_size</strong><span class="classifier">float</span></dt><dd><p>(Only used when <em class="xref py py-obj">centered_around_truth == True</em>.) Side length on the 2-d planes (slice) along which the maximum around
+the initial axis is sampled in meters. (Default: 1000m)</p>
+</dd>
+<dt><strong>deg_resolution</strong><span class="classifier">float</span></dt><dd><p>Target spacing for the grid spacing in terms of opening angle. Unit is radiants.
+Defines the stopping condition for the iterations. (Default: np.deg2rad(0.005))</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>point_found</strong><span class="classifier">np.array(3,)</span></dt><dd><p>Position of the found maximum</p>
+</dd>
+<dt><strong>weight</strong><span class="classifier">float</span></dt><dd><p>Amplitude/Strengt of the maximum</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricAxisReco.reconstruct_shower_axis">
+<span class="sig-name descname"><span class="pre">reconstruct_shower_axis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">traces</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">station_positions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shower_axis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">core</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">magnetic_field_vector</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_mc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_grid_spacing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">60</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cross_section_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/NuRadioReco/modules/efieldRadioInterferometricReconstruction.html#efieldInterferometricAxisReco.reconstruct_shower_axis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricAxisReco.reconstruct_shower_axis" title="Link to this definition"></a></dt>
+<dd><p>Run interferometric reconstruction of the shower axis. Find the maxima of the interferometric signals
+within 2-d plane (slices) along a given axis (initial guess). Through those maxima (their position in the
+atmosphere) a straight line is fitted to reconstruct the shower axis.</p>
+<dl class="simple">
+<dt>traces<span class="classifier">array(number_of_antennas, samples)</span></dt><dd><p>Electric field traces (one polarisation of it, usually vxB) for all antennas/stations.</p>
+</dd>
+<dt>times<span class="classifier">array(number_of_antennas, samples)</span></dt><dd><p>Time vectors corresponding to the electric field traces.</p>
+</dd>
+<dt>station_positions<span class="classifier">array(number_of_antennas, 3)</span></dt><dd><p>Position of each antenna.</p>
+</dd>
+<dt>shower_axis_inital<span class="classifier">array(3,)</span></dt><dd><p>Axis/direction which is used as initial guess for the true shower axis.
+Around this axis the interferometric signals are sample on 2-d planes.</p>
+</dd>
+<dt>core<span class="classifier">array(3,)</span></dt><dd><p>Shower core which is used as initial guess. Keep in mind that the altitudes (z-coordinate) matters.</p>
+</dd>
+<dt>magnetic_field_vector<span class="classifier">array(3,)</span></dt><dd><p>Magnetic field vector of the site you are using.</p>
+</dd>
+<dt>is_mc<span class="classifier">bool</span></dt><dd><p>If true, interprete the provided shower axis as truth and add some gaussian smearing to optain an
+inperfect initial guess for the shower axis (Default: True).</p>
+</dd>
+<dt>initial_grid_spacing<span class="classifier">double</span></dt><dd><p>Spacing of your grid points in meters (Default: 60m)</p>
+</dd>
+<dt>cross_section_size<span class="classifier">double</span></dt><dd><p>Side length on the 2-d planes (slice) along which the maximum around the initial axis is sampled in meters
+(Default: 1000m).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricAxisReco.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">evt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">det</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_MC_geometry</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_MC_pulses</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/NuRadioReco/modules/efieldRadioInterferometricReconstruction.html#efieldInterferometricAxisReco.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricAxisReco.run" title="Link to this definition"></a></dt>
+<dd><p>Run interferometric reconstruction of depth of coherent signal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>evt</strong><span class="classifier">Event</span></dt><dd><p>Event to run the module on.</p>
+</dd>
+<dt><strong>det</strong><span class="classifier">Detector</span></dt><dd><p>Detector description</p>
+</dd>
+<dt><strong>use_MC_geometry</strong><span class="classifier">bool</span></dt><dd><p>if true, take geometry from sim_shower. Results will than also be stored in sim_shower</p>
+</dd>
+<dt><strong>use_MC_pulses</strong><span class="classifier">bool</span></dt><dd><p>if true, take electric field trace from sim_station</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricAxisReco.end">
+<span class="sig-name descname"><span class="pre">end</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/NuRadioReco/modules/efieldRadioInterferometricReconstruction.html#efieldInterferometricAxisReco.end"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricAxisReco.end" title="Link to this definition"></a></dt>
+<dd><p>Plot reconstructed depth vs true depth of shower maximum (Xmax).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricAxisReco.begin">
+<span class="sig-name descname"><span class="pre">begin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">interpolation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_kind</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'power'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricAxisReco.begin" title="Link to this definition"></a></dt>
+<dd><p>Set module config.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>interpolation</strong><span class="classifier">bool</span></dt><dd><p>If true, use a linear interpolation to match sampling of the beamformed signal trace and the individual time-shifted antenna traces.
+Default is True, False is not yet implemented</p>
+</dd>
+<dt><strong>signal_kind</strong><span class="classifier">str</span></dt><dd><p>Define which signal “metric” is used on the beamformed traces. Default “power” : sum over the squared amplitudes in a 100 ns window around the peak.
+Other options are “amplitude” or “hilbert_sum”</p>
+</dd>
+<dt><strong>debug</strong><span class="classifier">bool</span></dt><dd><p>If true, show some debug plots (Default: False).</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricAxisReco.reconstruct_interferometric_depth">
+<span class="sig-name descname"><span class="pre">reconstruct_interferometric_depth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">traces</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">station_positions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shower_axis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">core</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lower_depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">400</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upper_depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">800</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bin_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_profile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricAxisReco.reconstruct_interferometric_depth" title="Link to this definition"></a></dt>
+<dd><p>Returns Gauss-parameters fitted to the “peak” of the interferometic
+longitudinal profile along the shower axis.</p>
+<p>A initial samping range and size in defined by “lower_depth”, “upper_depth”, “bin_size”.
+However if the “peak”, i.e., maximum signal is found at an edge the sampling range in
+continually increased (with a min/max depth of 0/2000 g/cm^2). The Gauss is fitted around the
+found peak with a refined sampling (use 20 samples in this narrow range).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>traces</strong><span class="classifier">array(number_of_antennas, samples)</span></dt><dd><p>Electric field traces (one polarisation of it, usually vxB) for all antennas/stations.</p>
+</dd>
+<dt><strong>times</strong><span class="classifier">array(number_of_antennas, samples)</span></dt><dd><p>Time vectors corresponding to the electric field traces.</p>
+</dd>
+<dt><strong>station_positions</strong><span class="classifier">array(number_of_antennas, 3)</span></dt><dd><p>Position of each antenna.</p>
+</dd>
+<dt><strong>shower_axis</strong><span class="classifier">array(3,)</span></dt><dd><p>Axis/direction along which the interferometric signal is sampled. Anchor is “core”.</p>
+</dd>
+<dt><strong>core</strong><span class="classifier">array(3,)</span></dt><dd><p>Shower core. Keep in mind that the altitudes (z-coordinate) matters.</p>
+</dd>
+<dt><strong>lower_depth</strong><span class="classifier">float</span></dt><dd><p>Define the lower edge for the inital sampling (default: 400 g/cm2).</p>
+</dd>
+<dt><strong>upper_depth</strong><span class="classifier">float</span></dt><dd><p>Define the upper edge for the inital sampling (default: 800 g/cm2).</p>
+</dd>
+<dt><strong>bin_size</strong><span class="classifier">float</span></dt><dd><p>Define the step size pf the inital sampling (default: 100 g/cm2).
+The refined sampling around the peak region is / 10 this value.</p>
+</dd>
+<dt><strong>return_profile</strong><span class="classifier">bool</span></dt><dd><p>If true return the sampled profile in addition to the Gauss parameter (default: False).</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>If return_profile is True</dt><dd><dl class="simple">
+<dt>depths_corse<span class="classifier">np.array</span></dt><dd><p>Depths along shower axis coarsely sampled</p>
+</dd>
+<dt>depths_fine<span class="classifier">np.array</span></dt><dd><p>Depths along shower axis finely sampled (used in fitting)</p>
+</dd>
+<dt>signals_corese<span class="classifier">np.array</span></dt><dd><p>Beamformed signals along shower axis coarsely sampled</p>
+</dd>
+<dt>signals_fine<span class="classifier">np.array</span></dt><dd><p>Beamformed signals along shower axis finely sampled (used in fitting)</p>
+</dd>
+<dt>popt<span class="classifier">list</span></dt><dd><p>List of fitted Gauss parameters (amplitude, position, width)</p>
+</dd>
+</dl>
+</dd>
+<dt>If return_profile is False:</dt><dd><dl class="simple">
+<dt>popt<span class="classifier">list</span></dt><dd><p>List of fitted Gauss parameters (amplitude, position, width)</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricAxisReco.sample_longitudinal_profile">
+<span class="sig-name descname"><span class="pre">sample_longitudinal_profile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">traces</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">station_positions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shower_axis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">core</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depths</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distances</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricAxisReco.sample_longitudinal_profile" title="Link to this definition"></a></dt>
+<dd><p>Returns the longitudinal profile of the interferometic signal sampled along the shower axis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>traces</strong><span class="classifier">array(number_of_antennas, samples)</span></dt><dd><p>Electric field traces (one polarisation of it, usually vxB) for all antennas/stations.</p>
+</dd>
+<dt><strong>times</strong><span class="classifier">array(number_of_antennas, samples)</span></dt><dd><p>Time vectors corresponding to the electric field traces.</p>
+</dd>
+<dt><strong>station_positions</strong><span class="classifier">array(number_of_antennas, 3)</span></dt><dd><p>Position of each antenna.</p>
+</dd>
+<dt><strong>shower_axis</strong><span class="classifier">array(3,)</span></dt><dd><p>Axis/direction along which the interferometric signal is sampled. Anchor is “core”.</p>
+</dd>
+<dt><strong>core</strong><span class="classifier">array(3,)</span></dt><dd><p>Shower core. Keep in mind that the altitudes (z-coordinate) matters.</p>
+</dd>
+<dt><strong>depths</strong><span class="classifier">array (optinal)</span></dt><dd><p>Define the positions (slant depth along the axis) at which the interferometric signal is sampled.
+Instead of “depths” you can provide “distances”.</p>
+</dd>
+<dt><strong>distances</strong><span class="classifier">array (optinal)</span></dt><dd><p>Define the positions (geometrical distance from core along the axis) at which the interferometric signal is sampled.
+Instead of “distances” you can provide “depths”.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>signals</strong><span class="classifier">array</span></dt><dd><p>Interferometric singals sampled along the given axis</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricAxisReco.update_atmospheric_model_and_refractivity_table">
+<span class="sig-name descname"><span class="pre">update_atmospheric_model_and_refractivity_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shower</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#NuRadioReco.modules.efieldRadioInterferometricReconstruction.efieldInterferometricAxisReco.update_atmospheric_model_and_refractivity_table" title="Link to this definition"></a></dt>
+<dd><p>Updates model of the atmosphere and tabulated, integrated refractive index according to shower properties.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>shower</strong><span class="classifier">BaseShower</span></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="NuRadioReco.modules.efieldRadioInterferometricReconstruction.get_geometry_and_transformation">
+<span class="sig-prename descclassname"><span class="pre">NuRadioReco.modules.efieldRadioInterferometricReconstruction.</span></span><span class="sig-name descname"><span class="pre">get_geometry_and_transformation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shower</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/NuRadioReco/modules/efieldRadioInterferometricReconstruction.html#get_geometry_and_transformation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#NuRadioReco.modules.efieldRadioInterferometricReconstruction.get_geometry_and_transformation" title="Link to this definition"></a></dt>
+<dd><p>Returns core (def. as intersection between shower axis and observation plane,
+shower axis, and radiotools.coordinatesytem for given shower.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>shower</strong><span class="classifier">BaseShower</span></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="NuRadioReco.modules.efieldRadioInterferometricReconstruction.get_station_data">
+<span class="sig-prename descclassname"><span class="pre">NuRadioReco.modules.efieldRadioInterferometricReconstruction.</span></span><span class="sig-name descname"><span class="pre">get_station_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">evt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">det</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_MC_pulses</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_sampling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/NuRadioReco/modules/efieldRadioInterferometricReconstruction.html#get_station_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#NuRadioReco.modules.efieldRadioInterferometricReconstruction.get_station_data" title="Link to this definition"></a></dt>
+<dd><p>Returns station data in a proper format</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>evt</strong><span class="classifier">Event</span></dt><dd></dd>
+<dt><strong>det</strong><span class="classifier">Detector</span></dt><dd></dd>
+<dt><strong>cs</strong><span class="classifier">radiotools.coordinatesystems.cstrafo</span></dt><dd></dd>
+<dt><strong>use_MC_pulses</strong><span class="classifier">bool</span></dt><dd><p>if true take electric field trace from sim_station</p>
+</dd>
+<dt><strong>n_sampling</strong><span class="classifier">int</span></dt><dd><p>if not None clip trace with n_sampling // 2 around np.argmax(np.abs(trace))</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>traces_vxB</strong><span class="classifier">np.array</span></dt><dd><p>The electric field traces in the vxB polarisation (takes first electric field stored in a station) for all stations/observers.</p>
+</dd>
+<dt><strong>times</strong><span class="classifier">mp.array</span></dt><dd><p>The electric field traces time series for all stations/observers.</p>
+</dd>
+<dt><strong>pos</strong><span class="classifier">np.array</span></dt><dd><p>Positions for all stations/observers.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="NuRadioReco.modules.efieldRadioInterferometricReconstruction.plot_lateral_cross_section">
+<span class="sig-prename descclassname"><span class="pre">NuRadioReco.modules.efieldRadioInterferometricReconstruction.</span></span><span class="sig-name descname"><span class="pre">plot_lateral_cross_section</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mc_pos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/NuRadioReco/modules/efieldRadioInterferometricReconstruction.html#plot_lateral_cross_section"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#NuRadioReco.modules.efieldRadioInterferometricReconstruction.plot_lateral_cross_section" title="Link to this definition"></a></dt>
+<dd><p>Plot the lateral distribution of the beamformed singal (in the vxB, vxvxB directions).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>xs</strong><span class="classifier">np.array</span></dt><dd><p>Positions on x-axis (vxB) at which the signal is sampled (on a 2d grid)</p>
+</dd>
+<dt><strong>ys</strong><span class="classifier">np.array</span></dt><dd><p>Positions on y-axis (vxvxB) at which the signal is sampled (on a 2d grid)</p>
+</dd>
+<dt><strong>signals</strong><span class="classifier">np.array</span></dt><dd><p>Signals sampled on the 2d grid defined by xs and ys.</p>
+</dd>
+<dt><strong>mc_pos</strong><span class="classifier">np.array(2,)</span></dt><dd><p>Intersection of the (MC-)axis with the “slice” of the lateral distribution plotted.</p>
+</dd>
+<dt><strong>fname</strong><span class="classifier">str</span></dt><dd><p>Name of the figure. If given the figure is saved, if fname is None the fiture is shown.</p>
+</dd>
+<dt><strong>title</strong><span class="classifier">str</span></dt><dd><p>Title of the figure (Default: None)</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="NuRadioReco.modules.efieldGalacticNoiseAdder.html" class="btn btn-neutral float-left" title="NuRadioReco.modules.efieldGalacticNoiseAdder module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="NuRadioReco.modules.efieldTimeDirectionFitter.html" class="btn btn-neutral float-right" title="NuRadioReco.modules.efieldTimeDirectionFitter module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, The NuRadio Group.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

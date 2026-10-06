@@ -1,0 +1,15 @@
+NuRadioReco.modules.base package
+================================
+
+.. automodule:: NuRadioReco.modules.base
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   NuRadioReco.modules.base.module

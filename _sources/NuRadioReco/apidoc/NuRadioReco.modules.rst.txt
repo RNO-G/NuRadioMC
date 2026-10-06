@@ -1,0 +1,70 @@
+NuRadioReco.modules package
+===========================
+
+.. automodule:: NuRadioReco.modules
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 1
+
+   NuRadioReco.modules.ARA
+   NuRadioReco.modules.ARIANNA
+   NuRadioReco.modules.LOFAR
+   NuRadioReco.modules.RNO_G
+   NuRadioReco.modules.base
+   NuRadioReco.modules.custom
+   NuRadioReco.modules.iftElectricFieldReconstructor
+   NuRadioReco.modules.io
+   NuRadioReco.modules.likelihood_reconstruction
+   NuRadioReco.modules.measured_noise
+   NuRadioReco.modules.neutrinoDirectionReconstructor
+   NuRadioReco.modules.neutrinoVertexReconstructor
+   NuRadioReco.modules.phasedarray
+   NuRadioReco.modules.trigger
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   NuRadioReco.modules.analogToDigitalConverter
+   NuRadioReco.modules.beamFormingDirectionFitter
+   NuRadioReco.modules.channelAddCableDelay
+   NuRadioReco.modules.channelAntennaDedispersion
+   NuRadioReco.modules.channelBandPassFilter
+   NuRadioReco.modules.channelCWNotchFilter
+   NuRadioReco.modules.channelGalacticNoiseAdder
+   NuRadioReco.modules.channelGenericNoiseAdder
+   NuRadioReco.modules.channelIceThermalNoiseAdder
+   NuRadioReco.modules.channelLengthAdjuster
+   NuRadioReco.modules.channelReadoutWindowCutter
+   NuRadioReco.modules.channelResampler
+   NuRadioReco.modules.channelSignalReconstructor
+   NuRadioReco.modules.channelSinewaveSubtraction
+   NuRadioReco.modules.channelStopFilter
+   NuRadioReco.modules.channelTemplateCorrelation
+   NuRadioReco.modules.channelTimeOffsetCalculator
+   NuRadioReco.modules.channelTimeWindow
+   NuRadioReco.modules.correlationDirectionFitter
+   NuRadioReco.modules.cosmicRayEnergyReconstructor
+   NuRadioReco.modules.efieldGalacticNoiseAdder
+   NuRadioReco.modules.efieldRadioInterferometricReconstruction
+   NuRadioReco.modules.efieldTimeDirectionFitter
+   NuRadioReco.modules.efieldToVoltageConverter
+   NuRadioReco.modules.efieldToVoltageConverterPerEfield
+   NuRadioReco.modules.electricFieldBandPassFilter
+   NuRadioReco.modules.electricFieldResampler
+   NuRadioReco.modules.electricFieldSignalReconstructor
+   NuRadioReco.modules.eventTypeIdentifier
+   NuRadioReco.modules.sphericalWaveFitter
+   NuRadioReco.modules.templateDirectionFitter
+   NuRadioReco.modules.voltageToAnalyticEfieldConverter
+   NuRadioReco.modules.voltageToEfieldConverter
+   NuRadioReco.modules.voltageToEfieldConverterPerChannel
+   NuRadioReco.modules.voltageToEfieldConverterPerChannelGroup

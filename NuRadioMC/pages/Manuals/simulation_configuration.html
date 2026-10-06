@@ -1,0 +1,1191 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simulation and configuration &mdash; NuRadio 3.2.0-dev documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/styling.css?v=3350586d" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=596fb6d1"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Running on a cluster" href="running_on_a_cluster.html" />
+    <link rel="prev" title="Ice and attenuation models" href="icemodels.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../main.html" class="icon icon-home">
+            NuRadio
+              <img src="../../../_static/logo_small.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../Introduction/pages/welcome_page.html">Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../Introduction/pages/quickstart.html">How to get started</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../Introduction/pages/quickstart.html#installation">Installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../Introduction/pages/quickstart.html#simulating-a-neutrino-detector-with-nuradiomc">Simulating a neutrino detector with NuRadioMC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../Introduction/pages/quickstart.html#reading-a-nur-file">Reading a <code class="docutils literal notranslate"><span class="pre">.nur</span></code> file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../Introduction/pages/quickstart.html#running-a-simple-analysis-with-nuradioreco">Running a simple analysis with NuRadioReco</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../Introduction/pages/installation.html">Installing NuRadioMC / NuRadioReco</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../Introduction/pages/installation.html#requirements">Requirements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../Introduction/pages/installation.html#installation-using-pip">Installation using <code class="docutils literal notranslate"><span class="pre">pip</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../Introduction/pages/installation.html#development-version">Development version</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../Introduction/pages/installation.html#optional-dependencies">Optional Dependencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../Introduction/pages/installation.html#not-pip-installable-packages">Not pip-installable packages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../Introduction/pages/installation.html#other-optional-packages">Other optional packages</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../Introduction/pages/conventions.html">Some notes on conventions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../Introduction/pages/conventions.html#units">Units</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../Introduction/pages/conventions.html#fourier-transformations">Fourier transformations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../Introduction/pages/conventions.html#coordinates">Coordinates</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../Introduction/pages/conventions.html#default-coordinate-system">Default coordinate system</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../Introduction/pages/conventions.html#points">Points</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../Introduction/pages/conventions.html#angles">Angles</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../Introduction/pages/conventions.html#directions">Directions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../Introduction/pages/conventions.html#electic-fields">Electic Fields</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../Introduction/pages/conventions.html#times">Times</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../Introduction/pages/conventions.html#particle-types">Particle types</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../Introduction/pages/contributing.html">Contributing to NuRadioMC</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../Introduction/pages/contributing.html#installing-nuradiomc-for-developers">Installing NuRadioMC for developers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../Introduction/pages/contributing.html#workflow">Workflow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../Introduction/pages/contributing.html#test-coverage">Test coverage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../Introduction/pages/contributing.html#coding-conventions">Coding conventions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../Introduction/pages/contributing.html#how-to">How to</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../Introduction/pages/contributing.html#writing-docstrings">Writing docstrings</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../Introduction/pages/contributing.html#update-the-version-number-dependencies">Update the version number / dependencies</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../Introduction/pages/contributing.html#writing-additional-documentation">Writing additional documentation</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../Introduction/pages/contributing.html#compiling-the-documentation">Compiling the documentation</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../Introduction/pages/contributing.html#headings-and-text">Headings and text</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../Introduction/pages/contributing.html#lists">Lists</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../Introduction/pages/contributing.html#links-and-cross-references">Links and cross-references</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../Introduction/pages/contributing.html#showing-code">Showing code</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../NuRadioReco/pages/welcome_page.html">NuRadioReco Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../NuRadioReco/pages/event_structure.html">Data Structure</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../NuRadioReco/pages/event_structure.html#nur-files-and-how-to-use-them">.nur Files and How to Use Them</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/event_structure.html#philosophy-and-basic-structure">Philosophy and Basic Structure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/event_structure.html#reading-and-writing-nur-files">Reading and Writing .nur Files</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../NuRadioReco/pages/event_structure.html#parameter-storage">Parameter Storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../NuRadioReco/pages/event_structure.html#list-of-data-classes">List of Data Classes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/event_structure.html#event">Event</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/event_structure.html#radio-shower">Radio Shower</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/event_structure.html#simshower">SimShower</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/event_structure.html#simemitter">SimEmitter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/event_structure.html#particle">Particle</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/event_structure.html#station">Station</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/event_structure.html#trigger">Trigger</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/event_structure.html#simstation">SimStation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/event_structure.html#basetrace">BaseTrace</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/event_structure.html#electric-field">Electric Field</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/event_structure.html#channel">Channel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/event_structure.html#hybrid-information">Hybrid Information</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/event_structure.html#hybrid-shower">Hybrid Shower</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/event_structure.html#hybrid-detector">Hybrid Detector</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../NuRadioReco/pages/detector_tree.html">Detector Description</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../NuRadioReco/pages/detector/detector.html">Detector Description</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/detector.html#the-detector-class">The Detector Class</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/detector.html#detector-description-formats">Detector Description Formats</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/pages/detector/detector.html#database">DataBase</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/pages/detector/detector.html#json">JSON</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/pages/detector/detector.html#dictionary">Dictionary</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/pages/detector/detector.html#signal-chain-responses">Signal Chain Responses</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/detector.html#genericdetector">GenericDetector</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/pages/detector/detector.html#event-specific-changes">Event-Specific Changes</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/detector.html#detector-description-in-event-files">Detector Description in Event Files</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/pages/detector/detector.html#writing-the-detector">Writing the Detector</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/pages/detector/detector.html#reading-the-detector">Reading the Detector</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/pages/detector/detector.html#detector-viewer">Detector Viewer</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../NuRadioReco/pages/detector/detector_database_fields.html">Properties of Detector Description</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/detector_database_fields.html#antennas">Antennas</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/pages/detector/detector_database_fields.html#further-discussion-on-antenna-coordinates">Further Discussion on Antenna Coordinates</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/detector_database_fields.html#adc-table">ADC Table</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html">Antenna Models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#implementation-of-antenna-models">Implementation of Antenna Models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#overview-of-available-antenna-models">Overview of available Antenna Models</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#bicone-v8-infair">bicone_v8_InfAir</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#bicone-v8-inffirn">bicone_v8_InfFirn</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#bicone-v8-inf-n1-32">bicone_v8_inf_n1.32</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#bicone-v8-inf-n1-4">bicone_v8_inf_n1.4</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#bicone-v8-inf-n1-78">bicone_v8_inf_n1.78</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#createlpda-100mhz-inffirn">createLPDA_100MHz_InfFirn</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#createlpda-100mhz-v2-inffirn">createLPDA_100MHz_v2_InfFirn</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#createlpda-100mhz-inffirn-n1-4">createLPDA_100MHz_InfFirn_n1.4</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#createlpda-100mhz-v2-inffirn-n1-4">createLPDA_100MHz_v2_InfFirn_n1.4</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#createlpda-100mhz-z1cm-infirn-rg">createLPDA_100MHz_z1cm_InFirn_RG</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#createlpda-100mhz-z1cm-infirn-boresighttoboundary">createLPDA_100MHz_z1cm_InFirn_BoresightToBoundary</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#createlpda-100mhz-z10cm-infirn-rg">createLPDA_100MHz_z10cm_InFirn_RG</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#createlpda-100mhz-z1m-infirn-rg">createLPDA_100MHz_z1m_InFirn_RG</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#createlpda-100mhz-z2m-infirn-rg">createLPDA_100MHz_z2m_InFirn_RG</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#createlpda-100mhz-z2m-infirn-backlobe-norg">createLPDA_100MHz_z2m_InFirn_Backlobe_NoRG</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#createlpda-100mhz-z3m-inair-rg">createLPDA_100MHz_z3m_InAir_RG</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#createlpda-100mhz-z3m-infirn-boresighttoboundary">createLPDA_100MHz_z3m_InFirn_BoresightToBoundary</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#createlpda-100mhz-z3mandlpdalen-infirn-boresighttoboundary">createLPDA_100MHz_z3mAndLPDALen_InFirn_BoresightToBoundary</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#createlpda-100mhz-z5m-infirn-rg">createLPDA_100MHz_z5m_InFirn_RG</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#createlpda-100mhz-z10m-infirn-rg">createLPDA_100MHz_z10m_InFirn_RG</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#createlpda-100mhz-z100m-infirn-rg">createLPDA_100MHz_z100m_InFirn_RG</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#createlpda-100mhz-z200m-infirn-rg">createLPDA_100MHz_z200m_InFirn_RG</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#createlpda-100mhz-infair">createLPDA_100MHz_InfAir</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#createlpda-100mhz-z1cm-inair-rg">createLPDA_100MHz_z1cm_InAir_RG</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#createlpda-100mhz-z1m-infirn-rg-v2">createLPDA_100MHz_z1m_InFirn_RG_v2</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#dip7cm-hpol-inffirn">dip7cm_hpol_infFirn</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#dip7cm-z260mm-infirn-rg">dip7cm_z260mm_InFirn_RG</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#dip7cm-z1m-infirn-rg">dip7cm_z1m_InFirn_RG</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#dip7cm-z2m-infirn-rg">dip7cm_z2m_InFirn_RG</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#dip7cm-z3m-infirn-rg-nearhorizontalhd">dip7cm_z3m_InFirn_RG_NearHorizontalHD</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#dip7cm-z5m-infirn-rg">dip7cm_z5m_InFirn_RG</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#dip7cm-z10m-infirn-rg">dip7cm_z10m_InFirn_RG</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#dip7cm-z200m-infirn-rg">dip7cm_z200m_InFirn_RG</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#dip7cm-z100m-infirn-rg">dip7cm_z100m_InFirn_RG</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#dip7cm-infair-s12">dip7cm_infAir_s12</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#dip7cm-z270mm-inair">dip7cm_z270mm_InAir</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#dip7cm-z1m-inair">dip7cm_z1m_InAir</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#dip7cm-z1m-inair-rg-nearhorizontalhd">dip7cm_z1m_InAir_RG_NearHorizontalHD</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#dip7cm-z1m-inair-rg-nearhorizontalhd2">dip7cm_z1m_InAir_RG_NearHorizontalHD2</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#dip7cm-z2m-inair">dip7cm_z2m_InAir</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#dip7cm-z5m-inair">dip7cm_z5m_InAir</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#rnog-vpol-4inch-center-n1-73">RNOG_vpol_4inch_center_n1.73</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#rnog-vpol-4inch-half-n1-73">RNOG_vpol_4inch_half_n1.73</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#rnog-vpol-4inch-wall-n1-73">RNOG_vpol_4inch_wall_n1.73</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#rnog-vpol-v3-5inch-center-n1-74">RNOG_vpol_v3_5inch_center_n1.74</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#rnog-hpol-v4-8inch-center-n1-74">RNOG_hpol_v4_8inch_center_n1.74</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#rnog-quadslot-v1-n1-74">RNOG_quadslot_v1_n1.74</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#rnog-quadslot-v2-n1-74">RNOG_quadslot_v2_n1.74</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#rnog-quadslot-v2-rescaled-finefreq">RNOG_quadslot_v2_rescaled_fineFreq</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#rnog-quadslot-v3-air-rescaled-to-n1-74">RNOG_quadslot_v3_air_rescaled_to_n1.74</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#skala-inffirn">SKALA_InfFirn</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#smallblackspider-ground2-measured">SmallBlackSpider_ground2_measured</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#butterfly-ground2">Butterfly_ground2</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#butterfly-ground2-east">Butterfly_ground2_East</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#butterfly-ground2-north">Butterfly_ground2_North</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#additional-models">Additional Models</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#rnog-vpol-v1-n1-4">RNOG_vpol_v1_n1.4</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#rnog-vpol-v1-n1-73">RNOG_vpol_v1_n1.73</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#fourslot-inffirn">fourslot_InfFirn</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#greenland-vpol-inffirn">greenland_vpol_InfFirn</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#trislot-rnog">trislot_RNOG</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#dipole-ara-bicone-infinitefirn">dipole_ARA_bicone_infinitefirn</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#xfdtd-hpol-150mmhole-n1-78">XFDTD_Hpol_150mmHole_n1.78</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#xfdtd-vpol-crossfeed-150mmhole-n1-78">XFDTD_Vpol_CrossFeed_150mmHole_n1.78</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/antennamodels.html#xfdtd-vpol-crossfeed-150mmhole-n1-78-inffirn">XFDTD_Vpol_CrossFeed_150mmHole_n1.78_InfFirn</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../NuRadioReco/pages/detector/rnog.html">The RNO-G detector class and database interface</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/rnog.html#detector-time-and-database-time">Detector time and database time</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/rnog.html#database-structure">Database structure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/rnog.html#signal-chain">Signal Chain</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/rnog.html#response-class">Response class</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/detector/rnog.html#detector-class">Detector class</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../NuRadioReco/pages/times.html">Overview of times</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../NuRadioReco/pages/times.html#station-time-event-time">Station time (Event time)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/times.html#trace-start-times-in-channels">Trace start times in channels</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/times.html#trace-start-times-in-e-fields">Trace start times in E-fields</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/times.html#trigger-times">Trigger times</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../NuRadioReco/pages/times.html#overview-of-modules-that-affect-time">Overview of modules that affect time</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../NuRadioReco/pages/nur_modules.html">Modules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../NuRadioReco/pages/nur_modules.html#basic-module-structure">Basic Module Structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../NuRadioReco/pages/nur_modules.html#logging">Logging</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../NuRadioReco/pages/event_display.html">Event Display</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../NuRadioReco/pages/utilities.html">Utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../NuRadioReco/pages/utilities.html#unit-system">Unit System</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../NuRadioReco/pages/utilities.html#fourier-transformation">Fourier Transformation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../NuRadioReco/pages/utilities.html#metaclasses">Metaclasses</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/utilities.html#singleton">Singleton</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../NuRadioReco/pages/code_documentation.html">Code Documentation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.framework.html">NuRadioReco.framework package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.framework.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.framework.base_shower.html">NuRadioReco.framework.base_shower module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.framework.base_station.html">NuRadioReco.framework.base_station module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.framework.base_trace.html">NuRadioReco.framework.base_trace module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.framework.channel.html">NuRadioReco.framework.channel module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.framework.electric_field.html">NuRadioReco.framework.electric_field module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.framework.emitter.html">NuRadioReco.framework.emitter module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.framework.event.html">NuRadioReco.framework.event module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.framework.hybrid_information.html">NuRadioReco.framework.hybrid_information module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.framework.hybrid_shower.html">NuRadioReco.framework.hybrid_shower module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.framework.parameter_storage.html">NuRadioReco.framework.parameter_storage module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.framework.parameters.html">NuRadioReco.framework.parameters module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.framework.particle.html">NuRadioReco.framework.particle module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.framework.radio_shower.html">NuRadioReco.framework.radio_shower module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.framework.sim_channel.html">NuRadioReco.framework.sim_channel module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.framework.sim_emitter.html">NuRadioReco.framework.sim_emitter module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.framework.sim_station.html">NuRadioReco.framework.sim_station module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.framework.station.html">NuRadioReco.framework.station module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.framework.trigger.html">NuRadioReco.framework.trigger module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.modules.html">NuRadioReco.modules package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.modules.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.modules.ARA.html">NuRadioReco.modules.ARA package</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.modules.ARIANNA.html">NuRadioReco.modules.ARIANNA package</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.modules.LOFAR.html">NuRadioReco.modules.LOFAR package</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.modules.RNO_G.html">NuRadioReco.modules.RNO_G package</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.modules.base.html">NuRadioReco.modules.base package</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.modules.custom.html">NuRadioReco.modules.custom package</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.modules.iftElectricFieldReconstructor.html">NuRadioReco.modules.iftElectricFieldReconstructor package</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.modules.io.html">NuRadioReco.modules.io package</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.modules.likelihood_reconstruction.html">NuRadioReco.modules.likelihood_reconstruction package</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.modules.measured_noise.html">NuRadioReco.modules.measured_noise package</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.modules.neutrinoDirectionReconstructor.html">NuRadioReco.modules.neutrinoDirectionReconstructor package</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.modules.neutrinoVertexReconstructor.html">NuRadioReco.modules.neutrinoVertexReconstructor package</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.modules.phasedarray.html">NuRadioReco.modules.phasedarray package</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.modules.trigger.html">NuRadioReco.modules.trigger package</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.modules.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.modules.analogToDigitalConverter.html">NuRadioReco.modules.analogToDigitalConverter module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.modules.beamFormingDirectionFitter.html">NuRadioReco.modules.beamFormingDirectionFitter module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.modules.channelAddCableDelay.html">NuRadioReco.modules.channelAddCableDelay module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.modules.channelAntennaDedispersion.html">NuRadioReco.modules.channelAntennaDedispersion module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.modules.channelBandPassFilter.html">NuRadioReco.modules.channelBandPassFilter module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.modules.channelCWNotchFilter.html">NuRadioReco.modules.channelCWNotchFilter module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.modules.channelGalacticNoiseAdder.html">NuRadioReco.modules.channelGalacticNoiseAdder module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.modules.channelGenericNoiseAdder.html">NuRadioReco.modules.channelGenericNoiseAdder module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.modules.channelIceThermalNoiseAdder.html">NuRadioReco.modules.channelIceThermalNoiseAdder module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.modules.channelLengthAdjuster.html">NuRadioReco.modules.channelLengthAdjuster module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.modules.channelReadoutWindowCutter.html">NuRadioReco.modules.channelReadoutWindowCutter module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.modules.channelResampler.html">NuRadioReco.modules.channelResampler module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.modules.channelSignalReconstructor.html">NuRadioReco.modules.channelSignalReconstructor module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.modules.channelSinewaveSubtraction.html">NuRadioReco.modules.channelSinewaveSubtraction module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.modules.channelStopFilter.html">NuRadioReco.modules.channelStopFilter module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.modules.channelTemplateCorrelation.html">NuRadioReco.modules.channelTemplateCorrelation module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.modules.channelTimeOffsetCalculator.html">NuRadioReco.modules.channelTimeOffsetCalculator module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.modules.channelTimeWindow.html">NuRadioReco.modules.channelTimeWindow module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.modules.correlationDirectionFitter.html">NuRadioReco.modules.correlationDirectionFitter module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.modules.cosmicRayEnergyReconstructor.html">NuRadioReco.modules.cosmicRayEnergyReconstructor module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.modules.efieldGalacticNoiseAdder.html">NuRadioReco.modules.efieldGalacticNoiseAdder module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.modules.efieldRadioInterferometricReconstruction.html">NuRadioReco.modules.efieldRadioInterferometricReconstruction module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.modules.efieldTimeDirectionFitter.html">NuRadioReco.modules.efieldTimeDirectionFitter module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.modules.efieldToVoltageConverter.html">NuRadioReco.modules.efieldToVoltageConverter module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.modules.efieldToVoltageConverterPerEfield.html">NuRadioReco.modules.efieldToVoltageConverterPerEfield module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.modules.electricFieldBandPassFilter.html">NuRadioReco.modules.electricFieldBandPassFilter module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.modules.electricFieldResampler.html">NuRadioReco.modules.electricFieldResampler module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.modules.electricFieldSignalReconstructor.html">NuRadioReco.modules.electricFieldSignalReconstructor module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.modules.eventTypeIdentifier.html">NuRadioReco.modules.eventTypeIdentifier module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.modules.sphericalWaveFitter.html">NuRadioReco.modules.sphericalWaveFitter module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.modules.templateDirectionFitter.html">NuRadioReco.modules.templateDirectionFitter module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.modules.voltageToAnalyticEfieldConverter.html">NuRadioReco.modules.voltageToAnalyticEfieldConverter module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.modules.voltageToEfieldConverter.html">NuRadioReco.modules.voltageToEfieldConverter module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.modules.voltageToEfieldConverterPerChannel.html">NuRadioReco.modules.voltageToEfieldConverterPerChannel module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.modules.voltageToEfieldConverterPerChannelGroup.html">NuRadioReco.modules.voltageToEfieldConverterPerChannelGroup module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.detector.html">NuRadioReco.detector package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.detector.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.detector.ARA.html">NuRadioReco.detector.ARA package</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.detector.ARIANNA.html">NuRadioReco.detector.ARIANNA package</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.detector.LOFAR.html">NuRadioReco.detector.LOFAR package</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.detector.RNO_G.html">NuRadioReco.detector.RNO_G package</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.detector.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.detector.amp.html">NuRadioReco.detector.amp module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.detector.antennapattern.html">NuRadioReco.detector.antennapattern module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.detector.detector.html">NuRadioReco.detector.detector module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.detector.detector_base.html">NuRadioReco.detector.detector_base module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.detector.detector_sql.html">NuRadioReco.detector.detector_sql module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.detector.detector_sys_uncertainties.html">NuRadioReco.detector.detector_sys_uncertainties module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.detector.filterresponse.html">NuRadioReco.detector.filterresponse module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.detector.generic_detector.html">NuRadioReco.detector.generic_detector module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.detector.response.html">NuRadioReco.detector.response module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.detector.sql_to_json.html">NuRadioReco.detector.sql_to_json module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.detector.test_detector_db.html">NuRadioReco.detector.test_detector_db module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.detector.visualize_detector.html">NuRadioReco.detector.visualize_detector module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.utilities.html">NuRadioReco.utilities package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.utilities.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.utilities.analytic_pulse.html">NuRadioReco.utilities.analytic_pulse module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.utilities.constants.html">NuRadioReco.utilities.constants module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.utilities.cr_flux.html">NuRadioReco.utilities.cr_flux module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.utilities.dataservers.html">NuRadioReco.utilities.dataservers module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.utilities.diodeSimulator.html">NuRadioReco.utilities.diodeSimulator module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.utilities.fft.html">NuRadioReco.utilities.fft module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.utilities.framework_utilities.html">NuRadioReco.utilities.framework_utilities module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.utilities.geometryUtilities.html">NuRadioReco.utilities.geometryUtilities module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.utilities.ice.html">NuRadioReco.utilities.ice module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.utilities.interferometry.html">NuRadioReco.utilities.interferometry module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.utilities.io_utilities.html">NuRadioReco.utilities.io_utilities module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.utilities.logging.html">NuRadioReco.utilities.logging module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.utilities.matched_filter.html">NuRadioReco.utilities.matched_filter module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.utilities.metaclasses.html">NuRadioReco.utilities.metaclasses module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.utilities.minimization.html">NuRadioReco.utilities.minimization module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.utilities.noise.html">NuRadioReco.utilities.noise module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.utilities.particle_names.html">NuRadioReco.utilities.particle_names module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.utilities.signal_processing.html">NuRadioReco.utilities.signal_processing module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.utilities.templates.html">NuRadioReco.utilities.templates module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.utilities.timing.html">NuRadioReco.utilities.timing module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.utilities.trace_utilities.html">NuRadioReco.utilities.trace_utilities module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.utilities.units.html">NuRadioReco.utilities.units module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../NuRadioReco/apidoc/NuRadioReco.utilities.version.html">NuRadioReco.utilities.version module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../NuRadioReco/pages/howto_documentation.html">Manuals</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../NuRadioReco/pages/how_to/vertex_reconstruction.html">Use the Vertex Reconstruction Modules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/how_to/vertex_reconstruction.html#creating-lookup-tables">Creating Lookup Tables</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/how_to/vertex_reconstruction.html#creating-electric-field-templates">Creating Electric Field Templates</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/how_to/vertex_reconstruction.html#d-vs-3d-vertex-reconstructor">2D vs. 3D Vertex Reconstructor</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../NuRadioReco/pages/how_to/coreas_interpolation.html">Using the cosmic-ray pulse interpolator in NRR</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/how_to/coreas_interpolation.html#initialising-the-interpolator">Initialising the interpolator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/how_to/coreas_interpolation.html#interpolating-signals">Interpolating signals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/how_to/coreas_interpolation.html#what-happens-when-you-initialise-a-signal-interpolator">What happens when you initialise a signal interpolator?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/how_to/coreas_interpolation.html#some-tips-to-work-with-fluence-interpolation">Some tips to work with fluence interpolation</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../NuRadioReco/pages/how_to/likelihood_reconstruction.html">Likelihood-based forward folding reconstruction</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/how_to/likelihood_reconstruction.html#neutrino-reconstruction">Neutrino reconstruction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../NuRadioReco/pages/how_to/likelihood_reconstruction.html#electric-field-reconstruction">Electric-field reconstruction</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="../welcome_page.html">NuRadioMC Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../HDF5_structure.html">HDF5 output structure</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../HDF5_structure.html#opening-the-hdf5-file">Opening the HDF5 file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../HDF5_structure.html#what-s-behind-the-hdf5-files">What’s behind the HDF5 files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../HDF5_structure.html#hdf5-structure">HDF5 structure</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../HDF5_structure.html#hdf5-file-attributes">HDF5 file attributes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../HDF5_structure.html#hdf5-file-contents">HDF5 file contents</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../HDF5_structure.html#station-data">Station data</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../code_documentation.html">Code Documentation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../apidoc/NuRadioMC.EvtGen.html">NuRadioMC.EvtGen package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/NuRadioMC.EvtGen.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../apidoc/NuRadioMC.EvtGen.NuRadioMCtoAraSim.html">NuRadioMC.EvtGen.NuRadioMCtoAraSim module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../apidoc/NuRadioMC.EvtGen.NuRadioProposal.html">NuRadioMC.EvtGen.NuRadioProposal module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../apidoc/NuRadioMC.EvtGen.create_tau_tab.html">NuRadioMC.EvtGen.create_tau_tab module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../apidoc/NuRadioMC.EvtGen.generate_cylinder.html">NuRadioMC.EvtGen.generate_cylinder module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../apidoc/NuRadioMC.EvtGen.generate_unforced.html">NuRadioMC.EvtGen.generate_unforced module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../apidoc/NuRadioMC.EvtGen.generator.html">NuRadioMC.EvtGen.generator module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../apidoc/NuRadioMC.EvtGen.generator_ASCII.html">NuRadioMC.EvtGen.generator_ASCII module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../apidoc/NuRadioMC.EvtGen.generator_skeleton.html">NuRadioMC.EvtGen.generator_skeleton module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../apidoc/NuRadioMC.EvtGen.hdf5_to_ASCII.html">NuRadioMC.EvtGen.hdf5_to_ASCII module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../apidoc/NuRadioMC.EvtGen.proposal_table_manager.html">NuRadioMC.EvtGen.proposal_table_manager module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../apidoc/NuRadioMC.EvtGen.readARAEventList.html">NuRadioMC.EvtGen.readARAEventList module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../apidoc/NuRadioMC.EvtGen.readEventList_ASCII.html">NuRadioMC.EvtGen.readEventList_ASCII module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidoc/NuRadioMC.SignalGen.html">NuRadioMC.SignalGen package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/NuRadioMC.SignalGen.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../apidoc/NuRadioMC.SignalGen.ARZ.html">NuRadioMC.SignalGen.ARZ package</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/NuRadioMC.SignalGen.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../apidoc/NuRadioMC.SignalGen.HCRB2017.html">NuRadioMC.SignalGen.HCRB2017 module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../apidoc/NuRadioMC.SignalGen.askaryan.html">NuRadioMC.SignalGen.askaryan module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../apidoc/NuRadioMC.SignalGen.emitter.html">NuRadioMC.SignalGen.emitter module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../apidoc/NuRadioMC.SignalGen.parametrizations.html">NuRadioMC.SignalGen.parametrizations module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidoc/NuRadioMC.SignalProp.html">NuRadioMC.SignalProp package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/NuRadioMC.SignalProp.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../apidoc/NuRadioMC.SignalProp.AnalyticRayTracingImpl.html">NuRadioMC.SignalProp.AnalyticRayTracingImpl package</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/NuRadioMC.SignalProp.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../apidoc/NuRadioMC.SignalProp.analyticraytracing.html">NuRadioMC.SignalProp.analyticraytracing module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../apidoc/NuRadioMC.SignalProp.directRayTracing.html">NuRadioMC.SignalProp.directRayTracing module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../apidoc/NuRadioMC.SignalProp.propagation.html">NuRadioMC.SignalProp.propagation module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../apidoc/NuRadioMC.SignalProp.propagation_base_class.html">NuRadioMC.SignalProp.propagation_base_class module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../apidoc/NuRadioMC.SignalProp.radioproparaytracing.html">NuRadioMC.SignalProp.radioproparaytracing module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidoc/NuRadioMC.simulation.html">NuRadioMC.simulation package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/NuRadioMC.simulation.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../apidoc/NuRadioMC.simulation.output_writer_hdf5.html">NuRadioMC.simulation.output_writer_hdf5 module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../apidoc/NuRadioMC.simulation.simulation.html">NuRadioMC.simulation.simulation module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../apidoc/NuRadioMC.simulation.time_logger.html">NuRadioMC.simulation.time_logger module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidoc/NuRadioMC.utilities.html">NuRadioMC.utilities package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../apidoc/NuRadioMC.utilities.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../apidoc/NuRadioMC.utilities.Veff.html">NuRadioMC.utilities.Veff module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../apidoc/NuRadioMC.utilities.attenuation.html">NuRadioMC.utilities.attenuation module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../apidoc/NuRadioMC.utilities.birefringence.html">NuRadioMC.utilities.birefringence module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../apidoc/NuRadioMC.utilities.cross_sections.html">NuRadioMC.utilities.cross_sections module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../apidoc/NuRadioMC.utilities.dump_hdf5.html">NuRadioMC.utilities.dump_hdf5 module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../apidoc/NuRadioMC.utilities.earth_attenuation.html">NuRadioMC.utilities.earth_attenuation module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../apidoc/NuRadioMC.utilities.fluxes.html">NuRadioMC.utilities.fluxes module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../apidoc/NuRadioMC.utilities.inelasticities.html">NuRadioMC.utilities.inelasticities module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../apidoc/NuRadioMC.utilities.medium.html">NuRadioMC.utilities.medium module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../apidoc/NuRadioMC.utilities.medium_base.html">NuRadioMC.utilities.medium_base module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../apidoc/NuRadioMC.utilities.merge_hdf5.html">NuRadioMC.utilities.merge_hdf5 module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../apidoc/NuRadioMC.utilities.muon_flux.html">NuRadioMC.utilities.muon_flux module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../apidoc/NuRadioMC.utilities.plotting.html">NuRadioMC.utilities.plotting module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../apidoc/NuRadioMC.utilities.runner.html">NuRadioMC.utilities.runner module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../apidoc/NuRadioMC.utilities.runner_example.html">NuRadioMC.utilities.runner_example module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../apidoc/NuRadioMC.utilities.split_hdf5.html">NuRadioMC.utilities.split_hdf5 module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 current"><a class="reference internal" href="../manuals.html">Manuals</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="veff_tutorial.html">Example: Calculating effective volume</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="veff_tutorial.html#run-an-effective-volume-simulation">Run an effective volume simulation</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="veff_tutorial.html#generating-the-input-event-list">Generating the input event list</a></li>
+<li class="toctree-l5"><a class="reference internal" href="veff_tutorial.html#running-the-simulation">Running the simulation</a></li>
+<li class="toctree-l5"><a class="reference internal" href="veff_tutorial.html#visualization-of-results">Visualization of results</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="expected_sensitivities_tutorial.html">Example: Calculating expected sensitivities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="example-multi_station_coincidences.html">Example: Multi-station coincidences</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="example-multi_station_coincidences.html#generation-of-detector-layout">1. Generation of detector layout</a></li>
+<li class="toctree-l4"><a class="reference internal" href="example-multi_station_coincidences.html#detector-simulation">2. Detector simulation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="example-multi_station_coincidences.html#running-the-simulation">3. Running the simulation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="example-multi_station_coincidences.html#analyzing-the-output">4. Analyzing the output</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="event_generation.html">Event Generation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="event_generation.html#events-in-a-cylindrical-volume">Events in a cylindrical volume</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="event_generation.html#input-parameters">Input parameters</a></li>
+<li class="toctree-l5"><a class="reference internal" href="event_generation.html#data-sets-and-attributes">Data sets and attributes</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="event_generation.html#atmospheric-muons-generated-on-a-flat-surface">Atmospheric muons generated on a flat surface</a></li>
+<li class="toctree-l4"><a class="reference internal" href="event_generation.html#nuradioproposal-as-a-standalone-module">NuRadioProposal as a standalone module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="signal_generation_shower.html">Signal Generation (from in-ice showers)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="signal_generation_shower.html#frequency-domain-parameterisations">Frequency-domain parameterisations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="signal_generation_shower.html#arz-semi-analytical-model">ARZ - semi-analytical model</a></li>
+<li class="toctree-l4"><a class="reference internal" href="signal_generation_shower.html#validity-of-the-parameterisations-and-the-arz-model">Validity of the parameterisations and the ARZ model</a></li>
+<li class="toctree-l4"><a class="reference internal" href="signal_generation_shower.html#timing">Timing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="signal_generation_shower.html#using-the-same-shower-random-seed">Using the same shower. Random seed</a></li>
+<li class="toctree-l4"><a class="reference internal" href="signal_generation_shower.html#fft-normalisation">FFT normalisation</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="shower_simulation.html">In-ice shower simulation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="signal_generation_emitter.html">Signal Generation (emitter)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="signal_generation_emitter.html#spice-pulser">SPice Pulser</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="signal_propagation.html">Signal Propagation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="signal_propagation.html#propagation-module">Propagation module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="signal_propagation.html#ray-tracing">Ray tracing</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="signal_propagation.html#analytical-ray-tracer">Analytical ray tracer</a></li>
+<li class="toctree-l5"><a class="reference internal" href="signal_propagation.html#radiopropa-numerical-ray-tracer-in-development">RadioPropa numerical ray tracer (in development)</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="signal_propagation.html#example-scripts">Example scripts</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="signal_propagation.html#how-to-calculate-an-analytic-ray-path">How to calculate an analytic ray path</a></li>
+<li class="toctree-l5"><a class="reference internal" href="signal_propagation.html#how-to-calculate-an-radiopropa-ray-path">How to calculate an radiopropa ray path</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="icemodels.html">Ice and attenuation models</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="icemodels.html#ice-model-implementation">Ice model implementation</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="icemodels.html#the-icemodel-and-icemodel-simple-class">The IceModel and IceModel_Simple class</a></li>
+<li class="toctree-l5"><a class="reference internal" href="icemodels.html#radiopropaicewrapper">RadioPropaIceWrapper</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="icemodels.html#available-models-in-nuradiomc">Available models in NuRadioMC</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="icemodels.html#simple-ice-models">Simple ice models</a></li>
+<li class="toctree-l5"><a class="reference internal" href="icemodels.html#radiopropa-ice-models">RadioPropa ice models</a></li>
+<li class="toctree-l5"><a class="reference internal" href="icemodels.html#attenuation-model">Attenuation model</a></li>
+<li class="toctree-l5"><a class="reference internal" href="icemodels.html#using-specific-models">Using specific models</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="icemodels.html#example-script">Example script</a></li>
+<li class="toctree-l4"><a class="reference internal" href="icemodels.html#birefringence-ice-models">Birefringence Ice Models</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="icemodels.html#available-birefringence-ice-models">Available Birefringence Ice Models</a></li>
+<li class="toctree-l5"><a class="reference internal" href="icemodels.html#ice-flow-direction">Ice-Flow Direction</a></li>
+<li class="toctree-l5"><a class="reference internal" href="icemodels.html#available-birefringence-propagation-options">Available Birefringence Propagation Options</a></li>
+<li class="toctree-l5"><a class="reference internal" href="icemodels.html#using-specific-birefringence-models">Using specific birefringence models</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Simulation and configuration</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#steering-files">Steering files</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#config-files">Config files</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#detector-description">Detector description</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#detector-simulation">Detector simulation</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="running_on_a_cluster.html">Running on a cluster</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="running_on_a_cluster.html#generate-input-files">1. Generate input files</a></li>
+<li class="toctree-l4"><a class="reference internal" href="running_on_a_cluster.html#generate-job-sh-scripts">2. Generate job *.sh scripts</a></li>
+<li class="toctree-l4"><a class="reference internal" href="running_on_a_cluster.html#submit-jobs-to-the-cluster">3. Submit jobs to the cluster</a></li>
+<li class="toctree-l4"><a class="reference internal" href="running_on_a_cluster.html#merge-individual-hdf5-output-files">4. Merge individual hdf5 output files</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Experiments/welcome_page.html">Experiment-specific features</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../Experiments/lofar/overview.html">LOFAR</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../main.html">NuRadio</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../main.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../welcome_page.html">NuRadioMC Documentation</a></li>
+          <li class="breadcrumb-item"><a href="../manuals.html">Manuals</a></li>
+      <li class="breadcrumb-item active">Simulation and configuration</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/NuRadioMC/pages/Manuals/simulation_configuration.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="simulation-and-configuration">
+<h1>Simulation and configuration<a class="headerlink" href="#simulation-and-configuration" title="Link to this heading"></a></h1>
+<p>The <a class="reference internal" href="../../apidoc/NuRadioMC.simulation.simulation.html#NuRadioMC.simulation.simulation.simulation" title="NuRadioMC.simulation.simulation.simulation"><code class="xref py py-class docutils literal notranslate"><span class="pre">simulation</span></code></a> class and the module of the same name, constitute the heart of NuRadioMC.
+The simulation module takes the neutrino input files and creates events with them.
+These events are then processed using the information in the config file and the detector layout specified in the detector JSON file.
+Finally, the trigger description in a steering file is used to determine whether an event triggers or not.</p>
+<p>This page outlines the important aspects of how to operate a NuRadioMC simulation. For a practical example, visit <a class="reference external" href="https://github.com/nu-radio/NuRadioMC/tree/master/NuRadioMC/examples/06_webinar">the webinar example</a>.</p>
+<p>Let us begin with a description of the steering files needed to run the simulation then let us discuss a brief outline of the procedure in <code class="docutils literal notranslate"><span class="pre">simulation.py</span></code>.</p>
+<section id="steering-files">
+<h2>Steering files<a class="headerlink" href="#steering-files" title="Link to this heading"></a></h2>
+<p>A NuRadioMC steering file is the file that describes and runs the simulation. As a small example, we can define a detector with an empty detector description.
+Every steering file should have a class that inherits from the simulation class, that we can call <code class="docutils literal notranslate"><span class="pre">mySimulation</span></code>.
+This class must at least define the methods <code class="docutils literal notranslate"><span class="pre">_detector_simulation_filter_amp</span></code> and <code class="docutils literal notranslate"><span class="pre">_detector_simulation_trigger</span></code>, which
+define the detector signal chain response (filters, amplifiers) and the trigger(s), respectively.</p>
+<p>To create a simulation instance, we need a NuRadioMC neutrino input file, a detector description JSON file, a YAML file with various configuration settings, the output file name, and optionally the output NuRadioReco file name (nur file).</p>
+<p>The following code shows how to run a simulation by creating an instance of mySimulation, who is a child class of simulation, and then run it.</p>
+<blockquote>
+<div><div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">NuRadioReco.modules.RNO_G.hardwareResponseIncorporator</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">NuRadioReco.modules.trigger.highLowThreshold</span>
+
+<span class="n">hardware_response</span> <span class="o">=</span> <span class="n">NuRadioReco</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">RNO_G</span><span class="o">.</span><span class="n">hardwareResponseIncorporator</span><span class="o">.</span><span class="n">hardwareResponseIncorporator</span><span class="p">()</span>
+<span class="n">highLowThreshold</span> <span class="o">=</span> <span class="n">NuRadioReco</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">trigger</span><span class="o">.</span><span class="n">highLowThreshold</span><span class="o">.</span><span class="n">triggerSimulator</span><span class="p">()</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">mySimulation</span><span class="p">(</span><span class="n">simulation</span><span class="o">.</span><span class="n">simulation</span><span class="p">):</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_detector_simulation_filter_amp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">evt</span><span class="p">,</span> <span class="n">station</span><span class="p">,</span> <span class="n">det</span><span class="p">):</span> <span class="c1"># simulate the detector response</span>
+        <span class="n">hardware_response</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">evt</span><span class="p">,</span> <span class="n">station</span><span class="p">,</span> <span class="n">det</span><span class="p">,</span> <span class="n">sim_to_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_detector_simulation_trigger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">evt</span><span class="p">,</span> <span class="n">station</span><span class="p">,</span> <span class="n">det</span><span class="p">):</span> <span class="c1"># run the trigger simulation</span>
+        <span class="n">highLowThreshold</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+            <span class="n">evt</span><span class="p">,</span> <span class="n">station</span><span class="p">,</span> <span class="n">det</span><span class="p">,</span> <span class="n">triggered_channels</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="n">trigger_name</span><span class="o">=</span><span class="s1">'main_trigger'</span><span class="p">)</span>
+
+<span class="n">sim</span> <span class="o">=</span> <span class="n">mySimulation</span><span class="p">(</span>
+    <span class="n">inputfilename</span><span class="o">=</span><span class="s2">"input.hdf5"</span><span class="p">,</span>
+    <span class="n">outputfilename</span><span class="o">=</span><span class="s2">"output.hdf5"</span><span class="p">,</span>
+    <span class="n">detectorfile</span><span class="o">=</span><span class="s2">"RNO_G/RNO_single_station.json"</span><span class="p">,</span>
+    <span class="n">outputfilenameNuRadioReco</span><span class="o">=</span><span class="s2">"output.nur"</span><span class="p">,</span>
+    <span class="n">config_file</span><span class="o">=</span><span class="s1">'config.yaml'</span><span class="p">,</span>
+    <span class="n">trigger_channels</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">])</span>
+
+<span class="c1"># run the simulation: this will produce the output files 'output.hdf5'</span>
+<span class="c1"># and 'output.nur' containing the triggering events</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>When the simulation child object is initialised, the detector description in the JSON file is loaded via NuRadioReco. Then, when the <code class="docutils literal notranslate"><span class="pre">run()</span></code> method is called, the simulation module starts the following process:</p>
+<blockquote>
+<div><ol class="arabic">
+<li><p>It reads the events from the input file, one by one, and assigns weights given by the probability that the neutrino reaches our effective volume</p></li>
+<li><p>It calculates the ray tracing solutions from the interaction vertices to the channels in each station</p></li>
+<li><p>Then, for the existing ray tracing solutions, the electric field is calculated using the SignalGen models, taking into account that propagation will modify the SignalGen input parameters</p></li>
+<li><p>The detector is simulated:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>The electric fields are convolved with the antenna response to obtain voltage traces;</p></li>
+<li><p>(Optionally) noise is added. By default, flat (white) noise is added prior to the amplification stage;</p></li>
+<li><p>The signal chain (filters, amplifiers) are applied,
+as defined in the user-provided <code class="docutils literal notranslate"><span class="pre">_detector_simulation_filter_amp</span></code> method;</p></li>
+<li><p>The trigger(s) are computed to determine if the event would satisfy the detector trigger conditions,
+as implemented by the the user-provided <code class="docutils literal notranslate"><span class="pre">_detector_simulation_trigger</span></code> method;</p></li>
+<li><p>The voltage traces are cut to the appropriate readout windows (the trace lengths specified by the detector),
+and downsampled to the detector sampling frequency</p></li>
+</ol>
+</div></blockquote>
+</li>
+<li><p>Finally, some properties for all triggering events are stored in an output <a class="reference internal" href="../HDF5_structure.html"><span class="doc">HDF5 file</span></a>,
+and (optionally) the full events are stored in a <a class="reference internal" href="../../../NuRadioReco/pages/event_structure.html"><span class="doc">.nur file</span></a>.</p></li>
+</ol>
+</div></blockquote>
+<p>An example of a steering file, complete with detector description, can be found in <a class="reference external" href="https://github.com/nu-radio/NuRadioMC/blob/master/NuRadioMC/examples/06_webinar/W02RunSimulation.py">examples/06_webinar/W02RunSimulation.py</a>.</p>
+</section>
+<section id="config-files">
+<h2>Config files<a class="headerlink" href="#config-files" title="Link to this heading"></a></h2>
+<p>The default configuration (or config) file used is the <code class="docutils literal notranslate"><span class="pre">config_default.yaml</span></code> file in the simulation folder. If the user wants to use different parameters, it suffices to specify ONLY the parameters they want to be overriden in their own config file. For instance, if the user wants to change only the emission model to ARZ2020, a short file like the following is enough:</p>
+<blockquote>
+<div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">signal</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">model</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ARZ2020</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>The following is a description of the default configuration file and what can be changed therein.</p>
+<blockquote>
+<div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">weights</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">weight_mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">core_mantle_crust</span><span class="w"> </span><span class="c1"># core_mantle_crust: use the three layer earth model,</span>
+<span class="w">    </span><span class="c1"># which considers the different densities of the core, mantle and crust.</span>
+<span class="w">    </span><span class="nt">cross_section_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ctw</span>
+<span class="w">    </span><span class="c1"># neutrino cross section: ghandi : according to Ghandi et al. Phys.Rev.D58:093009,1998,</span>
+<span class="w">    </span><span class="c1"># ctw : A. Connolly, R. S. Thorne, and D. Waters, Phys. Rev.D 83, 113009 (2011).</span>
+<span class="w">    </span><span class="c1"># csms: A. Cooper-Sarkar, P. Mertsch, S. Sarkar, JHEP 08 (2011) 042</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>The available options for weight mode are:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">simple</span></code>: assuming interaction happens at the surface and approximating the Earth with constant density</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">core_mantle_crust_simple</span></code>: assuming interaction happens at the surface and approximating the Earth with 3 layers of constant density</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">core_mantle_crust</span></code>: approximating the Earth with 3 layers of constant density, path through Earth to interaction vertex is considered</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PREM</span></code>: density of Earth is parameterised as a function of radius, path through Earth to interaction vertex is considered</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">None</span></code>: all weights are set to 1.</p></li>
+</ul>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">noise</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">False</span><span class="w">  </span><span class="c1"># specify if simulation should be run with or without noise</span>
+<span class="c1"># The user must add noise manually in the detector description</span>
+<span class="nt">sampling_rate</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5.</span><span class="w">  </span><span class="c1"># sampling rate in GHz used internally in the simulation.</span>
+<span class="c1"># At the end the waveforms will be downsampled to the sampling rate specified in the</span>
+<span class="c1"># detector description.</span>
+
+<span class="nt">seed</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1235</span><span class="w"> </span><span class="c1"># This seed is used for the first call to the random library</span>
+
+<span class="c1"># The following parameters are used to filter events that we know that</span>
+<span class="c1"># they will not trigger, gaining time in the process.</span>
+<span class="nt">speedup</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">minimum_weight_cut</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.e-5</span><span class="w"> </span><span class="c1"># If the assigned weight is less than this one,</span>
+<span class="w">  </span><span class="c1"># the event is skipped</span>
+<span class="w">  </span><span class="nt">delta_C_cut</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.698</span><span class="w">  </span><span class="c1"># 40 degree. If the difference between viewing angle</span>
+<span class="w">  </span><span class="c1"># and Cherenkov angle (corrected by ray tracing) is larger, the event is skipped</span>
+<span class="w">  </span><span class="nt">redo_raytracing</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">False</span><span class="w">  </span><span class="c1"># redo ray tracing even if previous calculated ray</span>
+<span class="w">  </span><span class="c1"># tracing solutions are present</span>
+<span class="w">  </span><span class="nt">min_efield_amplitude</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w">  </span><span class="c1"># the minimum signal amplitude of the efield as a factor</span>
+<span class="w">  </span><span class="c1"># of the noise RMS. If the value is smaller, no detector simulation is</span>
+<span class="w">  </span><span class="c1"># performed. As the vector effective length of antennas is typically less</span>
+<span class="w">  </span><span class="c1"># than 1, this cut does not introduce any bias as long as the value is smaller</span>
+<span class="w">  </span><span class="c1"># than the trigger threshold.</span>
+<span class="w">  </span><span class="nt">amp_per_ray_solution</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span><span class="w">  </span><span class="c1"># if False, the maximum amplitude for each ray tracing</span>
+<span class="w">  </span><span class="c1"># solution is not calculated</span>
+<span class="w">  </span><span class="nt">distance_cut</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">False</span><span class="w"> </span><span class="c1"># if True, a cut for the vertex-observer distance as a function</span>
+<span class="w">  </span><span class="c1"># of shower energy is applied</span>
+<span class="w">  </span><span class="c1"># (log10(max_dist / m) = intercept + slope * log10(shower_energy / eV))</span>
+<span class="w">  </span><span class="c1"># The intercept and the slope below have been obtained from distance</span>
+<span class="w">  </span><span class="c1"># histograms for several shower energy bins. A 10x10 array of 1.5 sigma dipoles</span>
+<span class="w">  </span><span class="c1"># in Greenland was used. The distance cut is a linear fit of the maximum distances</span>
+<span class="w">  </span><span class="c1"># at shower energies around 1~10 PeV with a cover factor of 1.5, or 50%.</span>
+<span class="w">  </span><span class="nt">distance_cut_intercept</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-12.14</span><span class="w"> </span><span class="c1"># intercept for the maximum distance cut</span>
+<span class="w">  </span><span class="nt">distance_cut_slope</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.9542</span><span class="w"> </span><span class="c1"># slope for the maximum distance cut</span>
+<span class="w">  </span><span class="c1"># This distance cut is really important when simulating large arrays and</span>
+<span class="w">  </span><span class="c1"># secondary interactions</span>
+
+<span class="c1"># The following block specifies the options for ray tracing</span>
+<span class="nt">propagation</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">module</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">analytic</span>
+<span class="w">  </span><span class="nt">ice_model</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">southpole_2015</span><span class="w"> </span><span class="c1"># There's a range of available models:</span>
+<span class="w">  </span><span class="c1"># greenland_simple, mooresbay_simple, southpole_2015, southpole_simple, ARASim_southpole</span>
+<span class="w">  </span><span class="nt">attenuation_model</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SP1</span><span class="w"> </span><span class="c1"># SP1 for South Pole, GL1 for Greenland, and</span>
+<span class="w">  </span><span class="c1"># MB1 for Moore's Bay</span>
+<span class="w">  </span><span class="nt">attenuate_ice</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span><span class="w"> </span><span class="c1"># if True apply the frequency dependent attenuation due to</span>
+<span class="w">  </span><span class="c1"># propagating through ice. (Note: The 1/R amplitude scaling will be applied in either case.)</span>
+<span class="w">  </span><span class="nt">n_freq</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">25</span><span class="w">  </span><span class="c1"># the number of frequencies where the attenuation length is</span>
+<span class="w">  </span><span class="c1"># calculated for. The remaining frequencies will be determined from a linear</span>
+<span class="w">  </span><span class="c1"># interpolation between the reference frequencies. The reference frequencies are</span>
+<span class="w">  </span><span class="c1"># equally spaced over the complete frequency range.</span>
+<span class="w">  </span><span class="nt">focusing</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">False</span><span class="w">  </span><span class="c1"># if True apply the focusing effect.</span>
+<span class="w">  </span><span class="nt">focusing_limit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w">  </span><span class="c1"># the maximum amplification factor of the focusing correction</span>
+<span class="w">  </span><span class="nt">n_reflections</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span><span class="w">  </span><span class="c1"># the maximum number of reflections off a reflective layer</span>
+<span class="w">  </span><span class="c1"># at the bottom of the ice layer</span>
+
+<span class="c1"># This block specifies the emission model</span>
+<span class="nt">signal</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">model</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Alvarez2009</span><span class="w"> </span><span class="c1"># Alvarez2000, Alvarez2009, ARZ2019, or ARZ2020</span>
+<span class="w">  </span><span class="nt">zerosignal</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">False</span><span class="w">  </span><span class="c1"># if True, the signal is set to zero. This is useful to</span>
+<span class="w">  </span><span class="c1"># study 'noise' only simulations, which inform about the noise trigger rate</span>
+<span class="w">  </span><span class="nt">polarization</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">auto</span><span class="w"> </span><span class="c1"># can be either 'auto' or 'custom'</span>
+<span class="w">  </span><span class="nt">ePhi</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.</span><span class="w">  </span><span class="c1"># only used if 'polarization = custom', fraction of ePhi component,</span>
+<span class="w">  </span><span class="c1"># the eTheta component is eTheta = (1 - ePhi**2)**0.5</span>
+<span class="w">  </span><span class="nt">shower_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span><span class="w"> </span><span class="c1"># optional argument to only simulate certain shower types.</span>
+<span class="w">  </span><span class="c1"># Arguments can be "had" or "em".</span>
+
+<span class="c1"># The last block specifies noise properties important for the trigger</span>
+<span class="nt">trigger</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">noise_temperature</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">300</span><span class="w">  </span><span class="c1"># in Kelvin</span>
+<span class="w">  </span><span class="c1"># This noise temperature is then used to calculate the noise RMS</span>
+<span class="w">  </span><span class="nt">Vrms</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span><span class="w">  </span><span class="c1"># the RMS noise value in volts. Not compatible with 'noise_temperature',</span>
+<span class="w">  </span><span class="c1"># if Vrms is set, 'noise_temperature' must be None</span>
+
+<span class="nt">output</span><span class="p">:</span><span class="w"> </span><span class="c1"># control which, if any, waveforms to store. By default, all waveforms are stored.</span>
+<span class="w">  </span><span class="nt">channel_traces</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span>
+<span class="w">  </span><span class="nt">electric_field_traces</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span>
+<span class="w">  </span><span class="nt">sim_channel_traces</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span>
+<span class="w">  </span><span class="nt">sim_electric_field_traces</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span>
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+<section id="detector-description">
+<h2>Detector description<a class="headerlink" href="#detector-description" title="Link to this heading"></a></h2>
+<p>The detector description used by NuRadioReco must be specified in a JSON detector file. We will explain the most important fields needed in these JSON files.</p>
+<p>To write a JSON detector file, first we start with the channels, each one having an antenna. The mandatory parameters for a channel are:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">channel_id</span></code>, the ID that will be used internally in NuRadioMC and NuRadioReco</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">station_id</span></code>, the ID of the station the channel belongs to</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">adc_sampling_frequency</span></code>, the sampling frequency for the analog-to-digital converter, which can be used for resampling traces.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ant_type</span></code>, the antenna type. For instance, ‘bicone_v8’ or ‘createLPDA_100MHz’.</p></li>
+<li><dl class="simple">
+<dt>These positions are relative to the altitude, northing, and easting of the associated station.</dt><dd><ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">ant_position_x</span></code>, the x coordinate of the antenna in metres</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ant_position_y</span></code>, the y coordinate of the antenna in metres</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ant_position_z</span></code>, the z coordinate of the antenna in metres.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ant_orientation_theta</span></code>. For dipoles, this theta marks the zenith of the direction along which the axis is placed. For LPDAs, it marks the boresight, the direction of maximum gain. All angles are in degrees.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ant_orientation_phi</span></code>. The same as ant_orientation_theta, but for azimuth.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ant_rotation_theta</span></code>. The zenith angle of the direction of the tines of the antenna, that must be perpendicular to the direction defined by ant_orientation_theta and ant_orientation_phi.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ant_rotation_phi</span></code>. The same as ant_rotation_theta, but for azimuth.</p></li>
+</ul>
+</div></blockquote>
+<p>For instance, a vertical dipole would have <code class="docutils literal notranslate"><span class="pre">ant_orientation_theta:</span> <span class="pre">0</span></code> and any <code class="docutils literal notranslate"><span class="pre">ant_orientation_phi</span></code>. <code class="docutils literal notranslate"><span class="pre">ant_rotation_theta</span></code> and <code class="docutils literal notranslate"><span class="pre">ant_rotation_phi</span></code> can be any direction perpendicular to the orientation, for instance <code class="docutils literal notranslate"><span class="pre">ant_rotation_theta:</span> <span class="pre">90</span></code> and <code class="docutils literal notranslate"><span class="pre">ant_rotation_phi:</span> <span class="pre">90</span></code>.</p>
+<p>Another example: a 45-degree downward-pointing LPDA antenna with the tines on the XZ plane would have <code class="docutils literal notranslate"><span class="pre">ant_orientation_theta:</span> <span class="pre">135</span></code>, <code class="docutils literal notranslate"><span class="pre">ant_orientation_phi:</span> <span class="pre">0</span></code>, <code class="docutils literal notranslate"><span class="pre">ant_rotation_theta:</span> <span class="pre">45</span></code>, <code class="docutils literal notranslate"><span class="pre">ant_rotation_phi:</span> <span class="pre">0</span></code>.</p>
+<p>See the <a class="reference internal" href="../../../NuRadioReco/pages/detector/detector_database_fields.html"><span class="doc">NuRadioReco documentation</span></a> for a more complete explanation of the antenna angles.</p>
+<p>The rest of the parameters are either not used yet (they’re here for future modules) or they are used by modules not needed for the present example.</p>
+<p>After the channels, the stations must be defined. The mandatory parameters for a station are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">pos_altitud</span></code>, the altitude of the station in metres</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pos_easting</span></code>, the easting of the station in metres</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pos_northing</span></code>, the northing of the station in metres</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">station_id</span></code>, the ID of the station that will be used internally by NuRadioMC and NuRadioReco</p></li>
+</ul>
+<p>One of the advantages of the default_detector_station option given by NuRadioReco is that, if we want to create another station 102 that has a channel setup identical to station 101, we can just define station 102 without any channel associated and then run our simulation using <code class="docutils literal notranslate"><span class="pre">default_detector_station=101</span></code>. The channels from station 101 will be copied to station 102, and their coordinates will be read as relative to the easting, northing, and altitude of station 102.</p>
+<p>We show in the following an example of a JSON detector file.</p>
+<blockquote>
+<div><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"_default"</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">    </span><span class="nt">"channels"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"1"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">"adc_id"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"adc_n_samples"</span><span class="p">:</span><span class="w"> </span><span class="mi">256</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"adc_nbits"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"adc_sampling_frequency"</span><span class="p">:</span><span class="w"> </span><span class="mf">2.0</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"adc_time_delay"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"amp_reference_measurement"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"amp_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"100"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"ant_orientation_phi"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"ant_orientation_theta"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"ant_position_x"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"ant_position_y"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"ant_position_z"</span><span class="p">:</span><span class="w"> </span><span class="mi">-90</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"ant_rotation_phi"</span><span class="p">:</span><span class="w"> </span><span class="mf">90.0</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"ant_rotation_theta"</span><span class="p">:</span><span class="w"> </span><span class="mf">90.0</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"ant_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"vpol_prototype_50cm_n1.74"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"cab_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"17-09"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"cab_length"</span><span class="p">:</span><span class="w"> </span><span class="mf">5.0</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"cab_reference_measurement"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"cab_time_delay"</span><span class="p">:</span><span class="w"> </span><span class="mf">19.8</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"cab_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"LMR_400"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"channel_id"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"commission_time"</span><span class="p">:</span><span class="w"> </span><span class="s2">"{TinyDate}:2017-11-01T00:00:00"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"decommission_time"</span><span class="p">:</span><span class="w"> </span><span class="s2">"{TinyDate}:2038-01-01T00:00:00"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"station_id"</span><span class="p">:</span><span class="w"> </span><span class="mi">101</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">"2"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">"adc_id"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"adc_n_samples"</span><span class="p">:</span><span class="w"> </span><span class="mi">256</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"adc_nbits"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"adc_sampling_frequency"</span><span class="p">:</span><span class="w"> </span><span class="mf">2.0</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"adc_time_delay"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"amp_reference_measurement"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"amp_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"100"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"ant_orientation_phi"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"ant_orientation_theta"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"ant_position_x"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"ant_position_y"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"ant_position_z"</span><span class="p">:</span><span class="w"> </span><span class="mf">-92.5</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"ant_rotation_phi"</span><span class="p">:</span><span class="w"> </span><span class="mf">90.0</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"ant_rotation_theta"</span><span class="p">:</span><span class="w"> </span><span class="mf">90.0</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"ant_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"bicone_v8_inf_n1.78"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"cab_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"17-09"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"cab_length"</span><span class="p">:</span><span class="w"> </span><span class="mf">5.0</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"cab_reference_measurement"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"cab_time_delay"</span><span class="p">:</span><span class="w"> </span><span class="mf">19.8</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"cab_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"LMR_400"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"channel_id"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"commission_time"</span><span class="p">:</span><span class="w"> </span><span class="s2">"{TinyDate}:2017-11-01T00:00:00"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"decommission_time"</span><span class="p">:</span><span class="w"> </span><span class="s2">"{TinyDate}:2038-01-01T00:00:00"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"station_id"</span><span class="p">:</span><span class="w"> </span><span class="mi">101</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">"3"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">"adc_id"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"adc_n_samples"</span><span class="p">:</span><span class="w"> </span><span class="mi">256</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"adc_nbits"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"adc_sampling_frequency"</span><span class="p">:</span><span class="w"> </span><span class="mf">2.0</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"adc_time_delay"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"amp_reference_measurement"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"amp_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"100"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"ant_orientation_phi"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"ant_orientation_theta"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"ant_position_x"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"ant_position_y"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"ant_position_z"</span><span class="p">:</span><span class="w"> </span><span class="mi">-95</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"ant_rotation_phi"</span><span class="p">:</span><span class="w"> </span><span class="mf">90.0</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"ant_rotation_theta"</span><span class="p">:</span><span class="w"> </span><span class="mf">90.0</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"ant_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"bicone_v8_inf_n1.78"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"cab_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"17-09"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"cab_length"</span><span class="p">:</span><span class="w"> </span><span class="mf">5.0</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"cab_reference_measurement"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"cab_time_delay"</span><span class="p">:</span><span class="w"> </span><span class="mf">19.8</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"cab_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"LMR_400"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"channel_id"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"commission_time"</span><span class="p">:</span><span class="w"> </span><span class="s2">"{TinyDate}:2017-11-01T00:00:00"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"decommission_time"</span><span class="p">:</span><span class="w"> </span><span class="s2">"{TinyDate}:2038-01-01T00:00:00"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"station_id"</span><span class="p">:</span><span class="w"> </span><span class="mi">101</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">"4"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">"adc_id"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"adc_n_samples"</span><span class="p">:</span><span class="w"> </span><span class="mi">256</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"adc_nbits"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"adc_sampling_frequency"</span><span class="p">:</span><span class="w"> </span><span class="mf">2.0</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"adc_time_delay"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"amp_reference_measurement"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"amp_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"100"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"ant_orientation_phi"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"ant_orientation_theta"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"ant_position_x"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"ant_position_y"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"ant_position_z"</span><span class="p">:</span><span class="w"> </span><span class="mf">-97.5</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"ant_rotation_phi"</span><span class="p">:</span><span class="w"> </span><span class="mf">90.0</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"ant_rotation_theta"</span><span class="p">:</span><span class="w"> </span><span class="mf">90.0</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"ant_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"bicone_v8_inf_n1.78"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"cab_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"17-09"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"cab_length"</span><span class="p">:</span><span class="w"> </span><span class="mf">5.0</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"cab_reference_measurement"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"cab_time_delay"</span><span class="p">:</span><span class="w"> </span><span class="mf">19.8</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"cab_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"LMR_400"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"channel_id"</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"commission_time"</span><span class="p">:</span><span class="w"> </span><span class="s2">"{TinyDate}:2017-11-01T00:00:00"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"decommission_time"</span><span class="p">:</span><span class="w"> </span><span class="s2">"{TinyDate}:2038-01-01T00:00:00"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"station_id"</span><span class="p">:</span><span class="w"> </span><span class="mi">101</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">"positions"</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">    </span><span class="nt">"stations"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"1"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">"MAC_address"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0002F7F2E7B9"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"MBED_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"v1"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"board_number"</span><span class="p">:</span><span class="w"> </span><span class="mi">203</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"commission_time"</span><span class="p">:</span><span class="w"> </span><span class="s2">"{TinyDate}:2017-11-04T00:00:00"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"decommission_time"</span><span class="p">:</span><span class="w"> </span><span class="s2">"{TinyDate}:2038-01-01T00:00:00"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"pos_altitude"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"pos_easting"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"pos_measurement_time"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"pos_northing"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"pos_position"</span><span class="p">:</span><span class="w"> </span><span class="s2">"MB1"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"pos_site"</span><span class="p">:</span><span class="w"> </span><span class="s2">"mooresbay"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"position"</span><span class="p">:</span><span class="w"> </span><span class="s2">"MB1"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"station_id"</span><span class="p">:</span><span class="w"> </span><span class="mi">101</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"station_type"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+<section id="detector-simulation">
+<h2>Detector simulation<a class="headerlink" href="#detector-simulation" title="Link to this heading"></a></h2>
+<p>The following steering file teaches what the principal constituents of a detector simulation are. This code has been taken from the <a class="reference external" href="https://github.com/nu-radio/NuRadioMC/blob/master/NuRadioMC/examples/06_webinar/W02RunSimulation.py">examples/06_webinar/W02RunSimulation.py</a>. It contains guidelines for generating noise, resampling, filtering, and implementing a trigger.</p>
+<blockquote>
+<div><div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
+<span class="c1"># import detector simulation modules</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">NuRadioReco.modules.trigger.simpleThreshold</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">NuRadioReco.modules.trigger.highLowThreshold</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">NuRadioReco.modules.channelResampler</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">NuRadioReco.modules.channelBandPassFilter</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">NuRadioReco.modules.channelGenericNoiseAdder</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">NuRadioReco.utilities</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">NuRadioMC.simulation</span><span class="w"> </span><span class="kn">import</span> <span class="n">simulation</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
+    <span class="n">results_folder</span> <span class="o">=</span> <span class="s1">'results'</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">results_folder</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">results_folder</span><span class="p">)</span>
+
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    This file is a steering file that runs a simple NuRadioMC simulation. If one</span>
+<span class="sd">    wants to run it with the default parameters, one just needs to type:</span>
+
+<span class="sd">    python W02RunSimulation.py</span>
+
+<span class="sd">    Otherwise, the arguments need to be specified as follows:</span>
+
+<span class="sd">    python W02RunSimulation.py --inputfilename input.hdf5 --detectordescription detector.json</span>
+<span class="sd">    --config config.yaml --outputfilename out.hdf5 --outputfilenameNuRadioReco out.nur</span>
+
+<span class="sd">    The last argument is optional, only needed if the user wants a nur file. nur files</span>
+<span class="sd">    contain lots of information on triggering events, so they're a great tool for</span>
+<span class="sd">    reconstruction (see NuRadioReco documentation and Christoph's webinar). However,</span>
+<span class="sd">    because of their massive amount of information, they can be really heavy. So, when</span>
+<span class="sd">    running NuRadioMC with millions of events, most of the time nur files should not</span>
+<span class="sd">    be created.</span>
+
+<span class="sd">    Be sure to read the comments in the config.yaml file and also the file</span>
+<span class="sd">    comments_detector.txt to understand how the detector.json function is structured.</span>
+<span class="sd">    """</span>
+
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">'Run NuRadioMC simulation'</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">'--inputfilename'</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">'input_3.2e+19_1.0e+20.hdf5'</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">'path to NuRadioMC input event list'</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">'--detectordescription'</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">'detector.json'</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">'path to file containing the detector description'</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">'--config'</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">'config.yaml'</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">'NuRadioMC yaml config file'</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">'--outputfilename'</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">results_folder</span><span class="p">,</span> <span class="s1">'NuMC_output.hdf5'</span><span class="p">),</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">'hdf5 output filename'</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">'--outputfilenameNuRadioReco'</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s1">'?'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">'outputfilename of NuRadioReco detector sim file'</span><span class="p">)</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    First we initialise the modules we are going to use. For our simulation, we are</span>
+<span class="sd">    going to need the following ones, which are explained below.</span>
+<span class="sd">    """</span>
+    <span class="n">simpleThreshold</span> <span class="o">=</span> <span class="n">NuRadioReco</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">trigger</span><span class="o">.</span><span class="n">simpleThreshold</span><span class="o">.</span><span class="n">triggerSimulator</span><span class="p">()</span>
+    <span class="n">highLowThreshold</span> <span class="o">=</span> <span class="n">NuRadioReco</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">trigger</span><span class="o">.</span><span class="n">highLowThreshold</span><span class="o">.</span><span class="n">triggerSimulator</span><span class="p">()</span>
+    <span class="n">channelResampler</span> <span class="o">=</span> <span class="n">NuRadioReco</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">channelResampler</span><span class="o">.</span><span class="n">channelResampler</span><span class="p">()</span>
+    <span class="n">channelBandPassFilter</span> <span class="o">=</span> <span class="n">NuRadioReco</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">channelBandPassFilter</span><span class="o">.</span><span class="n">channelBandPassFilter</span><span class="p">()</span>
+    <span class="n">channelGenericNoiseAdder</span> <span class="o">=</span> <span class="n">NuRadioReco</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">channelGenericNoiseAdder</span><span class="o">.</span><span class="n">channelGenericNoiseAdder</span><span class="p">()</span>
+
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    A typical NuRadioMC simulation uses the simulation class from the simulation</span>
+<span class="sd">    module. This class is incomplete by design, since it lacks the detector simulation</span>
+<span class="sd">    functions that controls what the detector does after the electric field arrives</span>
+<span class="sd">    at the antenna. That allows us to create our own class that inherits from</span>
+<span class="sd">    the simulation class that we will call mySimulation, and define in it a</span>
+<span class="sd">    _detector_simulation_filter_amp and _detector_simulation_trigger</span>
+<span class="sd">    function with all the characteristics of our detector setup.</span>
+<span class="sd">    """</span>
+
+
+    <span class="k">class</span><span class="w"> </span><span class="nc">mySimulation</span><span class="p">(</span><span class="n">simulation</span><span class="o">.</span><span class="n">simulation</span><span class="p">):</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">_detector_simulation_filter_amp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">evt</span><span class="p">,</span> <span class="n">station</span><span class="p">,</span> <span class="n">det</span><span class="p">):</span>
+<span class="w">            </span><span class="sd">"""</span>
+<span class="sd">            This function defines the signal chain, i.e., typically the filters and amplifiers.</span>
+<span class="sd">            (The antenna response will be applied automatically using the antenna model defined</span>
+<span class="sd">            in the detector description.)</span>
+<span class="sd">            In our case,</span>
+<span class="sd">            we will only implement a couple of filters, one that acts as a low-pass</span>
+<span class="sd">            and another one that acts as a high-pass.</span>
+<span class="sd">            """</span>
+            <span class="n">channelBandPassFilter</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">evt</span><span class="p">,</span> <span class="n">station</span><span class="p">,</span> <span class="n">det</span><span class="p">,</span>
+                                    <span class="n">passband</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">MHz</span><span class="p">,</span> <span class="mi">700</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">MHz</span><span class="p">],</span> <span class="n">filter_type</span><span class="o">=</span><span class="s2">"butter"</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+            <span class="n">channelBandPassFilter</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">evt</span><span class="p">,</span> <span class="n">station</span><span class="p">,</span> <span class="n">det</span><span class="p">,</span>
+                                    <span class="n">passband</span><span class="o">=</span><span class="p">[</span><span class="mi">150</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">MHz</span><span class="p">,</span> <span class="mi">800</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">GHz</span><span class="p">],</span> <span class="n">filter_type</span><span class="o">=</span><span class="s2">"butter"</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">_detector_simulation_trigger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">evt</span><span class="p">,</span> <span class="n">station</span><span class="p">,</span> <span class="n">det</span><span class="p">):</span>
+
+<span class="w">            </span><span class="sd">"""</span>
+<span class="sd">            This function defines the trigger</span>
+<span class="sd">            to know when an event has triggered. NuRadioMC and NuRadioReco support multiple</span>
+<span class="sd">            triggers per detector. As an example, we will use a high-low threshold trigger</span>
+<span class="sd">            with a high level of 5 times the noise RMS, and a low level of minus</span>
+<span class="sd">            5 times the noise RMS, a coincidence window of 40 nanoseconds and request</span>
+<span class="sd">            a coincidence of 2 out of 4 antennas. We can also choose which subset of</span>
+<span class="sd">            channels we want to use for triggering (we will use the four channels in</span>
+<span class="sd">            detector.json) by specifying their channel ids, defined in the detector file.</span>
+<span class="sd">            It is also important to give a descriptive name to the trigger.</span>
+<span class="sd">            """</span>
+            <span class="n">highLowThreshold</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">evt</span><span class="p">,</span> <span class="n">station</span><span class="p">,</span> <span class="n">det</span><span class="p">,</span>
+                                <span class="n">threshold_high</span><span class="o">=</span><span class="mi">5</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_Vrms</span><span class="p">,</span>
+                                <span class="n">threshold_low</span><span class="o">=-</span><span class="mi">5</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_Vrms</span><span class="p">,</span>
+                                <span class="n">coinc_window</span><span class="o">=</span><span class="mi">40</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">ns</span><span class="p">,</span>
+                                <span class="n">triggered_channels</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+                                <span class="n">number_concidences</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>  <span class="c1"># 2/4 majority logic</span>
+                                <span class="n">trigger_name</span><span class="o">=</span><span class="s1">'hilo_2of4_5_sigma'</span><span class="p">)</span>
+<span class="w">            </span><span class="sd">"""</span>
+<span class="sd">            We can add as well a simple trigger threshold of 10 sigma, or 10 times</span>
+<span class="sd">            the noise RMS. If the absolute value of the voltage goes above that</span>
+<span class="sd">            threshold, the event triggers.</span>
+<span class="sd">            """</span>
+            <span class="n">simpleThreshold</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">evt</span><span class="p">,</span> <span class="n">station</span><span class="p">,</span> <span class="n">det</span><span class="p">,</span>
+                                <span class="n">threshold</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_Vrms</span><span class="p">,</span>
+                                <span class="n">triggered_channels</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+                                <span class="n">trigger_name</span><span class="o">=</span><span class="s1">'simple_10_sigma'</span><span class="p">)</span>
+
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Now that the detector response has been written, we create an instance of</span>
+<span class="sd">    mySimulation with the following arguments:</span>
+<span class="sd">    - The input file name, with the neutrino events</span>
+<span class="sd">    - The output file name</span>
+<span class="sd">    - The name of detector description file</span>
+<span class="sd">    - The name of the output nur file (can be None if we don't want nur files)</span>
+<span class="sd">    - The name of the config file</span>
+
+<span class="sd">    We have also used here two optional arguments, which are default_detector_station</span>
+<span class="sd">    and default_detector channel. If we define a complete detector station with all</span>
+<span class="sd">    of its channels (101 in our case) and we want to add more stations, we can define</span>
+<span class="sd">    these with fewer parameters than needed. Then, making default_detector_station=101,</span>
+<span class="sd">    all the missing necessary parameters will be taken from the station 101, along</span>
+<span class="sd">    with all of the channels from station 101. A similar thing happens if we define</span>
+<span class="sd">    channels with incomplete information and set default_detector_station=0 - the</span>
+<span class="sd">    incomplete channels will be completed using the characteristics from channel 0.</span>
+<span class="sd">    """</span>
+
+    <span class="n">sim</span> <span class="o">=</span> <span class="n">mySimulation</span><span class="p">(</span><span class="n">inputfilename</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">inputfilename</span><span class="p">,</span>
+                    <span class="n">outputfilename</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">outputfilename</span><span class="p">,</span>
+                    <span class="n">detectorfile</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">detectordescription</span><span class="p">,</span>
+                    <span class="n">outputfilenameNuRadioReco</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">outputfilenameNuRadioReco</span><span class="p">,</span>
+                    <span class="n">config_file</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+    <span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="icemodels.html" class="btn btn-neutral float-left" title="Ice and attenuation models" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="running_on_a_cluster.html" class="btn btn-neutral float-right" title="Running on a cluster" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, The NuRadio Group.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
