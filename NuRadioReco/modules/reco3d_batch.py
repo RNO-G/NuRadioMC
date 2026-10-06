@@ -78,8 +78,10 @@ class Lockstep:
 
         Args:
             reco: InterferometricReco3D after ``begin``.
+
             coarse_backend: Optional object with ``stack_maps(lockstep, items)`` computing the coarse maps
                 (for example on a GPU); None uses the CPU kernel.
+
             batch_grids: Also batch the refine and polish grid maps (``_singleray_grid_maps``): the
                 settings waiting on the same grid share its per-pair contributions.
         """
@@ -121,7 +123,7 @@ class Lockstep:
             raise reply
         return reply
 
-    def run(self, fns):
+    def run_jobs(self, fns):
         """Run zero-argument callables in lockstep and return their results in order.
 
         Raises:
@@ -489,11 +491,15 @@ def reconstruct_batch(reco, jobs, coarse_backend=None, stats=None, batch_grids=F
 
     Args:
         reco: InterferometricReco3D after ``begin`` (tables of every searched channel loaded).
+
         jobs: List of (PairSet, kwargs) with kwargs the keyword arguments of ``reconstruct_from_pairs``
             (config, channel_mask, pair_weights, channel_delay_shift, channel_polarity,
             channel_position_shift).
+
         coarse_backend: Optional coarse-map backend (see ``Lockstep``); None uses the CPU kernel.
+
         stats: Optional dict that receives the summed batch timing of the lockstep groups.
+
         batch_grids: Also batch the refine and polish grid maps (see ``Lockstep``).
 
     Returns:
@@ -517,8 +523,8 @@ def reconstruct_batch(reco, jobs, coarse_backend=None, stats=None, batch_grids=F
     results = [None] * len(jobs)
     for idx in groups.values():
         lock = Lockstep(reco, coarse_backend, batch_grids)
-        out = lock.run([(lambda p=jobs[j][0], kw=jobs[j][1]: reco.reconstruct_from_pairs(p, **kw))
-                        for j in idx])
+        out = lock.run_jobs([(lambda p=jobs[j][0], kw=jobs[j][1]: reco.reconstruct_from_pairs(p, **kw))
+                             for j in idx])
         for j, r in zip(idx, out):
             results[j] = r
         if stats is not None:

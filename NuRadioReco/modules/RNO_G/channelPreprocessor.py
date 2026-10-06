@@ -306,12 +306,12 @@ class channelPreprocessor:
         ----------
         config : dict, optional
             Per-step flags and parameters. Keys override the class
-            defaults (`_DEFAULT_CONFIG`).
+            defaults (``_DEFAULT_CONFIG``).
 
         Raises
         ------
         ValueError
-            On a key that is not in `_DEFAULT_CONFIG`, or when
+            On a key that is not in ``_DEFAULT_CONFIG``, or when
             ``apply_delay_corrections`` is set without a file or without
             the cable-delay step it corrects.
         """

@@ -398,8 +398,10 @@ class GpuCoarseBackend:
 
         Args:
             reco: InterferometricReco3D after ``begin``.
+
             dense: Use the dense weight kernel (16 maps per thread) when every map's pairs follow the
                 column order; False always uses the per-map entry kernel.
+
             device_maps: Keep the coarse maps on the device (``DeviceMap``) and download only peaks and
                 statistics; False downloads every map in float64.
         """
@@ -1179,11 +1181,16 @@ class GpuMultiray:
 
         Args:
             rho_vec, phi_vec_rad, z_vec: Grid axes (m, rad, m).
+
             pa_center: PA centre (x, y).
+
             ant_xy: Per channel (x, y).
+
             slot_tables: Table per (channel, ray type slot), channel-major with n_rt slots per channel, None
                 for a slot without one.
+
             n_rt: Ray type slots per channel.
+
             corr_data, channels, ch_to_group, n_groups, pair_weights: As for ``grouped``.
 
         Returns:

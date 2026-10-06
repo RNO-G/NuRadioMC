@@ -104,8 +104,11 @@ def plane_wave_times(zen, az, ant_xyz, ice):
 
     Args:
         zen: Sky zenith angles in rad (0 to pi / 2), any shape.
+
         az: Azimuths in rad, broadcastable with ``zen``.
+
         ant_xyz: (n_ch, 3) antenna positions in m, z relative to the ice surface.
+
         ice: (n_ice, delta_n, z_0) of an exponential profile, or a tuple of in-ice layers
             (z_min, z_max, n_ice, delta_n, z_0) (``far_field_profile``).
 
@@ -421,8 +424,8 @@ class FarFieldMixin:
         Over the azimuth the horizontal term of ``plane_wave_times`` spans +/- sin(zen) D / c
         (D the antennas' horizontal separation); the vertical terms depend on the zenith
         only and are sampled on ``_FAR_WINDOW_ZENITH_SAMPLES`` zeniths from 0 to 90 deg, the
-        sampling error bounded by the largest zenith derivative (|z| / (c sqrt(n(0)^2 - 1))
-        per antenna below the surface, |z| / c above it, plus D / c) times half a step.
+        sampling error bounded by the largest zenith derivative (``|z| / (c sqrt(n(0)^2 - 1))``
+        per antenna below the surface, ``|z| / c`` above it, plus D / c) times half a step.
 
         Args:
             pairs: Sequence of (ch_a, ch_b) channel pairs.

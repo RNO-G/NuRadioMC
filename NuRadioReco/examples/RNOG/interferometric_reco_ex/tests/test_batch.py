@@ -81,7 +81,7 @@ def test_scheduler_rounds_results_and_exceptions(monkeypatch, use_greenlet):
         assert reco3d_batch.current_executor() is lock
         return [lock.request('stack_maps', (i, r, [None])) for r in range(n)]
 
-    out = lock.run([lambda i=i: job(i, i % 3) for i in range(7)])
+    out = lock.run_jobs([lambda i=i: job(i, i % 3) for i in range(7)])
     assert out == [[(i, r) for r in range(i % 3)] for i in range(7)]
     assert echo.rounds == [[1, 2, 4, 5], [2, 5]]
     assert reco3d_batch.current_executor() is None
@@ -94,7 +94,7 @@ def test_scheduler_rounds_results_and_exceptions(monkeypatch, use_greenlet):
         raise KeyError('job failed')
 
     with pytest.raises(KeyError, match='job failed'):
-        lock.run([lambda: job(0, 2), bad, lambda: job(2, 1)])
+        lock.run_jobs([lambda: job(0, 2), bad, lambda: job(2, 1)])
 
 
 def _random_case(rng, n_ch=9, n_settings=12, m=3000):

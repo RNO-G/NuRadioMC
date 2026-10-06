@@ -41,7 +41,7 @@ _SNAPSHOT_DETECTORS = {}
 def table_files_from_config(station_id, config):
     """Return channel -> list of travel-time table files named by a configuration.
 
-    Mirrors the file selection of `InterferometricReco3D._preload_tables`: one combined
+    Mirrors the file selection of ``InterferometricReco3D._preload_tables``: one combined
     table per channel, or one table per active ray type with `multi_ray_types`.
     """
     base = config['time_delay_tables']

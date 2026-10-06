@@ -871,7 +871,7 @@ def get_spectral_features(trace, sampling_rate, fmin=None, fmax=None,
                           low_band_boundary=0.1):
     """Compute spectral shape descriptors for a voltage trace.
 
-    All moments are computed on the power spectrum (|FFT|^2), not the
+    All moments are computed on the power spectrum (``|FFT|^2``), not the
     magnitude spectrum.
 
     Parameters
@@ -1018,8 +1018,8 @@ def get_impulse_template_correlations(trace, sampling_rate):
     """Correlate a trace against idealised impulse templates.
 
     Returns a dict mapping template name (``delta``, ``bipolar``,
-    ``gaussian``, ``bipolar_wide``, ``sinc``) to max |normalised
-    correlation| in [0, 1].
+    ``gaussian``, ``bipolar_wide``, ``sinc``) to the largest absolute normalised
+    correlation, in [0, 1].
     """
     n = len(trace)
     templates = _build_impulse_templates(n, sampling_rate)
