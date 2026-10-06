@@ -183,6 +183,62 @@ def guess_phase(fft_spec: np.ndarray, freqs: np.ndarray, target_freq: float):
 
     return phase
 
+def find_cw_peaks(spec, band_mask, delta_f, algorithm, peak_prominence, prescreen=True):
+    """
+    Find the spectrum bins of narrow (< 10 MHz) CW peaks above `peak_prominence` times a local RMS.
+
+    Parameters
+    ----------
+    spec: np.ndarray
+        Amplitude spectrum of the waveform.
+    band_mask: np.ndarray of bool
+        Bins of `spec` inside the frequency band used for the RMS.
+    delta_f: float
+        Frequency bin width (GHz).
+    algorithm: str
+        'simple': one RMS over the band, peaks searched in the full spectrum.
+        'sliding': RMS in a 50 MHz sliding window over the band, peaks searched per window.
+    peak_prominence: float
+        Height threshold in units of the (window) RMS.
+    prescreen: bool (default: True)
+        Skip windows (or the whole spectrum for 'simple') whose maximum is below the height
+        threshold. `scipy.signal.find_peaks` keeps a peak only if the spectrum value at the
+        peak is at least the threshold, so a window with a smaller maximum never contributes
+        a peak and the returned indices are identical with and without the pre-screen. False
+        runs `find_peaks` on every window.
+
+    Returns
+    -------
+    np.ndarray
+        Sorted, unique global bin indices of the peaks.
+    """
+    peak_width_limit = int(10 * units.MHz / delta_f)
+
+    if algorithm == 'simple':
+        height = peak_prominence * np.sqrt(np.mean(spec[band_mask] ** 2))
+        if prescreen and not spec.max() >= height:
+            return np.array([], dtype=int)
+        peak_idxs, _ = signal.find_peaks(spec, height=height, width=(0, peak_width_limit))
+        return peak_idxs
+
+    elif algorithm == 'sliding':
+        spec_roi = spec[band_mask]
+        window_size = int(50 * units.MHz / delta_f)
+        windowed_spectrum = np.lib.stride_tricks.sliding_window_view(spec_roi, window_size)
+        heights = peak_prominence * np.sqrt(np.mean(windowed_spectrum ** 2, axis=1))
+        if prescreen:
+            windows = np.flatnonzero(windowed_spectrum.max(axis=1) >= heights)
+        else:
+            windows = range(len(heights))
+
+        all_peaks = []
+        for i in windows:
+            peaks, _ = signal.find_peaks(windowed_spectrum[i], height=heights[i], width=(0, peak_width_limit))
+            all_peaks.extend(peaks + i)
+        first_idx = np.argmax(band_mask) if np.any(band_mask) else -1
+        return sorted(set(all_peaks)) + first_idx
+
+
 def sinewave_subtraction(wf: np.ndarray, algorithm: str='simple',  peak_prominence: float = 4.0, sampling_rate: float = 3.2, freq_band: tuple = (0.1, 0.7)):
     """
     Perform sine subtraction on a waveform to remove CW noise.
@@ -208,6 +264,15 @@ def sinewave_subtraction(wf: np.ndarray, algorithm: str='simple',  peak_prominen
     -------
     np.ndarray
         Corrected waveform with CW noise removed.
+
+    Notes
+    -----
+    The peak search (`find_cw_peaks`) skips every spectrum window whose maximum is below
+    the height passed to `scipy.signal.find_peaks`. Because `find_peaks` keeps a peak only
+    if its height (the spectrum value at the peak) is at least that threshold, a window
+    with a smaller maximum cannot contribute a peak, so the set of peak indices, the grouped
+    line frequencies, the fits and the returned waveform are identical to a search over
+    every window.
     """
 
 
@@ -235,42 +300,8 @@ def sinewave_subtraction(wf: np.ndarray, algorithm: str='simple',  peak_prominen
 
     # Mask frequencies within the range
     band_mask = (freqs >= f_min) & (freqs <= f_max)
-    spec_roi = spec[band_mask]
 
-    peak_width_limit = int(10 * units.MHz / delta_f) #10 MHz
-
-    if algorithm == 'simple':
-        # Compute RMS in the selected frequency band
-        rms_band = np.sqrt(np.mean(spec_roi ** 2))
-
-        # Find noise peaks based on this band-limited RMS
-        peak_idxs, _ = signal.find_peaks(spec, height=peak_prominence * rms_band, width=(0, peak_width_limit))
-
-
-    elif algorithm == 'sliding':
-        spec_roi = spec[band_mask]
-        freq_roi = freqs[band_mask]
-        # Compute RMS in a sliding window
-        window_size = int(50 * units.MHz / delta_f) #50 MHz
-        windowed_spectrum = np.lib.stride_tricks.sliding_window_view(spec_roi, window_size)
-        rms_values = np.sqrt(np.mean(windowed_spectrum**2, axis=1))
-
-        all_peaks = []
-        for i in range(len(rms_values)):
-            local_spectrum = windowed_spectrum[i]
-
-            peaks, _  = signal.find_peaks(local_spectrum, height=peak_prominence * rms_values[i], width=(0, peak_width_limit))
-
-            # Convert indices to global indices
-            global_peaks = peaks + i
-            all_peaks.extend(global_peaks)
-        #find first index of the band
-        first_idx = np.argmax(band_mask) if np.any(band_mask) else -1
-        # Remove duplicates (since windows overlap)
-        all_peaks = sorted(set(all_peaks))  # Unique and sorted peaks
-
-        # Remove duplicates (since windows overlap)
-        peak_idxs = sorted(set(all_peaks)) + first_idx  # Unique and sorted peaks
+    peak_idxs = find_cw_peaks(spec, band_mask, delta_f, algorithm, peak_prominence)
 
     noise_freqs = []
     corrected_waveform = wf.copy()
