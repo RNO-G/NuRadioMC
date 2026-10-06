@@ -331,7 +331,7 @@ class InterferometricReco3D(
         'pass2_volume', 'rx_arrival_mode', 'cross_type_sign_mode',
         'save_pair_store', 'pair_store_margin_ns', 'pair_store_dtype',
         'region_hypotheses', 'far_field_hypothesis', 'far_field_lobe_guard_ns',
-        'channel_position_shift', 'ice_model',
+        'channel_position_shift', 'ice_model', 'reader_kwargs',
     }
 
     def begin(self, station_id, config, det):

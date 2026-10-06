@@ -43,7 +43,7 @@ from NuRadioReco.modules.interferometricDirectionReconstruction3D import (
 from NuRadioReco.modules.RNO_G.channelPreprocessor import load_delay_corrections
 from NuRadioReco.framework.channel import Channel
 
-from reco_config import misplaced_preprocessor_keys
+from reco_config import misplaced_preprocessor_keys, reader_options
 from reco_output import write_results_h5
 from pair_store import DEFAULT_MARGIN_NS, PairStoreWriter, config_pair_weights, cut_pairs
 from reco_pass2 import (antenna_type, compute_first_arrival_angles, cross_type_pair_signs,
@@ -549,8 +549,7 @@ def main():
             data_provider = dataProviderRNOG()
             data_provider.begin(
                 input_file, det,
-                reader_kwargs={'mattak_kwargs': {
-                    'read_daq_status': False, 'backend': 'uproot'}},
+                reader_kwargs=reader_options(config),
                 preprocessor_config=preproc_config,
             )
         event_ids = data_provider.get_event_ids()
