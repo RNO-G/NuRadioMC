@@ -98,6 +98,9 @@ Run from `tests/` with the checkout importable:
 python -m pytest -q
 ```
 
+The tests of the reconstruction example in `../interferometric_reco_ex/tests` are run the same way, from their own
+folder. Run the two folders in separate calls: each imports its own `synthetic.py` by that plain name.
+
 `NuRadioReco/test/utilities/test_trace_utilities.py` covers the per-trace functions.
 
 ## Known limitations
