@@ -260,12 +260,13 @@ from reco_validation import (
 )
 
 
-def check_helper_snr(station, threshold=5.0):
+def check_helper_snr(station, threshold=5.0, noise_rms_summation='sequential'):
     """Check whether any helper channel exceeds SNR threshold.
 
     Args:
         station: NuRadioReco Station with preprocessed traces.
         threshold: Minimum SNR (max|V|/noise_rms) to count as signal.
+        noise_rms_summation: Form of the noise RMS, the config key of that name.
 
     Returns:
         True if at least one helper channel is above threshold.
@@ -280,7 +281,7 @@ def check_helper_snr(station, threshold=5.0):
             continue
     if not traces:
         return False
-    snrs = compute_channel_snrs(traces, ch_ids)
+    snrs = compute_channel_snrs(traces, ch_ids, noise_rms_summation)
     return any(s >= threshold for s in snrs.values())
 
 
@@ -305,11 +306,13 @@ def objective_attrs(config):
     """Results-file attributes that name the search objective of a config.
 
     Returns:
-        Dict with ``objective_version``, the windowed-SNR keys when ``snr_window_ns``
-        is set and the objective keys when the objective is not the record one.
+        Dict with ``objective_version``, ``noise_rms_summation``, the windowed-SNR keys
+        when ``snr_window_ns`` is set and the objective keys when the objective is not
+        the record one.
     """
     objective = InterferometricReco3D.objective_version(config)
-    attrs = {'objective_version': objective}
+    attrs = {'objective_version': objective,
+             'noise_rms_summation': config.get('noise_rms_summation', 'sequential')}
     if config.get('snr_window_ns') is not None:
         attrs['snr_window_ns'] = float(config['snr_window_ns'])
         attrs['helper_snr_threshold_windowed'] = float(config.get(
@@ -572,7 +575,8 @@ def main():
             use_fallback = False
             pw_threshold = config.get('plane_wave_snr_threshold', 5.0)
             if config.get('plane_wave_fallback', False):
-                if not check_helper_snr(stn1, threshold=pw_threshold):
+                if not check_helper_snr(stn1, threshold=pw_threshold,
+                                        noise_rms_summation=config.get('noise_rms_summation', 'sequential')):
                     use_fallback = True
 
             p1_config = make_fallback_config(config) if use_fallback else config

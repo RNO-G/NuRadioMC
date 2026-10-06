@@ -9,6 +9,39 @@ import numbers
 InterferometricReco3D = None
 
 
+def _split_trace_noise_rms_pairwise(trace, segments=4, lowest=2):
+    """Split-trace noise RMS with every segment summed by numpy's pairwise summation.
+
+    The quantity of ``trace_utilities.get_split_trace_noise_RMS``: the trace is cut
+    into ``segments`` consecutive segments and the mean of the ``lowest`` smallest
+    segment standard deviations is returned. That function turns the segments of a
+    trace whose length is a multiple of ``segments`` into an object array, whose
+    samples numpy then adds one after the other; here the segments stay float64
+    rows, which numpy adds pairwise. The two results agree to about 1e-15 relative
+    and are equal for other trace lengths. The 2022 results of the Deep CR search
+    were made with this form, and its order of operations is kept as it was there.
+
+    Args:
+        trace: Voltage trace.
+        segments: Number of segments.
+        lowest: Number of segments with the smallest standard deviation to average.
+
+    Returns:
+        The noise RMS as a float.
+    """
+    n = len(trace)
+    if n % segments == 0:
+        # Vectorised: reshape into (segments, seg_len) and take std along axis=1.
+        seg_len = n // segments
+        rms_of_splits = np.std(trace[:segments * seg_len].reshape(segments, seg_len), axis=1)
+    else:
+        # Fallback for traces not evenly divisible by ``segments``.
+        rms_of_splits = np.array([np.std(split) for split in np.array_split(trace, segments)])
+
+    rms_of_splits.partition(lowest)
+    return float(np.mean(rms_of_splits[:lowest]))
+
+
 class PairWeightsMixin:
     """Methods of InterferometricReco3D for pair weights and channel SNR."""
 
@@ -17,6 +50,7 @@ class PairWeightsMixin:
     PAIR_WEIGHT_MODES = ('record', 'information')
     PAIR_WEIGHT_K_NS = 12.65
     PAIR_WEIGHT_FLOOR_NS = 2.0
+    NOISE_RMS_SUMMATIONS = ('sequential', 'pairwise')
 
     @classmethod
     def _validate_snr_config(cls, config):
@@ -27,8 +61,8 @@ class PairWeightsMixin:
                 ``helper_snr_threshold_windowed`` is not a number,
                 ``pair_weight_mode`` is unknown, ``information`` is asked for
                 without ``snr_window_ns`` or without ``snr_pair_weighting``,
-                ``pair_weight_k_ns`` is not positive or ``pair_weight_floor_ns``
-                is negative.
+                ``pair_weight_k_ns`` is not positive, ``pair_weight_floor_ns``
+                is negative or ``noise_rms_summation`` is unknown.
         """
         window = config.get('snr_window_ns', None)
         if window is not None and not (isinstance(window, numbers.Real) and window > 0):
@@ -53,10 +87,14 @@ class PairWeightsMixin:
         if not (isinstance(floor_ns, numbers.Real) and floor_ns >= 0):
             raise ValueError(
                 f"pair_weight_floor_ns must be a non-negative number, got {floor_ns!r}")
+        summation = config.get('noise_rms_summation', 'sequential')
+        if summation not in cls.NOISE_RMS_SUMMATIONS:
+            raise ValueError(
+                f"noise_rms_summation must be one of {cls.NOISE_RMS_SUMMATIONS}, got {summation!r}")
         cls._validate_sign_config(config)
 
     @staticmethod
-    def _compute_snr_pair_weights(volt_arrays, channels):
+    def _compute_snr_pair_weights(volt_arrays, channels, noise_rms_summation='sequential'):
         """Compute the record per-pair weights from the 3-sample channel SNRs.
 
         Each pair is weighted by the geometric mean of the two channels' SNRs,
@@ -66,13 +104,14 @@ class PairWeightsMixin:
         Args:
             volt_arrays: Voltage traces, one per channel (same order as channels).
             channels: Channel IDs.
+            noise_rms_summation: Form of the noise RMS, see ``_channel_snrs``.
 
         Returns:
             (weights, channel_snrs): per-pair weights in ``combinations`` order and
             the SNR of every channel keyed by channel id.
         """
         snrs = InterferometricReco3D._channel_snrs(
-            volt_arrays, InterferometricReco3D.RECORD_SNR_WINDOW_SAMPLES)
+            volt_arrays, InterferometricReco3D.RECORD_SNR_WINDOW_SAMPLES, noise_rms_summation)
         return InterferometricReco3D._record_pair_weights(snrs), dict(zip(channels, snrs))
 
     @staticmethod
@@ -86,7 +125,7 @@ class PairWeightsMixin:
         return weights
 
     @staticmethod
-    def _channel_snrs(volt_arrays, window_size):
+    def _channel_snrs(volt_arrays, window_size, noise_rms_summation='sequential'):
         """Peak-to-peak SNR of every trace over a window of ``window_size`` samples.
 
         The largest peak-to-peak amplitude found within the window is divided by
@@ -95,6 +134,8 @@ class PairWeightsMixin:
         Args:
             volt_arrays: Voltage traces.
             window_size: Window length in samples (at least 2).
+            noise_rms_summation: ``sequential`` for ``trace_utilities.get_split_trace_noise_RMS``,
+                ``pairwise`` for ``_split_trace_noise_rms_pairwise`` (the config key of that name).
 
         Returns:
             List of SNR values in the order of ``volt_arrays``.
@@ -102,9 +143,11 @@ class PairWeightsMixin:
         from NuRadioReco.utilities.trace_utilities import (
             get_split_trace_noise_RMS, get_signal_to_noise_ratio)
 
+        noise_rms_of = (_split_trace_noise_rms_pairwise if noise_rms_summation == 'pairwise'
+                        else get_split_trace_noise_RMS)
         snrs = []
         for v in volt_arrays:
-            noise_rms = get_split_trace_noise_RMS(v)
+            noise_rms = noise_rms_of(v)
             snrs.append(get_signal_to_noise_ratio(v, noise_rms, window_size)
                         if noise_rms > 0 else 0.0)
         return snrs
@@ -155,7 +198,8 @@ class PairWeightsMixin:
         ``snr_pair_weighting`` or ``validation`` is on, or with ``record``. With
         ``snr_window_ns`` set the SNR is also measured over that time window
         (``round(window / dt)`` samples per channel, the split-trace noise RMS
-        unchanged).
+        unchanged). ``noise_rms_summation`` chooses the form of the noise RMS
+        for both (``_channel_snrs``).
 
         Args:
             volt_arrays: Voltage traces, one per channel.
@@ -169,15 +213,18 @@ class PairWeightsMixin:
             measured) and the windowed SNR per channel id (empty without
             ``snr_window_ns``).
         """
+        summation = config.get('noise_rms_summation', 'sequential')
         snr = {}
         if record or config.get('snr_pair_weighting', False) or config.get('validation', False):
-            snr = dict(zip(channels, self._channel_snrs(volt_arrays, self.RECORD_SNR_WINDOW_SAMPLES)))
+            snr = dict(zip(channels, self._channel_snrs(
+                volt_arrays, self.RECORD_SNR_WINDOW_SAMPLES, summation)))
         windowed = {}
         window_ns = config.get('snr_window_ns', None)
         if window_ns is not None:
             for ch, v, t in zip(channels, volt_arrays, time_arrays):
                 dt = t[1] - t[0] if len(t) > 1 else 1.0
-                windowed[ch] = self._channel_snrs([v], self._snr_window_samples(window_ns, dt))[0]
+                windowed[ch] = self._channel_snrs(
+                    [v], self._snr_window_samples(window_ns, dt), summation)[0]
         return snr, windowed
 
     def _group_pair_weights(self, snr, windowed, channels, config):

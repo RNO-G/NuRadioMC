@@ -124,7 +124,7 @@ def main():
         resampler.run(evt, stn, det, sampling_rate=10 * units.GHz)
         volt = [stn.get_channel(ch).get_trace() for ch in channels]
         times = [stn.get_channel(ch).get_times() for ch in channels]
-        _, snrs = reco._compute_snr_pair_weights(volt, channels)
+        _, snrs = reco._compute_snr_pair_weights(volt, channels, cfg.get('noise_rms_summation', 'sequential'))
         if max(snrs.get(ch, 0.0) for ch in (0, 1, 2, 3)) < args.min_pa_snr:
             continue
         rec = pair_residuals(reco, channels, volt, times, positions, args.window_ns)

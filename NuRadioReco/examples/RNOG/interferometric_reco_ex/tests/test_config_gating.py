@@ -123,6 +123,7 @@ MODULE_INERT_VALUES = {
     'optimizer_gradient': 'finite_difference',
     'ice_model': None,
     'save_coarse_map': False,
+    'noise_rms_summation': 'sequential',
 }
 MODULE_KEYS_WITHOUT_INERT_VALUE = frozenset({'z_grid_below', 'z_grid_above'})
 DRIVER_OWNED_KEYS = frozenset({'preprocessor', 'reader_kwargs'})

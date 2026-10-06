@@ -107,7 +107,7 @@ def preprocessing_channels(config):
     return sorted(used)
 
 
-def compute_channel_snrs(volt_arrays, channels):
+def compute_channel_snrs(volt_arrays, channels, noise_rms_summation='sequential'):
     """Per-channel SNR from preprocessed voltage traces.
 
     Uses split-trace noise RMS (lowest segments) to avoid including
@@ -118,16 +118,21 @@ def compute_channel_snrs(volt_arrays, channels):
     Args:
         volt_arrays: List of voltage trace arrays, one per channel.
         channels: List of channel IDs (same order as volt_arrays).
+        noise_rms_summation: Form of the noise RMS, the config key of that name
+            (``sequential`` or ``pairwise``).
 
     Returns:
         Dict mapping channel_id to SNR value.
     """
+    from NuRadioReco.modules.reco3d.pair_weights import _split_trace_noise_rms_pairwise
     from NuRadioReco.utilities.trace_utilities import (
         get_split_trace_noise_RMS, get_signal_to_noise_ratio)
 
+    noise_rms_of = (_split_trace_noise_rms_pairwise if noise_rms_summation == 'pairwise'
+                    else get_split_trace_noise_RMS)
     snrs = {}
     for v, ch in zip(volt_arrays, channels):
-        noise_rms = get_split_trace_noise_RMS(v)
+        noise_rms = noise_rms_of(v)
         snrs[ch] = float(get_signal_to_noise_ratio(v, noise_rms)
                          if noise_rms > 0 else 0.0)
     return snrs

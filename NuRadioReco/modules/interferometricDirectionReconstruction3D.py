@@ -332,6 +332,7 @@ class InterferometricReco3D(
         'save_pair_store', 'pair_store_margin_ns', 'pair_store_dtype',
         'region_hypotheses', 'far_field_hypothesis', 'far_field_lobe_guard_ns',
         'channel_position_shift', 'ice_model', 'reader_kwargs', 'save_coarse_map',
+        'noise_rms_summation',
     }
 
     def begin(self, station_id, config, det):
@@ -490,7 +491,7 @@ class InterferometricReco3D(
                 ``refine_window_mode``, an
                 invalid tie band or noise ceiling (``_candidate_tie_band``,
                 ``_candidate_tie_band_max_raw_corr``), two-arrival settings
-                (``_two_arrival_settings``), split z grid (``_split_z_grid``), SNR,
+                (``_two_arrival_settings``), split z grid (``_split_z_grid``), SNR, noise RMS,
                 pair-weight or sign keys (``_validate_snr_config``), an unknown
                 ``optimizer_method`` or ``optimizer_gradient``, invalid compass settings (``_compass_options``),
                 an unknown ``objective_normalisation``, a ``valid_weight_floor``
