@@ -566,7 +566,7 @@ def get_hilbert_envelope(trace):
     return envelope
 
 
-def get_impulsivity(trace):
+def get_impulsivity(trace, envelope=None, return_diagnostics=False):
     """
     Calculates the impulsivity of a signal (trace).
 
@@ -580,29 +580,58 @@ def get_impulsivity(trace):
     ----------
     trace: array of floats
         Trace of a waveform
+    envelope: array of floats, optional
+        Hilbert envelope of the trace, for callers that have it already. Computed from the trace if not given.
+    return_diagnostics: bool, default: False
+        If True, also describe how linear the CDF is (see Returns). The scalar is the same either way.
 
     Returns
     -------
     impulsivity: float
-        Impulsivity of the signal (scaled between 0 and 1)
+        Impulsivity of the signal (scaled between 0 and 1). NaN for a trace of zeros.
+    diagnostics: dict
+        Only if ``return_diagnostics`` is True, in place of the scalar. Keys: ``impulsivity`` (the scalar);
+        ``impulsivity_slope``, ``impulsivity_intercept`` and ``impulsivity_r_squared`` of a straight-line fit
+        of the CDF against the distance from the envelope maximum; ``impulsivity_ks_statistic``, the
+        two-sample Kolmogorov-Smirnov distance between the CDF and that line clipped to [0, 1].
+        A flat envelope (noise) gives a linear CDF, an impulse a CDF that saturates early.
     """
-
-    envelope = get_hilbert_envelope(trace)
-    maxv = np.argmax(envelope)
-    envelope_indexes = np.arange(len(envelope)) ## just a list of indices the same length as the array
-    closeness = list(
-        np.abs(envelope_indexes - maxv)
-    )  ## create an array containing index distance to max voltage (lower the value, the closer it is)
-
-    sorted_envelope = np.array([x for _, x in sorted(zip(closeness, envelope))])
-    cdf = np.cumsum(sorted_envelope**2)
+    if envelope is None:
+        envelope = get_hilbert_envelope(trace)
+    closeness = np.abs(np.arange(len(envelope)) - np.argmax(envelope))
+    # samples at the same distance from the maximum are taken in order of their envelope value
+    order = np.lexsort((envelope, closeness))
+    cdf = np.cumsum(envelope[order]**2)
     cdf = cdf / cdf[-1]
 
-    impulsivity = (np.mean(np.asarray([cdf])) * 2.0) - 1.0
+    impulsivity = (np.mean(cdf) * 2.0) - 1.0
     if impulsivity < 0:
         impulsivity = 0.0
 
-    return impulsivity
+    if not return_diagnostics:
+        return impulsivity
+
+    x = closeness[order].astype(float)
+    n = len(x)
+    sx, sy = x.sum(), cdf.sum()
+    sxy = n * (x * cdf).sum() - sx * sy
+    sxx = n * (x * x).sum() - sx * sx
+    slope = sxy / sxx
+    intercept = (sy - slope * sx) / n
+    r_squared = sxy**2 / (sxx * (n * (cdf * cdf).sum() - sy * sy))
+
+    line = np.sort(np.clip(slope * x + intercept, 0.0, 1.0))
+    pooled = np.concatenate([cdf, line])
+    ks_statistic = np.max(np.abs(np.searchsorted(cdf, pooled, side="right")
+                                 - np.searchsorted(line, pooled, side="right"))) / n
+
+    return {
+        "impulsivity": float(impulsivity),
+        "impulsivity_slope": float(slope),
+        "impulsivity_intercept": float(intercept),
+        "impulsivity_r_squared": float(r_squared),
+        "impulsivity_ks_statistic": float(ks_statistic) if np.isfinite(slope) else np.nan,
+    }
 
 
 def get_coherent_sum(trace_set, ref_trace, use_envelope = False):
@@ -856,10 +885,8 @@ def get_variable_window_size_correlation(data_trace, template_trace, window_size
         return correlation
 
 
-from scipy import stats as _stats
 from scipy.ndimage import (maximum_filter1d as _max_filter1d,
                            minimum_filter1d as _min_filter1d)
-from scipy.signal import correlate as _correlate, hilbert as _hilbert
 
 
 def get_maximum_peak_to_peak_amplitude(trace, win_size=6):
@@ -932,7 +959,11 @@ def get_spectral_features(trace, sampling_rate, fmin=None, fmax=None,
     entropy = float(-np.sum(p_norm * np.log(p_safe)))
 
     log_p = np.log10(np.clip(p, 1e-30, None))
-    slope, _, _, _, _ = _stats.linregress(f, log_p)
+    # least-squares slope in closed form: scipy.stats.linregress spends most of its time on input checks
+    n_f = len(f)
+    sx = f.sum()
+    sy = log_p.sum()
+    slope = (n_f * (f * log_p).sum() - sx * sy) / (n_f * (f * f).sum() - sx * sx)
 
     cum_power = np.cumsum(p)
     cum_power_norm = cum_power / cum_power[-1]
@@ -962,7 +993,27 @@ _IMPULSE_TEMPLATE_CACHE = {}
 
 
 def _build_impulse_templates(n_samples, sampling_rate):
-    """Build a library of idealised impulse templates for correlation."""
+    """
+    Build the idealised impulse templates and the spectra used to correlate against them.
+
+    Each template is normalised to zero mean and unit standard deviation and padded with zeros
+    to ``2 * n_samples``, so that one forward and one inverse FFT of a trace give its correlation
+    with all templates.
+
+    Parameters
+    ----------
+    n_samples : int
+        Trace length
+    sampling_rate : float
+        Sampling rate of the trace
+
+    Returns
+    -------
+    names : tuple of str
+        Template names
+    spectra_conj : ndarray
+        Complex conjugate of the padded templates' real FFT, shape (n_templates, n_samples + 1)
+    """
     key = (n_samples, sampling_rate)
     if key in _IMPULSE_TEMPLATE_CACHE:
         return _IMPULSE_TEMPLATE_CACHE[key]
@@ -996,73 +1047,181 @@ def _build_impulse_templates(n_samples, sampling_rate):
     sinc_pulse = np.nan_to_num(sinc_pulse, nan=1.0)
     templates["sinc"] = sinc_pulse
 
-    _IMPULSE_TEMPLATE_CACHE[key] = templates
-    return templates
+    names = tuple(templates)
+    stacked = np.stack([templates[name] for name in names])
+    padded = np.zeros((len(names), 2 * n_samples))
+    padded[:, :n_samples] = (stacked - stacked.mean(axis=1, keepdims=True)) / stacked.std(axis=1, keepdims=True)
 
-
-def _normalized_correlation_max(trace, template, floor=1e-10):
-    """Return the maximum absolute normalised cross-correlation in [0, 1]."""
-    t_norm = trace - np.mean(trace)
-    p_norm = template - np.mean(template)
-    t_std = np.std(t_norm)
-    p_std = np.std(p_norm)
-    if t_std < floor or p_std < floor:
-        return 0.0
-    t_norm = t_norm / t_std
-    p_norm = p_norm / p_std
-    corr = _correlate(t_norm, p_norm, mode="same") / len(trace)
-    return float(np.max(np.abs(corr)))
+    _IMPULSE_TEMPLATE_CACHE[key] = names, np.conj(np.fft.rfft(padded, axis=1))
+    return _IMPULSE_TEMPLATE_CACHE[key]
 
 
 def get_impulse_template_correlations(trace, sampling_rate):
-    """Correlate a trace against idealised impulse templates.
-
-    Returns a dict mapping template name (``delta``, ``bipolar``,
-    ``gaussian``, ``bipolar_wide``, ``sinc``) to the largest absolute normalised
-    correlation, in [0, 1].
     """
-    n = len(trace)
-    templates = _build_impulse_templates(n, sampling_rate)
-    return {
-        name: _normalized_correlation_max(trace, tmpl)
-        for name, tmpl in templates.items()
-    }
+    Correlate a trace against idealised impulse templates.
 
+    The trace and each template are normalised to zero mean and unit standard deviation. The
+    correlation is the one of ``scipy.signal.correlate(trace, template, mode='same')`` divided
+    by the trace length, computed for all templates with one FFT of the trace.
 
-def get_extended_impulsivity(trace):
-    """Extended impulsivity diagnostics complementing ``get_impulsivity``.
-
-    Augments the standard CDF-based impulsivity scalar with linear-fit
-    diagnostics and a KS test against a purely linear CDF.
+    Parameters
+    ----------
+    trace : array of floats
+        Trace of a waveform
+    sampling_rate : float
+        Sampling rate of the trace
 
     Returns
     -------
-    dict with keys ``impulsivity_custom``, ``impulsivity_r_squared``,
-    ``impulsivity_slope``, ``impulsivity_intercept``, and
-    ``impulsivity_ks_statistic``.
+    dict
+        Template name (``delta``, ``bipolar``, ``gaussian``, ``bipolar_wide``, ``sinc``) to the
+        largest absolute normalised correlation, in [0, 1]. All zero for a constant trace.
     """
-    envelope = np.abs(_hilbert(trace))
-    peak_idx = np.argmax(envelope)
-    closeness = np.abs(np.arange(len(envelope)) - peak_idx)
+    n = len(trace)
+    names, spectra_conj = _build_impulse_templates(n, sampling_rate)
 
-    sort_order = np.argsort(closeness)
-    sorted_env = envelope[sort_order]
-    cdf = np.cumsum(sorted_env) / np.sum(sorted_env)
+    t_std = np.std(trace)
+    if t_std < 1e-10:
+        return {name: 0.0 for name in names}
 
-    impulsivity_custom = float(2.0 * np.mean(cdf) - 1.0)
+    padded = np.zeros(2 * n)
+    padded[:n] = (trace - np.mean(trace)) / t_std
+    circular = np.fft.irfft(np.fft.rfft(padded) * spectra_conj, n=2 * n, axis=1)
+    # lags -(n-1) .. n-1 in the order of scipy's "full" output, then its centred "same" part
+    full = np.concatenate([circular[:, n + 1:], circular[:, :n]], axis=1)
+    start = (n - 1) // 2
+    max_corr = np.max(np.abs(full[:, start:start + n] / n), axis=1)
 
-    x = closeness[sort_order].astype(float)
-    slope, intercept, r_value, _, _ = _stats.linregress(x, cdf)
-    linear_pred = np.clip(slope * x + intercept, 0.0, 1.0)
-    linear_pred = np.sort(linear_pred)
-    ks_stat, _ = _stats.ks_2samp(cdf, linear_pred)
+    return {name: float(c) for name, c in zip(names, max_corr)}
+
+
+def _band_power(power, freqs, flo, fhi):
+    """Integrated spectral power in the half-open band [flo, fhi)."""
+    m = (freqs >= flo) & (freqs < fhi)
+    return float(power[m].sum())
+
+
+def get_band_features(trace, sampling_rate, band_lo, band_hi,
+                      fmin=None, fmax=None, noise_segments=4, noise_lowest=2):
+    """
+    Band-limited spectral-power features for one channel trace.
+
+    The in-band signal-to-noise (``band_snr``) is gain-referenced: the
+    in-band power is divided by the in-band noise power estimated from the
+    quietest split-trace segments, so the per-channel electronics gain
+    cancels (it rides both signal and noise). This makes ``band_snr``, and
+    any cross-channel ratio built from it, robust to per-channel gain
+    miscalibration.
+
+    Parameters
+    ----------
+    trace : ndarray
+        Voltage trace (1-D).
+    sampling_rate : float
+        Sampling rate (use GHz inside NuRadioReco).
+    band_lo, band_hi : float
+        Signal band edges, same units as ``sampling_rate``.
+    fmin, fmax : float, optional
+        Full spectral range for ``peak_frequency`` and the denominator of
+        ``band_power_ratio``. Default: full positive spectrum.
+    noise_segments, noise_lowest : int
+        Split-trace noise estimate controls (as in
+        ``get_split_trace_noise_RMS``): the band noise power is the mean
+        in-band power of the ``noise_lowest`` quietest of ``noise_segments``
+        equal segments, scaled to the full length.
+
+    Returns
+    -------
+    dict
+        Keys ``band_power`` (raw in-band power), ``band_snr``
+        (gain-referenced in-band power-SNR), ``band_power_ratio`` (in-band
+        over full-range power), ``band_slope`` (log10 of upper-half over
+        lower-half in-band power; spectral tilt), and ``peak_frequency``.
+    """
+    n = len(trace)
+    fft_vals = np.fft.rfft(trace)
+    freqs = np.fft.rfftfreq(n, d=1.0 / sampling_rate)
+    power = np.abs(fft_vals) ** 2
+
+    if fmin is None:
+        fmin = freqs[1] if len(freqs) > 1 else 0.0
+    if fmax is None:
+        fmax = freqs[-1]
+
+    band_power = _band_power(power, freqs, band_lo, band_hi)
+    range_power = _band_power(power, freqs, fmin, fmax)
+    band_mid = 0.5 * (band_lo + band_hi)
+    p_lo = _band_power(power, freqs, band_lo, band_mid)
+    p_hi = _band_power(power, freqs, band_mid, band_hi)
+
+    # In-band noise power from the quietest split-trace segments (band-matched).
+    if n >= noise_segments * 2:
+        seg_len = n // noise_segments
+        segs = trace[:noise_segments * seg_len].reshape(noise_segments, seg_len)
+        seg_rms = np.std(segs, axis=1)
+        quiet = segs[np.argsort(seg_rms)[:noise_lowest]]
+        seg_freqs = np.fft.rfftfreq(seg_len, d=1.0 / sampling_rate)
+        noise_band = np.mean([
+            _band_power(np.abs(np.fft.rfft(s)) ** 2, seg_freqs, band_lo, band_hi)
+            for s in quiet
+        ])
+        # Scale segment-length power up to the full-trace length for comparison.
+        noise_band *= (n / seg_len)
+    else:
+        noise_band = 0.0
+
+    band_snr = float(band_power / noise_band) if noise_band > 0 else float("nan")
+    band_power_ratio = float(band_power / range_power) if range_power > 0 else float("nan")
+    band_slope = float(np.log10((p_hi + 1e-30) / (p_lo + 1e-30)))
+
+    rng = (freqs >= fmin) & (freqs <= fmax)
+    peak_frequency = float(freqs[rng][np.argmax(power[rng])]) if rng.any() else float("nan")
 
     return {
-        "impulsivity_custom": impulsivity_custom,
-        "impulsivity_r_squared": float(r_value ** 2),
-        "impulsivity_slope": float(slope),
-        "impulsivity_intercept": float(intercept),
-        "impulsivity_ks_statistic": float(ks_stat),
+        "band_power": band_power,
+        "band_snr": band_snr,
+        "band_power_ratio": band_power_ratio,
+        "band_slope": band_slope,
+        "peak_frequency": peak_frequency,
     }
 
 
+def get_normalized_cross_correlation(trace_a, trace_b, max_lag=None):
+    """
+    Peak normalized cross-correlation between two traces and its lag.
+
+    Gain-independent (each trace is normalized by its own L2 norm), so it
+    measures waveform-shape coherence rather than amplitude. Used for
+    co-located HPOL/VPOL pairs: a coherent plane wave hits both with
+    correlated structure at near-zero lag; thermal noise does not.
+
+    Parameters
+    ----------
+    trace_a, trace_b : ndarray
+        Equal-length voltage traces.
+    max_lag : int, optional
+        If given, restrict the search to lags in [-max_lag, max_lag] samples.
+
+    Returns
+    -------
+    max_abs_corr : float
+        Largest absolute normalized correlation, in [0, 1]. NaN if either
+        trace has zero norm.
+    lag : int
+        Sample offset (b relative to a) at the peak. 0 if either trace has
+        zero norm.
+    """
+    a = np.asarray(trace_a, float)
+    b = np.asarray(trace_b, float)
+    na = np.linalg.norm(a)
+    nb = np.linalg.norm(b)
+    if na == 0 or nb == 0:
+        return float("nan"), 0
+    corr = np.correlate(a / na, b / nb, mode="full")
+    lags = np.arange(-(len(b) - 1), len(a))
+    if max_lag is not None:
+        keep = np.abs(lags) <= max_lag
+        corr = corr[keep]
+        lags = lags[keep]
+    i = int(np.argmax(np.abs(corr)))
+    return float(np.abs(corr[i])), int(lags[i])

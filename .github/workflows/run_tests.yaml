@@ -256,6 +256,11 @@ jobs:
       run: |
         python NuRadioReco/test/framework/test_parameter_storage.py
 
+    - name: "Test per-trace variables of trace_utilities"
+      if: always()
+      run: |
+        python NuRadioReco/test/utilities/test_trace_utilities.py
+
     - name: "Test calibration pulser example"
       if: always()
       run: |
