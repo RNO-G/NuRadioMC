@@ -345,6 +345,20 @@ def test_batch_far_field_equals_separate_calls(batch_reco, batch_pairs, table_di
             assert_bit_equal(a, b, (e, j))
 
 
+@pytest.mark.slow
+def test_batch_coarse_maps_equal_separate_calls(batch_reco, batch_pairs, table_dir):
+    """With `save_coarse_map` every setting of a batch returns the coarse map of its separate call bit for bit."""
+    chosen = _settings(table_dir)
+    settings = [dict(s, config=dict(s['config'], save_coarse_map=True)) for s in (chosen[0], chosen[3], chosen[6], chosen[8])]
+    for e, pairs in enumerate(batch_pairs):
+        separate = [batch_reco.reconstruct_from_pairs(pairs, **s) for s in settings]
+        batched = batch_reco.reconstruct_from_pairs_batch(pairs, settings, batch_grids=True)
+        for j, (a, b) in enumerate(zip(separate, batched)):
+            assert b['coarse_map_v1'].shape == (30, 120, 100), (e, j)
+            assert_bit_equal(a, b, (e, j))
+        assert batched[3]['coarse_map_v1_hpol'].shape == (30, 120, 100)
+
+
 def test_gpu_kernel_source_compiles():
     """The CUDA source of the GPU backend compiles with NVRTC for the V100 architecture (no device needed)."""
     pytest.importorskip('cupy')
@@ -368,7 +382,8 @@ def test_gpu_batch_matches_cpu_batch(batch_reco, batch_pairs, table_dir):
     The GPU maps equal the CPU maps to the rounding of the device arithmetic (the grid kernel interpolates the
     travel times with contracted multiply-adds), so the primaries agree to 1e-6 and the polish-grid correlation
     to 1e-6, and so do the far-field directions (coarse sky maps on the GPU); two grid batches on one backend
-    also check that the series pool is rebuilt per lockstep.
+    also check that the series pool is rebuilt per lockstep. With `save_coarse_map` the map kept on the device
+    arrives in the result as a NumPy array equal to the CPU map to 1e-6.
     """
     cp = pytest.importorskip('cupy')
     try:
@@ -379,13 +394,18 @@ def test_gpu_batch_matches_cpu_batch(batch_reco, batch_pairs, table_dir):
 
     settings = _settings(table_dir)[:8]
     settings += [dict(s, config=dict(s['config'], far_field_hypothesis=True)) for s in settings[:3]]
+    settings += [dict(s, config=dict(s['config'], save_coarse_map=True)) for s in (settings[0], settings[6])]
     jobs = [(pairs, s) for pairs in batch_pairs for s in settings]
     cpu = reco3d_batch.reconstruct_batch(batch_reco, jobs, batch_grids=True)
     backend = GpuCoarseBackend(batch_reco)
     for _ in range(2):
         gpu = reco3d_batch.reconstruct_batch(batch_reco, jobs, coarse_backend=backend, batch_grids=True)
+        assert sum('coarse_map_v1' in b for b in gpu) == 2 * len(batch_pairs)
         for j, (a, b) in enumerate(zip(cpu, gpu)):
             assert b['reco_backend'] == 1
+            if 'coarse_map_v1' in a:
+                assert type(b['coarse_map_v1']) is np.ndarray and b['coarse_map_v1'].shape == (30, 120, 100), j
+                assert np.allclose(a['coarse_map_v1'], b['coarse_map_v1'], rtol=0.0, atol=1e-6, equal_nan=True), j
             for k in ('rho', 'phi', 'z'):
                 assert abs(a[k] - b[k]) <= 1e-6 * max(1.0, abs(a[k])), (j, k, a[k], b[k])
             assert abs(a['max_corr'] - b['max_corr']) <= 1e-6, (j, a['max_corr'], b['max_corr'])

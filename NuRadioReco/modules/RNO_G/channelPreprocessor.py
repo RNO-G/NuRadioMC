@@ -241,10 +241,13 @@ class channelPreprocessor:
        angle-independent, unlike antenna dedispersion which is reco-only)
     6. ``channelResampler`` (upsample to a target rate, typically 5 GHz)
     7. ``channelSinewaveSubtraction`` (CW peak removal)
-    8. ``channelBandPassFilter`` (apply analysis passband)
+    8. notch (``apply_notch``): the spectrum bins of every channel inside
+       each band of ``notch_bands`` (pairs of lower and upper edge in GHz,
+       edges included) are set to zero
+    9. ``channelBandPassFilter`` (apply analysis passband)
 
     Block-offset removal is on by default. Glitch detection and steps
-    4-8 are off by default. Unknown configuration keys raise.
+    4-9 are off by default. Unknown configuration keys raise.
 
     ``channels`` (default ``None``) restricts every step to the listed
     channel ids: the other channels are detached from the station while
@@ -280,6 +283,8 @@ class channelPreprocessor:
         "cw_peak_prominence": 4.0,
         "cw_freq_band": (0.1, 0.6),
         "cw_algorithm": "sliding",
+        "apply_notch": False,
+        "notch_bands": ((0.399 * units.GHz, 0.407 * units.GHz),),
         "apply_bandpass": False,
         "bandpass_band": (0.1 * units.GHz, 0.6 * units.GHz),
         "bandpass_filter_type": "butter",
@@ -417,6 +422,19 @@ class channelPreprocessor:
             self._cw_filter.run(event, station, det,
                                 algorithm=cfg["cw_algorithm"],
                                 peak_prominence=cfg["cw_peak_prominence"])
+
+        if cfg["apply_notch"]:
+            # Deterministic band rejection for known narrowband transmitters
+            # (e.g. the RS41 radiosonde telemetry at 402-404 MHz) that the
+            # adaptive CW peak removal does not reliably catch. Zeroing a few
+            # MHz of the analysis band costs a broadband impulse about 1% and
+            # is intended to replace the launch-window livetime veto.
+            for channel in station.iter_channels():
+                spec = channel.get_frequency_spectrum()
+                freqs = channel.get_frequencies()
+                for f_lo, f_hi in cfg["notch_bands"]:
+                    spec[(freqs >= f_lo) & (freqs <= f_hi)] = 0
+                channel.set_frequency_spectrum(spec, channel.get_sampling_rate())
 
         if cfg["apply_bandpass"]:
             self._bandpass.run(

@@ -692,6 +692,32 @@ class TablesMixin:
 
         return coords_per_ch
 
+    def travel_times(self, rho, phi_deg, z, channels):
+        """Travel time from a position to each channel, read from the travel-time tables.
+
+        The position is given in the frame of the search: ``rho`` and ``phi_deg``
+        about the vertical axis through the phased-array centre (the mean of the
+        positions of channels 1 and 2) and ``z`` absolute, with the ice surface at 0.
+        Each channel's table is interpolated at the horizontal distance between the
+        position and the channel (at least 1 m) and at ``z``, as for the delay
+        matrices of the search. The single-ray tables must be loaded, which
+        ``begin`` does for the channels of its config with ``multi_ray_types: false``.
+
+        Args:
+            rho: Horizontal distance from the phased-array axis (m).
+            phi_deg: Azimuth (deg), counter-clockwise from the x axis (east).
+            z: Height (m), negative below the surface.
+            channels: Channel ids with a loaded table.
+
+        Returns:
+            Dict channel id -> travel time (ns). The value is NaN where the channel's
+            table holds no ray solution (the shadow zone) and minus infinity outside
+            the range of the table, such as above the surface with the in-ice tables.
+        """
+        src = self._build_source_enu_matrix(np.array([rho]), np.array([np.radians(phi_deg)]), np.array([z]))
+        coords = self._compute_rho_and_coords(src, channels)
+        return {ch: float(self._interpolators[ch].interp(coords[ch])[0]) for ch in channels}
+
     def _compute_delay_matrices(self, src_enu, channels):
         """Compute pairwise time delay matrices over a 3D grid.
 

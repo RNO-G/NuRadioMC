@@ -13,7 +13,8 @@ Layout (``n`` events, ``P`` pairs, ``C`` channels):
 - file attributes: ``format``, ``format_version``, ``created``, ``code_commit``,
   ``reco_version``, ``config_json`` (the driver config), ``config_hash``, ``station_id``,
   ``channels``, ``dtype``, ``margin_ns``, ``apply_hann_window``,
-  ``correlation_normalization``, ``snr_window_ns`` (NaN when unset), ``n_events``.
+  ``correlation_normalization``, ``snr_window_ns`` (NaN when unset), ``noise_rms_summation``
+  (absent in stores written before the key existed, which used ``sequential``), ``n_events``.
 - ``pairs/ch_a``, ``pairs/ch_b`` (P): channel ids, lag = t_a - t_b; ``pairs/window_ns``
   (P, 2): lag window the series were cut to (NaN: the volume reaches no table cell).
 - ``events/run_number``, ``event_number``, ``source_file``, ``station_id`` (n);
@@ -208,6 +209,7 @@ class PairStoreWriter:
             'apply_hann_window': bool(config.get('apply_hann_window', False)),
             'correlation_normalization': 'pearson' if norm == 'normalized' else norm,
             'snr_window_ns': float(config.get('snr_window_ns', None) or np.nan),
+            'noise_rms_summation': config.get('noise_rms_summation', 'sequential'),
         }
         self.file.attrs.update(attrs)
         grp = self.file.create_group('pairs')
@@ -304,7 +306,8 @@ class PairStore:
         window_ns = float(attrs['snr_window_ns'])
         self.settings = {'apply_hann_window': bool(attrs['apply_hann_window']),
                          'correlation_normalization': str(attrs['correlation_normalization']),
-                         'snr_window_ns': None if np.isnan(window_ns) else window_ns}
+                         'snr_window_ns': None if np.isnan(window_ns) else window_ns,
+                         'noise_rms_summation': str(attrs.get('noise_rms_summation', 'sequential'))}
         self.results_attrs = dict(self.file['results_attrs'].attrs) if 'results_attrs' in self.file else {}
         events = self.file['events']
         self.run_number = events['run_number'][()]

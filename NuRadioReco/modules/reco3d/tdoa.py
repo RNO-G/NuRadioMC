@@ -298,7 +298,7 @@ class TdoaMixin:
         pair_weights = None
         if config.get('snr_pair_weighting', False):
             pair_weights, _ = self._compute_snr_pair_weights(
-                volt_arrays, channels
+                volt_arrays, channels, config.get('noise_rms_summation', 'sequential')
             )
 
         corr_data, _ = self._prepare_corr_funcs(

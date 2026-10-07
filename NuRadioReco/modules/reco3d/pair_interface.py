@@ -27,8 +27,9 @@ class PairSet(namedtuple('PairSet', ['channels', 'pairs', 'series', 'snr', 'snr_
 
         snr_windowed: Dict channel -> SNR over ``settings['snr_window_ns']``, or empty.
 
-        settings: Dict of the preprocessing keys the series depend on
-            (``apply_hann_window``, ``correlation_normalization``, ``snr_window_ns``).
+        settings: Dict of the preprocessing keys the series and SNRs depend on
+            (``apply_hann_window``, ``correlation_normalization``, ``snr_window_ns``,
+            ``noise_rms_summation``).
 
         windows: None for complete series, else (n_pairs, 2) lag windows in ns
             outside which the series were cut (zeros there).
@@ -92,8 +93,9 @@ class PairInterfaceMixin:
 
             config: Reconstruction config dict or YAML path. Its channels must be
                 listed in the order of ``pairs.channels``; its
-                ``apply_hann_window`` and ``correlation_normalization`` (and
-                ``snr_window_ns`` when set) must be those the series were made with.
+                ``apply_hann_window``, ``correlation_normalization`` and
+                ``noise_rms_summation`` (and ``snr_window_ns`` when set) must be
+                those the series and SNRs were made with.
 
             channel_mask: Channels removed from the channel list (and so from every
                 polarization group) before the search.
@@ -154,6 +156,8 @@ class PairInterfaceMixin:
                     if settings[k] != pairs.settings[k]]
         if settings['snr_window_ns'] not in (None, pairs.settings['snr_window_ns']):
             mismatch.append('snr_window_ns')
+        if settings['noise_rms_summation'] != pairs.settings.get('noise_rms_summation', 'sequential'):
+            mismatch.append('noise_rms_summation')
         if mismatch:
             raise ValueError(f"series settings differ in {mismatch}: the pair set was made with "
                              f"{pairs.settings}")
@@ -217,7 +221,8 @@ class PairInterfaceMixin:
         norm = config.get('correlation_normalization', 'normalized')
         return {'apply_hann_window': bool(config.get('apply_hann_window', False)),
                 'correlation_normalization': 'pearson' if norm == 'normalized' else norm,
-                'snr_window_ns': config.get('snr_window_ns', None)}
+                'snr_window_ns': config.get('snr_window_ns', None),
+                'noise_rms_summation': config.get('noise_rms_summation', 'sequential')}
 
     @staticmethod
     def _mask_channels(config, channel_mask):

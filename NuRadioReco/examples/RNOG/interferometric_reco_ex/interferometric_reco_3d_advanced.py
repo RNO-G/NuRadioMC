@@ -18,7 +18,6 @@ pairs reproduce the pass-1 results exactly through ``reco_from_pairs.py``.
 """
 
 import argparse
-import datetime
 import itertools
 import os
 import yaml
@@ -26,12 +25,9 @@ import time
 import numpy as np
 import logging
 
-import NuRadioReco.detector.detector as detector
-from NuRadioReco.detector.RNO_G import rnog_detector
 from NuRadioReco.modules.channelResampler import channelResampler
 from NuRadioReco.modules.channelAntennaDedispersion import channelAntennaDedispersion
-from NuRadioReco.modules.RNO_G.dataProviderRNOG import dataProviderRNOG
-from NuRadioReco.modules.RNO_G.dataProviderNuRadio import dataProviderNuRadio
+from NuRadioReco.modules.RNO_G.dataProviderSetup import init_detector, select_data_provider
 from NuRadioReco.utilities import units
 from NuRadioReco.detector.antennapattern import AntennaPatternProvider
 from NuRadioMC.SignalProp import propagation
@@ -41,10 +37,9 @@ from NuRadioReco.modules.interferometricDirectionReconstruction3D import (
     InterferometricReco3D, check_detector_consistency, snapshot_search_dirs,
     table_files_from_config)
 from NuRadioReco.modules.RNO_G.channelPreprocessor import load_delay_corrections
-from NuRadioReco.framework.channel import Channel
 
 from reco_config import misplaced_preprocessor_keys
-from reco_output import write_results_h5
+from reco_output import coherent_channels, write_results_h5
 from pair_store import DEFAULT_MARGIN_NS, PairStoreWriter, config_pair_weights, cut_pairs
 from reco_pass2 import (antenna_type, compute_first_arrival_angles, cross_type_pair_signs,
                          pass2_options, pass2_search_config, pass2_template, ray_tracer_backend)
@@ -52,26 +47,6 @@ from reco_pass2 import (antenna_type, compute_first_arrival_angles, cross_type_p
 logger = logging.getLogger("reco3d.iterative")
 
 ice = greenland_simple()
-
-
-def init_detector(config):
-    """Build and update a Detector from config."""
-    det_file = config.get('detector_file', None)
-    det_date_str = config.get('detector_date', '2022-10-01')
-    det_date = datetime.datetime.fromisoformat(det_date_str)
-    station_id = config['station_id']
-
-    if det_file:
-        det = rnog_detector.Detector(
-            detector_file=det_file,
-            log_level=logging.WARNING,
-            select_stations=station_id,
-        )
-    else:
-        det = detector.Detector(source="rnog_mongo")
-
-    det.update(det_date)
-    return det
 
 
 def compute_arrival_angles(rho, phi_deg, z, station_id, det, channels):
@@ -285,12 +260,13 @@ from reco_validation import (
 )
 
 
-def check_helper_snr(station, threshold=5.0):
+def check_helper_snr(station, threshold=5.0, noise_rms_summation='sequential'):
     """Check whether any helper channel exceeds SNR threshold.
 
     Args:
         station: NuRadioReco Station with preprocessed traces.
         threshold: Minimum SNR (max|V|/noise_rms) to count as signal.
+        noise_rms_summation: Form of the noise RMS, the config key of that name.
 
     Returns:
         True if at least one helper channel is above threshold.
@@ -305,7 +281,7 @@ def check_helper_snr(station, threshold=5.0):
             continue
     if not traces:
         return False
-    snrs = compute_channel_snrs(traces, ch_ids)
+    snrs = compute_channel_snrs(traces, ch_ids, noise_rms_summation)
     return any(s >= threshold for s in snrs.values())
 
 
@@ -330,11 +306,13 @@ def objective_attrs(config):
     """Results-file attributes that name the search objective of a config.
 
     Returns:
-        Dict with ``objective_version``, the windowed-SNR keys when ``snr_window_ns``
-        is set and the objective keys when the objective is not the record one.
+        Dict with ``objective_version``, ``noise_rms_summation``, the windowed-SNR keys
+        when ``snr_window_ns`` is set and the objective keys when the objective is not
+        the record one.
     """
     objective = InterferometricReco3D.objective_version(config)
-    attrs = {'objective_version': objective}
+    attrs = {'objective_version': objective,
+             'noise_rms_summation': config.get('noise_rms_summation', 'sequential')}
     if config.get('snr_window_ns') is not None:
         attrs['snr_window_ns'] = float(config['snr_window_ns'])
         attrs['helper_snr_threshold_windowed'] = float(config.get(
@@ -372,7 +350,8 @@ def main():
     parser.add_argument("--validation", action="store_true",
                         help="Record per-channel SNR and correlation quality metrics")
     parser.add_argument("--save-nur", type=str, default=None,
-                        help="Write events with coherent WF channels to NUR file")
+                        help="Write the events with coherent WF channels to this NUR file; the file is "
+                             "written even when no event has a stored waveform (see save_coherent_waveforms)")
     parser.add_argument("--auto-gpu", action="store_true",
                         help="Detect an available GPU and enable the GPU "
                              "reco backend (overrides use_gpu in config).")
@@ -520,8 +499,6 @@ def main():
         surface_channels = {ch for ch in channels if antenna_type(det, station_id, ch) == 'lpda'}
         air_tracer = propagation.get_propagation_module('air_ice')(ice, log_level=logging.WARNING)
 
-    COH_WF_CHANNEL_BASE = 100
-
     nur_writer = None
     if args.save_nur:
         from NuRadioReco.modules.io.eventWriter import eventWriter
@@ -541,18 +518,8 @@ def main():
                 and file_basename not in event_filter['by_file']:
             continue
 
-        if is_nur:
-            data_provider = dataProviderNuRadio()
-            data_provider.begin(
-                input_file, det, preprocessor_config=preproc_config)
-        else:
-            data_provider = dataProviderRNOG()
-            data_provider.begin(
-                input_file, det,
-                reader_kwargs={'mattak_kwargs': {
-                    'read_daq_status': False, 'backend': 'uproot'}},
-                preprocessor_config=preproc_config,
-            )
+        data_provider = select_data_provider(
+            input_file, det, reader_kwargs=config.get('reader_kwargs'), preprocessor_config=preproc_config)
         event_ids = data_provider.get_event_ids()
 
         emitter_pos = None
@@ -608,7 +575,8 @@ def main():
             use_fallback = False
             pw_threshold = config.get('plane_wave_snr_threshold', 5.0)
             if config.get('plane_wave_fallback', False):
-                if not check_helper_snr(stn1, threshold=pw_threshold):
+                if not check_helper_snr(stn1, threshold=pw_threshold,
+                                        noise_rms_summation=config.get('noise_rms_summation', 'sequential')):
                     use_fallback = True
 
             p1_config = make_fallback_config(config) if use_fallback else config
@@ -708,24 +676,12 @@ def main():
             result['event_number'] = int(eid[1])
             result['source_file'] = os.path.basename(input_file)
 
-            if nur_writer is not None:
-                n_coh = config.get('n_coherent_waveforms', 1)
-                coh_ch_ids = [COH_WF_CHANNEL_BASE + i for i in range(n_coh)]
-                stn1_out = evt1.get_station(station_id)
-                for wf_key in sorted(k for k in result
-                                     if k.startswith('coherent_wf_')):
-                    pk_idx = int(wf_key.split('_')[-1])
-                    ch_id = COH_WF_CHANNEL_BASE + pk_idx
-                    ch = Channel(channel_id=ch_id)
-                    wf_times = result.get('coherent_times')
-                    sr = 1.0 / (wf_times[1] - wf_times[0]) * 1e9 if wf_times is not None else 10e9
-                    ch.set_trace(result[wf_key], sr)
-                    stn1_out.add_channel(ch)
+            coh_channels = coherent_channels(result) if nur_writer is not None else []
+            if coh_channels:
                 evt_out = NREvent(evt1.get_run_number(), evt1.get_id())
                 stn_out = NRStation(station_id)
-                for ch_id in coh_ch_ids:
-                    if stn1_out.has_channel(ch_id):
-                        stn_out.add_channel(stn1_out.get_channel(ch_id))
+                for ch in coh_channels:
+                    stn_out.add_channel(ch)
                 evt_out.set_station(stn_out)
                 nur_writer.run(evt_out)
 
@@ -748,7 +704,7 @@ def main():
         reco2.end()
 
     if nur_writer is not None:
-        nur_writer.end()
+        nur_writer.end(write_empty_file=True)
 
     report = event_report or det_report
     attrs = {

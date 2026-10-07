@@ -9,9 +9,9 @@ proof that the absent configuration itself is unchanged. The split z grid keys h
 such value (given, they replace `coarse_n_z` and the coarse z grid), so they are listed
 in MODULE_KEYS_WITHOUT_INERT_VALUE instead; `test_split_z_grid.py` checks that the
 reference configuration carries neither and that a split grid without an air block
-repeats the default search. The `preprocessor` block is read by the driver and never by
-the module; it is registered so that begin() does not warn about it, and listed in
-DRIVER_OWNED_KEYS. The driver's pass-2 options (``pass2_volume``, ``rx_arrival_mode``,
+repeats the default search. The `preprocessor` block and `reader_kwargs` are read by the
+driver and never by the module; they are registered so that begin() does not warn about
+them, and listed in DRIVER_OWNED_KEYS. The driver's pass-2 options (``pass2_volume``, ``rx_arrival_mode``,
 ``cross_type_sign_mode``) are registered for the same reason with the values that keep the
 previous driver behaviour in DRIVER_INERT_VALUES; the module ignores them, and
 test_rx_air.py checks the driver side. No shipped config carries a key the module does not know.
@@ -122,9 +122,11 @@ MODULE_INERT_VALUES = {
     'channel_position_shift': None,
     'optimizer_gradient': 'finite_difference',
     'ice_model': None,
+    'save_coarse_map': False,
+    'noise_rms_summation': 'sequential',
 }
 MODULE_KEYS_WITHOUT_INERT_VALUE = frozenset({'z_grid_below', 'z_grid_above'})
-DRIVER_OWNED_KEYS = frozenset({'preprocessor'})
+DRIVER_OWNED_KEYS = frozenset({'preprocessor', 'reader_kwargs'})
 DRIVER_INERT_VALUES = {
     'pass2_volume': 'template',
     'rx_arrival_mode': 'direct',
@@ -138,6 +140,8 @@ PREPROCESSOR_INERT_VALUES = {
     'apply_delay_corrections': False,
     'delay_corrections_file': None,
     'channels': None,
+    'apply_notch': False,
+    'notch_bands': ((0.399 * units.GHz, 0.407 * units.GHz),),
 }
 COMPARED_KEYS = ['rho', 'phi', 'z', 'max_corr'] + [f'peak_{i}_{f}' for i in range(3) for f in ('rho', 'phi', 'z', 'corr', 'map_snr')]
 
